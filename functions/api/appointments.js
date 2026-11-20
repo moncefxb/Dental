@@ -1,4 +1,3 @@
-
 const ALLOWED_SERVICES = new Set([
   "general",
   "cosmetic",
@@ -22,19 +21,42 @@ function json(data, status = 200) {
   });
 }
 
-function generateReference() {
-  const bytes = new Uint8Array(8);
+function randomToken() {
+  const bytes = new Uint8Array(16);
   crypto.getRandomValues(bytes);
 
-  const token = Array.from(bytes, byte =>
-    byte.toString(16).padStart(2, "0")
-  ).join("").toUpperCase();
+  return Array.from(bytes, b =>
+    b.toString(16).padStart(2, "0")
+  ).join("");
+}
 
-  return `NOVA-${token}`;
+function generateReference() {
+  return `NOVA-${randomToken().slice(0, 16).toUpperCase()}`;
+}
+
+async function hashIP(ip, secret) {
+  const encoder = new TextEncoder();
+
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode(ip)
+  );
+
+  return Array.from(new Uint8Array(signature), b =>
+    b.toString(16).padStart(2, "0")
+  ).join("");
 }
 
 export async function onRequestPost({ request, env }) {
-  // 1. Verify request origin
   const origin = request.headers.get("Origin");
   const requestUrl = new URL(request.url);
 
@@ -48,14 +70,12 @@ export async function onRequestPost({ request, env }) {
     }
   }
 
-  // 2. Verify content type
   const contentType = request.headers.get("Content-Type") || "";
 
   if (!contentType.toLowerCase().includes("application/json")) {
     return json({ ok: false, error: "json_required" }, 415);
   }
 
-  // 3. Limit request size
   const contentLength = Number(
     request.headers.get("Content-Length") || 0
   );
@@ -64,7 +84,6 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "payload_too_large" }, 413);
   }
 
-  // 4. Parse JSON
   let body;
 
   try {
@@ -83,15 +102,10 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "invalid_input" }, 400);
   }
 
-  // 5. Honeypot protection
-  if (
-    typeof body.website === "string" &&
-    body.website.trim() !== ""
-  ) {
+  if (typeof body.website === "string" && body.website.trim() !== "") {
     return json({ ok: true, reference: "" }, 202);
   }
 
-  // 6. Normalize inputs
   const name = typeof body.name === "string"
     ? body.name.trim().replace(/\s+/g, " ")
     : "";
@@ -110,7 +124,6 @@ export async function onRequestPost({ request, env }) {
     ? body.language
     : "";
 
-  // 7. Validate name
   if (
     name.length < 2 ||
     name.length > 100 ||
@@ -119,7 +132,6 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "invalid_input" }, 400);
   }
 
-  // 8. Validate phone
   if (
     !/^[+()\d\s.-]{8,25}$/.test(phone) ||
     phoneDigits.length < 8 ||
@@ -128,7 +140,6 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "invalid_input" }, 400);
   }
 
-  // 9. Validate service and language
   if (
     !ALLOWED_SERVICES.has(service) ||
     !ALLOWED_LANGUAGES.has(language)
@@ -136,70 +147,93 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "invalid_input" }, 400);
   }
 
-  // 10. Verify consent
   if (body.consent !== true) {
     return json({ ok: false, error: "consent_required" }, 400);
   }
 
-  // 11. Verify database binding
-  if (!env.DB) {
-    return json({ ok: false, error: "database_not_bound" }, 503);
+  if (!env.DB || !env.RATE_LIMIT_SECRET) {
+    return json({ ok: false, error: "server_configuration_error" }, 503);
   }
 
-  // 12. Generate and save unique reference
+  const ip = request.headers.get("CF-Connecting-IP");
+
+  if (!ip) {
+    return json({ ok: false, error: "ip_unavailable" }, 400);
+  }
+
   try {
+    const ipHash = await hashIP(ip, env.RATE_LIMIT_SECRET);
+    const now = Math.floor(Date.now() / 1000);
+
     for (let attempt = 0; attempt < 3; attempt++) {
+      const token = randomToken();
       const reference = generateReference();
 
-      try {
-        await env.DB.prepare(`
-          INSERT INTO appointments (
-            patient_name,
-            phone,
-            service_type,
-            preferred_date,
-            status,
-            reference
-          )
-          VALUES (?, ?, ?, '', 'pending', ?)
-        `).bind(
-          name,
-          phone,
-          service,
-          reference
-        ).run();
+      const rateLimitStatement = env.DB.prepare(`
+        INSERT INTO appointment_rate_limits (
+          ip_hash,
+          last_request_at,
+          token
+        )
+        VALUES (?, ?, ?)
+        ON CONFLICT(ip_hash) DO UPDATE SET
+          last_request_at = excluded.last_request_at,
+          token = excluded.token
+        WHERE appointment_rate_limits.last_request_at
+          <= excluded.last_request_at - 60
+        RETURNING token
+      `).bind(ipHash, now, token);
 
-        // Return reference only after successful insertion
+      const appointmentStatement = env.DB.prepare(`
+        INSERT INTO appointments (
+          patient_name,
+          phone,
+          service_type,
+          preferred_date,
+          status,
+          reference
+        )
+        SELECT ?, ?, ?, '', 'pending', ?
+        WHERE EXISTS (
+          SELECT 1
+          FROM appointment_rate_limits
+          WHERE ip_hash = ? AND token = ?
+        )
+        RETURNING reference
+      `).bind(
+        name,
+        phone,
+        service,
+        reference,
+        ipHash,
+        token
+      );
+
+      const results = await env.DB.batch([
+        rateLimitStatement,
+        appointmentStatement
+      ]);
+
+      if (!results[0]?.results?.length) {
+        return json({ ok: false, error: "rate_limited" }, 429);
+      }
+
+      const saved = results[1]?.results?.[0];
+
+      if (saved?.reference) {
         return json({
           ok: true,
-          reference
+          reference: saved.reference
         }, 201);
-
-      } catch (error) {
-        const message = String(error?.message || "");
-
-        // Retry only if the reference collided with an existing one
-        if (
-          message.includes("UNIQUE constraint failed") &&
-          message.includes("reference")
-        ) {
-          continue;
-        }
-
-        throw error;
       }
+
+      return json({ ok: false, error: "database_write_failed" }, 503);
     }
 
-    return json({
-      ok: false,
-      error: "reference_generation_failed"
-    }, 503);
+    return json({ ok: false, error: "reference_generation_failed" }, 503);
 
   } catch {
-    return json({
-      ok: false,
-      error: "database_write_failed"
-    }, 503);
+    return json({ ok: false, error: "database_write_failed" }, 503);
   }
 }
 
