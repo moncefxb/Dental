@@ -1,0 +1,9 @@
+
+functions/
+src/
+wrangler.jsonc
+.assetsignore
+*.sql
+wrangler.local.toml.example
+_routes.json
+_headers
