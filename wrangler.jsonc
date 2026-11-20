@@ -15,5 +15,15 @@
       "database_name": "dental",
       "database_id": "aefb7588-9780-476a-8869-94ea96135b3c"
     }
+  ],
+  "ratelimits": [
+    {
+      "name": "APPOINTMENTS_LIMITER",
+      "namespace_id": "73120491",
+      "simple": {
+        "limit": 1,
+        "period": 60
+      }
+    }
   ]
 }
