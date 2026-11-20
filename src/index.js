@@ -9,42 +9,6 @@ export default {
 
     if (url.pathname === "/api/appointments") {
       if (request.method === "POST") {
-        const ip = request.headers.get("CF-Connecting-IP");
-
-        if (!ip) {
-          return new Response(
-            JSON.stringify({
-              ok: false,
-              error: "ip_unavailable"
-            }),
-            {
-              status: 400,
-              headers: {
-                "Content-Type": "application/json"
-              }
-            }
-          );
-        }
-
-        const { success } = await env.APPOINTMENTS_LIMITER.limit({
-          key: ip
-        });
-
-        if (!success) {
-          return new Response(
-            JSON.stringify({
-              ok: false,
-              error: "rate_limited"
-            }),
-            {
-              status: 429,
-              headers: {
-                "Content-Type": "application/json"
-              }
-            }
-          );
-        }
-
         return onRequestPost({ request, env });
       }
 
