@@ -1,4 +1,3 @@
-
 const ALLOWED_SERVICES = new Set([
   "general",
   "cosmetic",
@@ -20,36 +19,6 @@ function json(data, status = 200) {
       "X-Content-Type-Options": "nosniff"
     }
   });
-}
-
-function algeriaToday() {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Africa/Algiers",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).formatToParts(new Date());
-
-  const values = Object.fromEntries(
-    parts.map(part => [part.type, part.value])
-  );
-
-  return `${values.year}-${values.month}-${values.day}`;
-}
-
-function isRealDate(value) {
-  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-    return false;
-  }
-
-  const [year, month, day] = value.split("-").map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day));
-
-  return (
-    date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 &&
-    date.getUTCDate() === day
-  );
 }
 
 export async function onRequestPost({ request, env }) {
@@ -112,11 +81,6 @@ export async function onRequestPost({ request, env }) {
   const service = typeof body.service === "string" ? body.service : "";
   const language = typeof body.language === "string" ? body.language : "";
 
-  const preferredDate =
-    body.preferredDate === null || body.preferredDate === ""
-      ? null
-      : body.preferredDate;
-
   if (
     name.length < 2 ||
     name.length > 100 ||
@@ -144,13 +108,6 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "consent_required" }, 400);
   }
 
-  if (
-    preferredDate !== null &&
-    (!isRealDate(preferredDate) || preferredDate < algeriaToday())
-  ) {
-    return json({ ok: false, error: "invalid_date" }, 400);
-  }
-
   if (!env.DB) {
     return json({ ok: false, error: "database_not_bound" }, 503);
   }
@@ -161,12 +118,11 @@ export async function onRequestPost({ request, env }) {
     await env.DB.prepare(`
       INSERT INTO appointments
         (patient_name, phone, service_type, preferred_date, status)
-      VALUES (?, ?, ?, ?, 'pending')
+      VALUES (?, ?, ?, '', 'pending')
     `).bind(
       name,
       phone,
-      service,
-      preferredDate
+      service
     ).run();
   } catch {
     return json({ ok: false, error: "database_write_failed" }, 503);
