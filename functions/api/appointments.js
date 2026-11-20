@@ -1,3 +1,4 @@
+
 const ALLOWED_SERVICES = new Set([
   "general",
   "cosmetic",
@@ -21,7 +22,19 @@ function json(data, status = 200) {
   });
 }
 
+function generateReference() {
+  const bytes = new Uint8Array(8);
+  crypto.getRandomValues(bytes);
+
+  const token = Array.from(bytes, byte =>
+    byte.toString(16).padStart(2, "0")
+  ).join("").toUpperCase();
+
+  return `NOVA-${token}`;
+}
+
 export async function onRequestPost({ request, env }) {
+  // 1. Verify request origin
   const origin = request.headers.get("Origin");
   const requestUrl = new URL(request.url);
 
@@ -35,18 +48,23 @@ export async function onRequestPost({ request, env }) {
     }
   }
 
+  // 2. Verify content type
   const contentType = request.headers.get("Content-Type") || "";
 
   if (!contentType.toLowerCase().includes("application/json")) {
     return json({ ok: false, error: "json_required" }, 415);
   }
 
-  const contentLength = Number(request.headers.get("Content-Length") || 0);
+  // 3. Limit request size
+  const contentLength = Number(
+    request.headers.get("Content-Length") || 0
+  );
 
   if (contentLength > 8192) {
     return json({ ok: false, error: "payload_too_large" }, 413);
   }
 
+  // 4. Parse JSON
   let body;
 
   try {
@@ -65,10 +83,15 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "invalid_input" }, 400);
   }
 
-  if (typeof body.website === "string" && body.website.trim() !== "") {
+  // 5. Honeypot protection
+  if (
+    typeof body.website === "string" &&
+    body.website.trim() !== ""
+  ) {
     return json({ ok: true, reference: "" }, 202);
   }
 
+  // 6. Normalize inputs
   const name = typeof body.name === "string"
     ? body.name.trim().replace(/\s+/g, " ")
     : "";
@@ -78,9 +101,16 @@ export async function onRequestPost({ request, env }) {
     : "";
 
   const phoneDigits = phone.replace(/\D/g, "");
-  const service = typeof body.service === "string" ? body.service : "";
-  const language = typeof body.language === "string" ? body.language : "";
 
+  const service = typeof body.service === "string"
+    ? body.service
+    : "";
+
+  const language = typeof body.language === "string"
+    ? body.language
+    : "";
+
+  // 7. Validate name
   if (
     name.length < 2 ||
     name.length > 100 ||
@@ -89,6 +119,7 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "invalid_input" }, 400);
   }
 
+  // 8. Validate phone
   if (
     !/^[+()\d\s.-]{8,25}$/.test(phone) ||
     phoneDigits.length < 8 ||
@@ -97,6 +128,7 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "invalid_input" }, 400);
   }
 
+  // 9. Validate service and language
   if (
     !ALLOWED_SERVICES.has(service) ||
     !ALLOWED_LANGUAGES.has(language)
@@ -104,36 +136,76 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "invalid_input" }, 400);
   }
 
+  // 10. Verify consent
   if (body.consent !== true) {
     return json({ ok: false, error: "consent_required" }, 400);
   }
 
+  // 11. Verify database binding
   if (!env.DB) {
     return json({ ok: false, error: "database_not_bound" }, 503);
   }
 
-  const id = crypto.randomUUID();
-
+  // 12. Generate and save unique reference
   try {
-    await env.DB.prepare(`
-      INSERT INTO appointments
-        (patient_name, phone, service_type, preferred_date, status)
-      VALUES (?, ?, ?, '', 'pending')
-    `).bind(
-      name,
-      phone,
-      service
-    ).run();
-  } catch {
-    return json({ ok: false, error: "database_write_failed" }, 503);
-  }
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const reference = generateReference();
 
-  return json({
-    ok: true,
-    reference: `NOVA-${id.slice(0, 8).toUpperCase()}`
-  }, 201);
+      try {
+        await env.DB.prepare(`
+          INSERT INTO appointments (
+            patient_name,
+            phone,
+            service_type,
+            preferred_date,
+            status,
+            reference
+          )
+          VALUES (?, ?, ?, '', 'pending', ?)
+        `).bind(
+          name,
+          phone,
+          service,
+          reference
+        ).run();
+
+        // Return reference only after successful insertion
+        return json({
+          ok: true,
+          reference
+        }, 201);
+
+      } catch (error) {
+        const message = String(error?.message || "");
+
+        // Retry only if the reference collided with an existing one
+        if (
+          message.includes("UNIQUE constraint failed") &&
+          message.includes("reference")
+        ) {
+          continue;
+        }
+
+        throw error;
+      }
+    }
+
+    return json({
+      ok: false,
+      error: "reference_generation_failed"
+    }, 503);
+
+  } catch {
+    return json({
+      ok: false,
+      error: "database_write_failed"
+    }, 503);
+  }
 }
 
 export async function onRequestGet() {
-  return json({ ok: false, error: "method_not_allowed" }, 405);
+  return json({
+    ok: false,
+    error: "method_not_allowed"
+  }, 405);
 }
