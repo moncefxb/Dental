@@ -322,6 +322,7 @@ export async function adminListAppointments({ request, env }) {
         notes,
         status,
         reference,
+        source,
         created_at
       FROM appointments
       ORDER BY datetime(created_at) DESC, id DESC
@@ -448,8 +449,7 @@ export async function adminCreateAppointment({ request, env }) {
         preferred_date,
         status,
         reference,
-        source,
-        created_at
+        source
       )
       VALUES (?, ?, ?, '', 'pending', ?, ?)
       RETURNING id, patient_name, phone, service_type,
@@ -467,7 +467,8 @@ export async function adminCreateAppointment({ request, env }) {
     }
 
     return json({ ok: true, appointment: result }, 201);
-  } catch {
+  } catch (error) {
+    console.error("adminCreateAppointment error:", error);
     return json({ ok: false, error: "database_write_failed" }, 503);
   }
 }
