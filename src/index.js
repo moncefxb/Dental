@@ -9,7 +9,8 @@ import {
   adminSession,
   adminLogout,
   adminListAppointments,
-  adminUpdateAppointment
+  adminUpdateAppointment,
+  adminCreateAppointment
 } from "../functions/api/admin.js";
 
 function methodNotAllowed(allow) {
@@ -77,6 +78,13 @@ export default {
     if (path === "/api/admin/appointments/update") {
       return method === "POST"
         ? adminUpdateAppointment({ request, env })
+        : methodNotAllowed("POST");
+    }
+
+    // Create manual appointment — authenticated
+    if (path === "/api/admin/appointments/create") {
+      return method === "POST"
+        ? adminCreateAppointment({ request, env })
         : methodNotAllowed("POST");
     }
 
