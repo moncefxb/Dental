@@ -232,6 +232,24 @@ input:focus,select:focus {
   padding-top:13px;
 }
 .actions .btn { flex:1 1 110px; font-size:12px; }
+
+.schedule-box {
+  margin-top:15px;
+  padding:14px;
+  background:#f5f8fa;
+  border:1px solid var(--line);
+  border-radius:12px;
+}
+.schedule-box label { margin-top:0; }
+.schedule-box input { direction:ltr; }
+.schedule-box .btn { margin-top:10px; width:100%; }
+.schedule-current {
+  color:var(--green);
+  font-size:12px;
+  margin-top:8px;
+  line-height:1.6;
+}
+
 .empty {
   text-align:center;
   color:var(--muted);
@@ -500,6 +518,18 @@ function createButton(label,className,callback) {
   return button;
 }
 
+function formatScheduledAt(value) {
+  if (!value) return "لم يتم تحديد موعد بعد";
+
+  const parts = value.split("T");
+  if (parts.length !== 2) return value;
+
+  const [year,month,day] = parts[0].split("-");
+  const [hour,minute] = parts[1].split(":");
+
+  return `${day}/${month}/${year} - ${hour}:${minute}`;
+}
+
 function renderAppointments() {
   const query = $("searchInput").value.trim().toLowerCase();
   const status = $("statusFilter").value;
@@ -572,6 +602,40 @@ function renderAppointments() {
       card.append(notes);
     }
 
+    // موعد المريض المتفق عليه مع السكرتيرة
+    const scheduleBox = document.createElement("div");
+    scheduleBox.className = "schedule-box";
+
+    const scheduleLabel = document.createElement("label");
+    scheduleLabel.textContent = "تاريخ ووقت الموعد المتفق عليه";
+    scheduleLabel.htmlFor = "scheduled-" + item.id;
+
+    const scheduleInput = document.createElement("input");
+    scheduleInput.type = "datetime-local";
+    scheduleInput.id = "scheduled-" + item.id;
+    scheduleInput.value = item.scheduled_at || "";
+
+    const currentSchedule = document.createElement("div");
+    currentSchedule.className = "schedule-current";
+    currentSchedule.textContent = item.scheduled_at
+      ? "الموعد المحفوظ: " + formatScheduledAt(item.scheduled_at)
+      : "لم يتم حفظ موعد متفق عليه.";
+
+    const saveButton = createButton(
+      "حفظ التاريخ والساعة",
+      "",
+      () => saveScheduledAt(item.id,scheduleInput.value,saveButton)
+    );
+
+    scheduleBox.append(
+      scheduleLabel,
+      scheduleInput,
+      saveButton,
+      currentSchedule
+    );
+
+    card.append(scheduleBox);
+
     const actions = document.createElement("div");
     actions.className = "actions";
 
@@ -629,6 +693,52 @@ async function loadAppointments() {
     setMessage(dashboardMessage,"تعذر الاتصال بالخادم.");
   } finally {
     $("refreshBtn").disabled = false;
+  }
+}
+
+async function saveScheduledAt(id,value,button) {
+  button.disabled = true;
+  button.textContent = "جارٍ الحفظ...";
+
+  try {
+    const {response,data} = await api(
+      "/api/admin/appointments/update",
+      {
+        method:"POST",
+        body:JSON.stringify({
+          id,
+          scheduled_at:value
+        })
+      }
+    );
+
+    if (!response.ok || data.ok !== true) {
+      if (response.status !== 401) {
+        setMessage(
+          dashboardMessage,
+          data.error === "invalid_scheduled_at"
+            ? "التاريخ أو الساعة غير صالحين."
+            : "تعذر حفظ الموعد. حاول مجدداً."
+        );
+      }
+      return;
+    }
+
+    await loadAppointments();
+
+    setMessage(
+      dashboardMessage,
+      value
+        ? "تم حفظ الموعد المتفق عليه. اضغط «تأكيد الحجز» لتأكيده."
+        : "تم مسح الموعد المحفوظ.",
+      true
+    );
+
+  } catch {
+    setMessage(dashboardMessage,"تعذر الاتصال بالخادم.");
+  } finally {
+    button.disabled = false;
+    button.textContent = "حفظ التاريخ والساعة";
   }
 }
 
@@ -708,8 +818,8 @@ async function updateStatus(id,status) {
       return;
     }
 
-    setMessage(dashboardMessage,"تم تحديث حالة الحجز.",true);
     await loadAppointments();
+    setMessage(dashboardMessage,"تم تحديث حالة الحجز.",true);
 
   } catch {
     setMessage(dashboardMessage,"تعذر الاتصال بالخادم.");
