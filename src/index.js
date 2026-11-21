@@ -13,6 +13,14 @@ import {
   adminCreateAppointment
 } from "../functions/api/admin.js";
 
+import {
+  adminListPatients,
+  adminGetPatient,
+  adminCreateVisit,
+  adminReports,
+  adminExport
+} from "../functions/api/records.js";
+
 function methodNotAllowed(allow) {
   return new Response(
     JSON.stringify({ ok: false, error: "method_not_allowed" }),
@@ -67,25 +75,57 @@ export default {
         : methodNotAllowed("POST");
     }
 
-    // List appointments — authenticated
+    // Appointments
     if (path === "/api/admin/appointments") {
       return method === "GET"
         ? adminListAppointments({ request, env })
         : methodNotAllowed("GET");
     }
 
-    // Update appointment status — authenticated
     if (path === "/api/admin/appointments/update") {
       return method === "POST"
         ? adminUpdateAppointment({ request, env })
         : methodNotAllowed("POST");
     }
 
-    // Create manual appointment — authenticated
     if (path === "/api/admin/appointments/create") {
       return method === "POST"
         ? adminCreateAppointment({ request, env })
         : methodNotAllowed("POST");
+    }
+
+    // Patients
+    if (path === "/api/admin/patients") {
+      return method === "GET"
+        ? adminListPatients({ request, env })
+        : methodNotAllowed("GET");
+    }
+
+    if (path === "/api/admin/patients/detail") {
+      return method === "GET"
+        ? adminGetPatient({ request, env })
+        : methodNotAllowed("GET");
+    }
+
+    // Patient visits
+    if (path === "/api/admin/visits") {
+      return method === "POST"
+        ? adminCreateVisit({ request, env })
+        : methodNotAllowed("POST");
+    }
+
+    // Reports
+    if (path === "/api/admin/reports") {
+      return method === "GET"
+        ? adminReports({ request, env })
+        : methodNotAllowed("GET");
+    }
+
+    // Backup export
+    if (path === "/api/admin/export") {
+      return method === "GET"
+        ? adminExport({ request, env })
+        : methodNotAllowed("GET");
     }
 
     // Secretary dashboard page
