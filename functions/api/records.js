@@ -334,3 +334,49 @@ export async function adminExport({ request, env }) {
     return json({ ok: false, error: "backup_failed" }, 503);
   }
       }
+
+export async function adminCreatePatient({ request, env }) {
+  const denied = await authorized(request, env, true);
+  if (denied) return denied;
+
+  const body = await readJson(request);
+
+  const name = typeof body?.patient_name === "string"
+    ? body.patient_name.trim().replace(/\s+/g, " ")
+    : "";
+
+  const phone = typeof body?.phone === "string"
+    ? body.phone.trim()
+    : "";
+
+  const notes = typeof body?.notes === "string"
+    ? body.notes.trim()
+    : "";
+
+  const digits = phone.replace(/\D/g, "");
+
+  if (
+    name.length < 2 ||
+    name.length > 100 ||
+    /[\u0000-\u001F\u007F]/.test(name) ||
+    !/^[+()\d\s.-]{8,25}$/.test(phone) ||
+    digits.length < 8 ||
+    digits.length > 15 ||
+    notes.length > 5000
+  ) {
+    return json({ ok: false, error: "invalid_input" }, 400);
+  }
+
+  try {
+    const patient = await env.DB.prepare(`
+      INSERT INTO patients (patient_name, phone, notes)
+      VALUES (?, ?, ?)
+      RETURNING id, patient_name, phone, notes, created_at
+    `).bind(name, phone, notes).first();
+
+    return json({ ok: true, patient }, 201);
+  } catch (error) {
+    console.error("adminCreatePatient:", error);
+    return json({ ok: false, error: "database_write_failed" }, 503);
+  }
+}
