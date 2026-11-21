@@ -6,1081 +6,608 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="same-origin">
-<title>NOVA | إدارة الحجوزات</title>
+<title>NOVA | لوحة الإدارة</title>
 <style>
-:root {
-  color-scheme:light;
-  --ink:#183044;
-  --muted:#718096;
-  --line:#e6edf2;
-  --page:#f4f7fa;
-  --blue:#176b87;
-  --blue-dark:#10566f;
-  --green:#16845b;
-  --red:#bd4545;
-  --orange:#a36a18;
-  --white:#fff;
+:root{color-scheme:light;--ink:#183044;--muted:#718096;--line:#e6edf2;--page:#f4f7fa;--blue:#176b87;--green:#16845b;--red:#bd4545;--orange:#a36a18}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+.topbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.topbar-inner{max-width:1100px;min-height:65px;margin:auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-size:19px;font-weight:850}.brand span{color:var(--blue)}
+.subtitle,.muted{color:var(--muted);font-size:12px;line-height:1.7}
+main{max-width:1100px;margin:24px auto;padding:0 16px 45px}
+h1{font-size:24px;margin:0 0 5px}h2{font-size:18px;margin:0 0 12px}
+.panel,.manual-form,.appointment,.stat,.record-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:18px}
+.login-panel{max-width:420px;margin:65px auto}
+label{display:block;font-size:13px;font-weight:700;margin:13px 0 6px}
+input,select,textarea{width:100%;min-height:43px;border:1px solid #d9e2e9;border-radius:10px;background:#fff;color:var(--ink);padding:9px 11px;outline:none}
+textarea{min-height:85px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #176b871a}
+.btn{border:0;border-radius:10px;min-height:40px;padding:9px 14px;background:var(--blue);color:white;font-weight:750}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn-light{background:#edf3f6;color:var(--ink)}
+.btn-green{background:var(--green)}.btn-red{background:var(--red)}
+.full{width:100%;margin-top:18px}
+.message{font-size:13px;margin-top:10px;color:var(--red);line-height:1.6}
+.success-message{color:var(--green)}
+.toolbar,.view-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.toolbar-actions{display:flex;gap:8px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:17px 0}
+.stat strong{display:block;font-size:26px}.stat span{font-size:12px;color:var(--muted)}
+.stat.today{border-top:3px solid var(--blue)}.stat.pending{border-top:3px solid var(--orange)}
+.stat.confirmed{border-top:3px solid var(--green)}.stat.unscheduled{border-top:3px solid #8796a5}
+.manual-form{margin:18px 0}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 13px}
+.views{display:flex;gap:8px;overflow:auto;margin:17px 0 12px}
+.view-btn{flex:0 0 auto;border:1px solid var(--line);background:white;color:var(--muted);border-radius:10px;padding:10px 14px;font-weight:700}
+.view-btn.active{background:var(--blue);color:white;border-color:var(--blue)}
+.filters{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:9px;margin:12px 0}
+.date-tools{max-width:300px;margin-bottom:12px}
+.appointment-list,.record-list{display:grid;gap:11px}
+.appointment{padding:16px}
+.appointment-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:12px}
+.patient-name{font-weight:850;font-size:16px}
+.patient-phone{direction:ltr;text-align:right;color:var(--muted);font-size:13px;margin-top:4px}
+.status{border-radius:30px;padding:5px 10px;font-size:11px;font-weight:800;background:#fff3dc;color:var(--orange);height:max-content}
+.status.confirmed{background:#e3f5eb;color:var(--green)}
+.status.rejected,.status.cancelled{background:#fce9e9;color:var(--red)}
+.details{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.detail{font-size:13px;overflow-wrap:anywhere}.detail small{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+.reference{direction:ltr;text-align:right;font-family:monospace}
+.notes{margin-top:12px;padding:10px;background:#f5f8fa;border-radius:10px;white-space:pre-wrap;font-size:13px}
+.schedule-box{margin-top:13px;padding:13px;background:#f5f8fa;border-radius:11px}
+.schedule-row{display:grid;grid-template-columns:1fr 160px;gap:9px;align-items:end}
+.schedule-row label{margin-top:0}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px;padding-top:12px;border-top:1px solid var(--line)}
+.actions .btn{flex:1 1 120px;font-size:12px}
+.empty{text-align:center;color:var(--muted);padding:28px;background:white;border:1px dashed #ccd8e0;border-radius:13px}
+.section-panel{background:white;border:1px solid var(--line);border-radius:15px;padding:18px;margin-top:15px}
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.patient-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px;border:1px solid var(--line);border-radius:12px;background:white}
+.patient-row strong{display:block}.patient-row small{color:var(--muted)}
+.patient-detail{background:#f5f8fa;border-radius:12px;padding:14px;margin:12px 0}
+.visit-card{border:1px solid var(--line);border-radius:11px;padding:12px;background:white}
+.visit-card strong{display:block;margin-bottom:5px}
+.report-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.report-stat{background:#f5f8fa;border-radius:12px;padding:14px}
+.report-stat strong{display:block;font-size:24px}
+.report-stat span{font-size:12px;color:var(--muted)}
+.footer-note{text-align:center;color:var(--muted);font-size:11px;margin-top:22px}
+@media(max-width:700px){
+ main{padding:0 12px 35px;margin-top:17px}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .filters{grid-template-columns:1fr 1fr}.filters input{grid-column:1/-1}
+ .details{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .report-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
-* { box-sizing:border-box; }
-body {
-  margin:0;
-  background:var(--page);
-  color:var(--ink);
-  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
-}
-button,input,select { font:inherit; }
-button { cursor:pointer; }
-[hidden] { display:none!important; }
-
-.topbar {
-  background:#fff;
-  border-bottom:1px solid var(--line);
-  position:sticky;
-  top:0;
-  z-index:5;
-}
-.topbar-inner {
-  max-width:1100px;
-  min-height:68px;
-  margin:auto;
-  padding:12px 20px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-}
-.brand { font-size:19px; font-weight:850; letter-spacing:.2px; }
-.brand span { color:var(--blue); }
-.subtitle { color:var(--muted); font-size:12px; margin-top:2px; }
-
-main {
-  max-width:1100px;
-  margin:25px auto;
-  padding:0 18px 45px;
-}
-h1 { font-size:25px; margin:0 0 5px; }
-h2 { font-size:18px; margin:0; }
-.muted { color:var(--muted); font-size:13px; line-height:1.7; }
-.panel {
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:17px;
-  padding:22px;
-  box-shadow:0 5px 22px rgba(24,48,68,.035);
-}
-.login-panel { max-width:420px; margin:65px auto; }
-
-label {
-  display:block;
-  font-size:13px;
-  font-weight:700;
-  margin:15px 0 7px;
-}
-input,select {
-  width:100%;
-  min-height:45px;
-  border:1px solid #d9e2e9;
-  border-radius:11px;
-  background:#fff;
-  color:var(--ink);
-  padding:10px 12px;
-  outline:none;
-}
-input:focus,select:focus {
-  border-color:var(--blue);
-  box-shadow:0 0 0 3px rgba(23,107,135,.10);
-}
-.btn {
-  border:0;
-  border-radius:11px;
-  min-height:42px;
-  padding:10px 15px;
-  background:var(--blue);
-  color:#fff;
-  font-weight:750;
-  transition:background .15s,transform .15s;
-}
-.btn:hover { background:var(--blue-dark); }
-.btn:active { transform:scale(.98); }
-.btn:disabled { opacity:.55; cursor:not-allowed; }
-.btn-light { background:#edf3f6; color:var(--ink); }
-.btn-light:hover { background:#e1eaf0; }
-.btn-green { background:var(--green); }
-.btn-green:hover { background:#106d49; }
-.btn-red { background:var(--red); }
-.btn-red:hover { background:#a33232; }
-.full { width:100%; margin-top:20px; }
-
-.message {
-  margin-top:12px;
-  font-size:13px;
-  line-height:1.6;
-  color:var(--red);
-}
-.success-message { color:var(--green); }
-
-.toolbar {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  gap:12px;
-  margin-bottom:18px;
-}
-.toolbar-actions { display:flex; gap:8px; }
-
-.stats {
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:12px;
-  margin:18px 0 22px;
-}
-.stat {
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:15px;
-  padding:15px;
-  min-width:0;
-}
-.stat strong {
-  display:block;
-  font-size:27px;
-  font-weight:850;
-  margin-bottom:2px;
-  font-variant-numeric:tabular-nums;
-}
-.stat span { color:var(--muted); font-size:12px; }
-.stat.today { border-top:3px solid var(--blue); }
-.stat.pending { border-top:3px solid var(--orange); }
-.stat.confirmed { border-top:3px solid var(--green); }
-.stat.unscheduled { border-top:3px solid #8796a5; }
-
-.manual-form {
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:18px;
-  margin:20px 0;
-}
-.manual-heading {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-}
-.manual-grid {
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:0 14px;
-}
-.manual-form button { margin-top:17px; }
-
-.views {
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  padding:3px 1px 12px;
-  margin:15px 0 5px;
-  scrollbar-width:thin;
-}
-.view-btn {
-  flex:0 0 auto;
-  border:1px solid var(--line);
-  background:#fff;
-  color:var(--muted);
-  border-radius:11px;
-  padding:10px 15px;
-  font-size:13px;
-  font-weight:750;
-}
-.view-btn.active {
-  background:var(--blue);
-  border-color:var(--blue);
-  color:#fff;
-}
-.view-heading {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  gap:10px;
-  margin:10px 0 14px;
-}
-.view-heading h2 { font-size:18px; }
-.view-count {
-  color:var(--muted);
-  font-size:12px;
-  font-weight:650;
-}
-
-.date-tools {
-  display:grid;
-  grid-template-columns:minmax(180px,250px) 1fr;
-  gap:10px;
-  align-items:end;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:13px;
-  margin-bottom:13px;
-}
-.date-tools label { margin-top:0; }
-.date-tools .muted { padding-bottom:10px; }
-
-.filters {
-  display:grid;
-  grid-template-columns:minmax(180px,1.6fr) repeat(2,minmax(130px,1fr));
-  gap:10px;
-  margin-bottom:15px;
-}
-.appointment-list { display:grid; gap:12px; }
-
-.appointment {
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:17px;
-  box-shadow:0 3px 12px rgba(24,48,68,.025);
-}
-.appointment.is-today { border-right:4px solid var(--blue); }
-.appointment.is-unscheduled { border-right:4px solid #9aa8b5; }
-.appointment-head {
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:12px;
-  margin-bottom:14px;
-}
-.patient-name {
-  font-size:17px;
-  font-weight:850;
-  overflow-wrap:anywhere;
-}
-.patient-phone {
-  direction:ltr;
-  text-align:right;
-  color:var(--muted);
-  font-size:13px;
-  margin-top:4px;
-}
-.status {
-  display:inline-block;
-  border-radius:30px;
-  padding:6px 11px;
-  font-size:11px;
-  font-weight:800;
-  white-space:nowrap;
-  background:#fff3dc;
-  color:var(--orange);
-}
-.status.confirmed { background:#e3f5eb; color:var(--green); }
-.status.rejected,.status.cancelled { background:#fce9e9; color:var(--red); }
-
-.details {
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:13px 12px;
-}
-.detail {
-  min-width:0;
-  font-size:13px;
-  overflow-wrap:anywhere;
-}
-.detail small {
-  display:block;
-  color:var(--muted);
-  font-size:11px;
-  margin-bottom:4px;
-}
-.reference {
-  direction:ltr;
-  text-align:right;
-  font-family:ui-monospace,monospace;
-}
-.notes {
-  margin-top:13px;
-  padding:11px 13px;
-  background:#f5f8fa;
-  border-radius:11px;
-  font-size:13px;
-  white-space:pre-wrap;
-  overflow-wrap:anywhere;
-}
-
-.schedule-box {
-  margin-top:15px;
-  padding:14px;
-  background:#f5f8fa;
-  border:1px solid #e8eef2;
-  border-radius:13px;
-}
-.schedule-title {
-  font-size:13px;
-  font-weight:800;
-  margin-bottom:8px;
-}
-.schedule-row {
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 175px;
-  gap:9px;
-  align-items:end;
-}
-.schedule-box label { margin:0 0 6px; }
-.schedule-box input { direction:ltr; }
-.schedule-box .btn { width:100%; }
-.schedule-current {
-  color:var(--green);
-  font-size:12px;
-  margin-top:8px;
-  line-height:1.6;
-}
-.no-schedule {
-  color:var(--orange);
-}
-.actions {
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:14px;
-  padding-top:13px;
-  border-top:1px solid var(--line);
-}
-.actions .btn { flex:1 1 130px; font-size:12px; }
-
-.empty {
-  text-align:center;
-  color:var(--muted);
-  padding:35px 15px;
-  background:#fff;
-  border:1px dashed #ccd8e0;
-  border-radius:15px;
-}
-.empty strong {
-  display:block;
-  color:var(--ink);
-  font-size:15px;
-  margin-bottom:5px;
-}
-.footer-note {
-  text-align:center;
-  color:var(--muted);
-  font-size:11px;
-  margin-top:22px;
-}
-
-@media(max-width:700px) {
-  main { margin-top:18px; padding:0 12px 35px; }
-  .topbar-inner { padding:11px 13px; }
-  .stats { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
-  .stat { padding:12px; }
-  .stat strong { font-size:24px; }
-  .filters { grid-template-columns:1fr 1fr; }
-  .filters input { grid-column:1/-1; }
-  .details { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .date-tools { grid-template-columns:1fr; }
-  .date-tools .muted { padding:0; }
-}
-@media(max-width:420px) {
-  h1 { font-size:21px; }
-  .toolbar { align-items:flex-start; }
-  .toolbar-actions { width:100%; }
-  .toolbar-actions .btn { flex:1; }
-  .manual-grid { grid-template-columns:1fr; }
-  .schedule-row { grid-template-columns:1fr; }
-  .appointment { padding:14px; }
-  .appointment-head { gap:7px; }
-  .patient-name { font-size:15px; }
-  .details { gap:11px 8px; }
+@media(max-width:430px){
+ h1{font-size:21px}.form-grid{grid-template-columns:1fr}
+ .schedule-row{grid-template-columns:1fr}
+ .toolbar-actions{width:100%}.toolbar-actions .btn{flex:1}
+ .appointment{padding:13px}.details{gap:10px 8px}
 }
 </style>
 </head>
-
 <body>
 <header class="topbar">
-  <div class="topbar-inner">
-    <div>
-      <div class="brand">NOVA <span>Dental Studio</span></div>
-      <div class="subtitle">إدارة وتنظيم حجوزات العيادة</div>
-    </div>
-    <button id="logoutBtn" class="btn btn-light" hidden>تسجيل الخروج</button>
-  </div>
+ <div class="topbar-inner">
+  <div><div class="brand">NOVA <span>Dental Studio</span></div><div class="subtitle">لوحة الإدارة الداخلية</div></div>
+  <button id="logoutBtn" class="btn btn-light" hidden>تسجيل الخروج</button>
+ </div>
 </header>
 
 <main>
 <section id="loginSection" class="panel login-panel">
-  <h1>دخول السكرتيرة</h1>
-  <p class="muted">تسجيل الدخول للوصول إلى لوحة إدارة الحجوزات.</p>
-  <form id="loginForm">
-    <label for="username">اسم المستخدم</label>
-    <input id="username" autocomplete="username" required maxlength="128">
-    <label for="password">كلمة المرور</label>
-    <input id="password" type="password" autocomplete="current-password" required maxlength="256">
-    <button id="loginBtn" class="btn full" type="submit">تسجيل الدخول</button>
-    <div id="loginMessage" class="message" role="alert"></div>
-  </form>
+ <h1>دخول السكرتيرة</h1>
+ <p class="muted">تسجيل الدخول للوصول إلى لوحة إدارة العيادة.</p>
+ <form id="loginForm">
+  <label for="username">اسم المستخدم</label>
+  <input id="username" autocomplete="username" maxlength="128" required>
+  <label for="password">كلمة المرور</label>
+  <input id="password" type="password" autocomplete="current-password" maxlength="256" required>
+  <button id="loginBtn" class="btn full">تسجيل الدخول</button>
+  <div id="loginMessage" class="message" role="alert"></div>
+ </form>
 </section>
 
 <section id="dashboardSection" hidden>
-  <div class="toolbar">
-    <div>
-      <h1>لوحة الحجوزات</h1>
-      <div class="muted">نظرة واضحة على مواعيد المرضى وطلبات الحجز</div>
-    </div>
-    <div class="toolbar-actions">
-      <button id="refreshBtn" class="btn btn-light">تحديث البيانات</button>
-    </div>
+ <div class="toolbar">
+  <div><h1>لوحة إدارة NOVA</h1><div class="muted">الحجوزات والمرضى والزيارات والتقارير</div></div>
+  <div class="toolbar-actions">
+   <button id="refreshBtn" class="btn btn-light">تحديث الحجوزات</button>
+   <button id="exportBtn" class="btn btn-light">تصدير نسخة احتياطية</button>
   </div>
+ </div>
 
+ <div class="views" role="tablist">
+  <button class="view-btn active" data-section="appointmentsSection">الحجوزات</button>
+  <button class="view-btn" data-section="patientsSection">المرضى</button>
+  <button class="view-btn" data-section="reportsSection">التقارير</button>
+ </div>
+
+ <section id="appointmentsSection">
   <div class="stats">
-    <div class="stat today">
-      <strong id="todayCount">0</strong>
-      <span>مواعيد اليوم</span>
-    </div>
-    <div class="stat pending">
-      <strong id="pendingCount">0</strong>
-      <span>طلبات قيد الانتظار</span>
-    </div>
-    <div class="stat confirmed">
-      <strong id="confirmedCount">0</strong>
-      <span>حجوزات مؤكدة</span>
-    </div>
-    <div class="stat unscheduled">
-      <strong id="unscheduledCount">0</strong>
-      <span>دون موعد محدد</span>
-    </div>
+   <div class="stat today"><strong id="todayCount">0</strong><span>مواعيد اليوم</span></div>
+   <div class="stat pending"><strong id="pendingCount">0</strong><span>طلبات الانتظار</span></div>
+   <div class="stat confirmed"><strong id="confirmedCount">0</strong><span>حجوزات مؤكدة</span></div>
+   <div class="stat unscheduled"><strong id="unscheduledCount">0</strong><span>دون موعد محدد</span></div>
   </div>
 
   <section class="manual-form">
-    <div class="manual-heading">
-      <div>
-        <h2>إضافة حجز يدوي</h2>
-        <div class="muted">للحجوزات القادمة عبر الهاتف أو واتساب أو الحضور</div>
-      </div>
+   <h2>إضافة حجز يدوي</h2>
+   <p class="muted">للحجوزات القادمة عبر الهاتف أو واتساب أو الحضور المباشر.</p>
+   <form id="manualBookingForm">
+    <div class="form-grid">
+     <div><label for="manualName">اسم المريض</label><input id="manualName" maxlength="100" required></div>
+     <div><label for="manualPhone">رقم الهاتف</label><input id="manualPhone" type="tel" maxlength="25" required></div>
+     <div><label for="manualService">الخدمة</label>
+      <select id="manualService">
+       <option value="general">علاج عام</option><option value="cosmetic">تجميل الأسنان</option>
+       <option value="orthodontics">تقويم الأسنان</option><option value="restorative">ترميم الأسنان</option>
+       <option value="implants">زراعة الأسنان</option><option value="pediatric">طب أسنان الأطفال</option><option value="other">خدمة أخرى</option>
+      </select>
+     </div>
+     <div><label for="manualSource">مصدر الحجز</label>
+      <select id="manualSource"><option value="phone">الهاتف</option><option value="whatsapp">واتساب</option><option value="walk_in">حضور مباشر</option></select>
+     </div>
     </div>
-    <form id="manualBookingForm">
-      <div class="manual-grid">
-        <div>
-          <label for="manualName">اسم المريض</label>
-          <input id="manualName" maxlength="100" autocomplete="name" required>
-        </div>
-        <div>
-          <label for="manualPhone">رقم الهاتف</label>
-          <input id="manualPhone" type="tel" maxlength="25" autocomplete="tel" required>
-        </div>
-        <div>
-          <label for="manualService">الخدمة</label>
-          <select id="manualService" required>
-            <option value="general">علاج عام</option>
-            <option value="cosmetic">تجميل الأسنان</option>
-            <option value="orthodontics">تقويم الأسنان</option>
-            <option value="restorative">ترميم الأسنان</option>
-            <option value="implants">زراعة الأسنان</option>
-            <option value="pediatric">طب أسنان الأطفال</option>
-            <option value="other">خدمة أخرى</option>
-          </select>
-        </div>
-        <div>
-          <label for="manualSource">مصدر الحجز</label>
-          <select id="manualSource" required>
-            <option value="phone">الهاتف</option>
-            <option value="whatsapp">واتساب</option>
-            <option value="walk_in">حضور مباشر</option>
-          </select>
-        </div>
-      </div>
-      <button id="manualSubmitBtn" class="btn" type="submit">تسجيل الحجز</button>
-      <div id="manualMessage" class="message" role="status" aria-live="polite"></div>
-    </form>
+    <button id="manualSubmitBtn" class="btn">تسجيل الحجز</button>
+    <div id="manualMessage" class="message" role="status"></div>
+   </form>
   </section>
 
-  <div class="views" role="tablist" aria-label="طريقة عرض الحجوزات">
-    <button class="view-btn active" data-view="day" type="button">مواعيد اليوم</button>
-    <button class="view-btn" data-view="unscheduled" type="button">دون موعد</button>
-    <button class="view-btn" data-view="all" type="button">كل الحجوزات</button>
+  <div class="views">
+   <button class="view-btn active" data-view="day">مواعيد اليوم</button>
+   <button class="view-btn" data-view="unscheduled">دون موعد</button>
+   <button class="view-btn" data-view="all">كل الحجوزات</button>
   </div>
-
-  <div id="dateTools" class="date-tools">
-    <div>
-      <label for="selectedDate">عرض مواعيد تاريخ</label>
-      <input id="selectedDate" type="date">
-    </div>
-    <div class="muted">تُعرض المواعيد مرتبة حسب الساعة، من الأسبق إلى الأحدث.</div>
-  </div>
-
+  <div id="dateTools" class="date-tools"><label for="selectedDate">عرض مواعيد تاريخ</label><input id="selectedDate" type="date"></div>
   <div class="filters">
-    <input id="searchInput" type="search" placeholder="ابحث بالاسم أو الهاتف أو رقم المرجع">
-    <select id="statusFilter">
-      <option value="all">كل الحالات</option>
-      <option value="pending">بانتظار التأكيد</option>
-      <option value="confirmed">مؤكد</option>
-      <option value="rejected">مرفوض</option>
-      <option value="cancelled">ملغي</option>
-    </select>
-    <select id="sourceFilter">
-      <option value="all">كل المصادر</option>
-      <option value="website">الموقع الإلكتروني</option>
-      <option value="phone">الهاتف</option>
-      <option value="whatsapp">واتساب</option>
-      <option value="walk_in">حضور مباشر</option>
-    </select>
+   <input id="searchInput" type="search" placeholder="ابحث بالاسم أو الهاتف أو المرجع">
+   <select id="statusFilter"><option value="all">كل الحالات</option><option value="pending">بانتظار التأكيد</option><option value="confirmed">مؤكد</option><option value="rejected">مرفوض</option><option value="cancelled">ملغي</option></select>
+   <select id="sourceFilter"><option value="all">كل المصادر</option><option value="website">الموقع الإلكتروني</option><option value="phone">الهاتف</option><option value="whatsapp">واتساب</option><option value="walk_in">حضور مباشر</option></select>
   </div>
-
-  <div class="view-heading">
-    <h2 id="listTitle">مواعيد اليوم</h2>
-    <span id="resultCount" class="view-count">0 نتيجة</span>
-  </div>
-
-  <div id="dashboardMessage" class="message" role="status" aria-live="polite"></div>
+  <div class="view-heading"><h2 id="listTitle">مواعيد اليوم</h2><span id="resultCount" class="muted">0 نتيجة</span></div>
+  <div id="dashboardMessage" class="message" role="status"></div>
   <div id="appointmentList" class="appointment-list"></div>
-  <div class="footer-note">NOVA Dental Studio · لوحة إدارة داخلية</div>
+ </section>
+
+ <section id="patientsSection" hidden>
+  <div class="section-panel">
+   <div class="section-title"><div><h2>إدارة المرضى</h2><div class="muted">إضافة المرضى والبحث في السجل الطبي.</div></div></div>
+   <form id="patientForm">
+    <div class="form-grid">
+     <div><label for="patientName">اسم المريض</label><input id="patientName" maxlength="100" required></div>
+     <div><label for="patientPhone">رقم الهاتف</label><input id="patientPhone" type="tel" maxlength="25" required></div>
+    </div>
+    <label for="patientNotes">ملاحظات أولية</label><textarea id="patientNotes" maxlength="5000"></textarea>
+    <button id="patientSubmitBtn" class="btn">إضافة المريض</button>
+    <div id="patientMessage" class="message" role="status"></div>
+   </form>
+  </div>
+
+  <div class="section-panel">
+   <h2>قائمة المرضى</h2>
+   <label for="patientSearch">البحث بالاسم أو الهاتف</label>
+   <input id="patientSearch" type="search" placeholder="اكتب اسم المريض أو رقم هاتفه">
+   <div id="patientsMessage" class="message"></div>
+   <div id="patientsList" class="record-list"></div>
+  </div>
+
+  <div id="patientDetailSection" class="section-panel" hidden>
+   <div class="section-title"><h2>ملف المريض</h2><button id="closePatientBtn" class="btn btn-light">إغلاق</button></div>
+   <div id="patientDetail"></div>
+   <div class="section-panel">
+    <h2>تسجيل زيارة جديدة</h2>
+    <form id="visitForm">
+     <input id="visitPatientId" type="hidden">
+     <div class="form-grid">
+      <div><label for="visitDate">تاريخ الزيارة</label><input id="visitDate" type="date" required></div>
+      <div><label for="visitService">الخدمة</label>
+       <select id="visitService">
+        <option value="general">علاج عام</option><option value="cosmetic">تجميل الأسنان</option>
+        <option value="orthodontics">تقويم الأسنان</option><option value="restorative">ترميم الأسنان</option>
+        <option value="implants">زراعة الأسنان</option><option value="pediatric">طب أسنان الأطفال</option><option value="other">خدمة أخرى</option>
+       </select>
+      </div>
+     </div>
+     <label for="visitDiagnosis">التشخيص</label><textarea id="visitDiagnosis" maxlength="5000"></textarea>
+     <label for="visitTreatment">العلاج المقدم</label><textarea id="visitTreatment" maxlength="5000"></textarea>
+     <label for="visitNotes">ملاحظات</label><textarea id="visitNotes" maxlength="5000"></textarea>
+     <button id="visitSubmitBtn" class="btn">حفظ الزيارة</button>
+     <div id="visitMessage" class="message" role="status"></div>
+    </form>
+   </div>
+   <div class="section-panel"><h2>سجل الزيارات</h2><div id="visitHistory" class="record-list"></div></div>
+   <div class="section-panel"><h2>حجوزات المريض</h2><div id="patientAppointments" class="record-list"></div></div>
+  </div>
+ </section>
+
+ <section id="reportsSection" hidden>
+  <div class="section-panel">
+   <h2>التقارير والإحصائيات</h2>
+   <div class="form-grid">
+    <div><label for="reportFrom">من تاريخ</label><input id="reportFrom" type="date"></div>
+    <div><label for="reportTo">إلى تاريخ</label><input id="reportTo" type="date"></div>
+   </div>
+   <button id="loadReportsBtn" class="btn">عرض التقرير</button>
+   <div id="reportsMessage" class="message" role="status"></div>
+   <div id="reportResults"></div>
+  </div>
+ </section>
+ <div class="footer-note">NOVA Dental Studio · لوحة إدارة داخلية</div>
 </section>
 </main>
 
 <script>
 const $ = id => document.getElementById(id);
-
-const loginSection = $("loginSection");
-const dashboardSection = $("dashboardSection");
-const loginForm = $("loginForm");
-const loginBtn = $("loginBtn");
-const loginMessage = $("loginMessage");
-const dashboardMessage = $("dashboardMessage");
-const appointmentList = $("appointmentList");
-const logoutBtn = $("logoutBtn");
-const manualBookingForm = $("manualBookingForm");
-const manualSubmitBtn = $("manualSubmitBtn");
-const manualMessage = $("manualMessage");
-
 let appointments = [];
+let patients = [];
 let currentView = "day";
+let selectedPatientId = null;
+let patientSearchTimer = null;
 
-const statusLabels = {
-  pending:"بانتظار التأكيد",
-  confirmed:"مؤكد",
-  rejected:"مرفوض",
-  cancelled:"ملغي"
-};
+const statusLabels = {pending:"بانتظار التأكيد",confirmed:"مؤكد",rejected:"مرفوض",cancelled:"ملغي"};
+const serviceLabels = {general:"علاج عام",cosmetic:"تجميل الأسنان",orthodontics:"تقويم الأسنان",restorative:"ترميم الأسنان",implants:"زراعة الأسنان",pediatric:"طب أسنان الأطفال",other:"خدمة أخرى"};
+const sourceLabels = {website:"الموقع الإلكتروني",phone:"الهاتف",whatsapp:"واتساب",walk_in:"حضور مباشر"};
 
-const serviceLabels = {
-  general:"علاج عام",
-  cosmetic:"تجميل الأسنان",
-  orthodontics:"تقويم الأسنان",
-  restorative:"ترميم الأسنان",
-  implants:"زراعة الأسنان",
-  pediatric:"طب أسنان الأطفال",
-  other:"خدمة أخرى"
-};
+function localDateString(date=new Date()){
+ const y=date.getFullYear(),m=String(date.getMonth()+1).padStart(2,"0"),d=String(date.getDate()).padStart(2,"0");
+ return `${y}-${m}-${d}`;
+}
+function formatDate(value){
+ if(!value)return "غير محدد";
+ const p=String(value).slice(0,10).split("-");
+ return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:value;
+}
+function formatScheduledAt(value){
+ if(!value)return "لم يتم تحديد موعد";
+ const [date,time]=value.split("T");
+ return `${formatDate(date)} - ${(time||"").slice(0,5)}`;
+}
+function setMessage(element,message,success=false){
+ element.textContent=message||"";
+ element.classList.toggle("success-message",Boolean(success));
+}
+async function api(path,options={}){
+ const response=await fetch(path,{
+  ...options,credentials:"same-origin",cache:"no-store",
+  headers:{...(options.body?{"Content-Type":"application/json"}:{}),...(options.headers||{})}
+ });
+ let data={};
+ try{data=await response.json()}catch{}
+ if(response.status===401)showLogin("انتهت جلسة الدخول. يرجى تسجيل الدخول مجدداً.");
+ return {response,data};
+}
+function showLogin(message=""){
+ $("dashboardSection").hidden=true;$("loginSection").hidden=false;$("logoutBtn").hidden=true;
+ $("loginMessage").textContent=message;appointments=[];
+}
+function showDashboard(){
+ $("loginSection").hidden=true;$("dashboardSection").hidden=false;$("logoutBtn").hidden=false;
+ $("loginMessage").textContent="";
+}
+function createButton(label,className,callback){
+ const b=document.createElement("button");b.type="button";b.className="btn "+className;b.textContent=label;b.addEventListener("click",callback);return b;
+}
+function addDetail(container,label,value,extraClass=""){
+ const box=document.createElement("div"),small=document.createElement("small"),val=document.createElement("div");
+ box.className="detail";small.textContent=label;val.textContent=value||"غير محدد";
+ if(extraClass)val.className=extraClass;box.append(small,val);container.append(box);
+}
+function getScheduledDate(item){return item.scheduled_at?item.scheduled_at.slice(0,10):""}
 
-const sourceLabels = {
-  website:"الموقع الإلكتروني",
-  phone:"الهاتف",
-  whatsapp:"واتساب",
-  walk_in:"حضور مباشر"
-};
-
-function localDateString(date=new Date()) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth()+1).padStart(2,"0");
-  const day = String(date.getDate()).padStart(2,"0");
-  return `${year}-${month}-${day}`;
+function updateStats(){
+ const today=localDateString();
+ $("todayCount").textContent=appointments.filter(a=>a.scheduled_at&&getScheduledDate(a)===today&&!["cancelled","rejected"].includes(a.status)).length;
+ $("pendingCount").textContent=appointments.filter(a=>a.status==="pending").length;
+ $("confirmedCount").textContent=appointments.filter(a=>a.status==="confirmed").length;
+ $("unscheduledCount").textContent=appointments.filter(a=>!a.scheduled_at&&["pending","confirmed"].includes(a.status)).length;
+}
+function selectView(view){
+ currentView=view;
+ document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+ $("dateTools").hidden=view!=="day";
+ $("listTitle").textContent=view==="day"?"مواعيد اليوم":view==="unscheduled"?"حجوزات دون موعد":"كل الحجوزات";
+ renderAppointments();
+}
+function renderAppointments(){
+ const query=$("searchInput").value.trim().toLowerCase(),status=$("statusFilter").value,source=$("sourceFilter").value,date=$("selectedDate").value;
+ let list=appointments.filter(a=>{
+  const text=[a.patient_name,a.phone,a.reference].join(" ").toLowerCase();
+  if(!text.includes(query)||(status!=="all"&&a.status!==status)||(source!=="all"&&a.source!==source))return false;
+  if(currentView==="day"&&(!a.scheduled_at||getScheduledDate(a)!==date))return false;
+  if(currentView==="unscheduled"&&(a.scheduled_at||!["pending","confirmed"].includes(a.status)))return false;
+  return true;
+ });
+ list.sort((a,b)=>{
+  if(currentView==="unscheduled")return String(b.created_at||"").localeCompare(String(a.created_at||""));
+  const x=a.scheduled_at||"9999",y=b.scheduled_at||"9999";
+  return x.localeCompare(y);
+ });
+ const root=$("appointmentList");root.replaceChildren();$("resultCount").textContent=list.length+" نتيجة";
+ if(!list.length){const e=document.createElement("div");e.className="empty";e.textContent="لا توجد حجوزات مطابقة.";root.append(e);return}
+ list.forEach(item=>{
+  const card=document.createElement("article");card.className="appointment";
+  const head=document.createElement("div");head.className="appointment-head";
+  const info=document.createElement("div"),name=document.createElement("div"),phone=document.createElement("div"),badge=document.createElement("span");
+  name.className="patient-name";name.textContent=item.patient_name||"مريض";
+  phone.className="patient-phone";phone.textContent=item.phone||"";
+  info.append(name,phone);badge.className="status "+item.status;badge.textContent=statusLabels[item.status]||item.status;
+  head.append(info,badge);card.append(head);
+  const details=document.createElement("div");details.className="details";
+  addDetail(details,"الخدمة",serviceLabels[item.service_type]||item.service_type);
+  addDetail(details,"المصدر",sourceLabels[item.source]||item.source);
+  addDetail(details,"تاريخ الطلب",item.created_at);
+  addDetail(details,"الموعد",formatScheduledAt(item.scheduled_at));
+  addDetail(details,"رقم المرجع",item.reference,"reference");
+  card.append(details);
+  if(item.notes){const n=document.createElement("div");n.className="notes";n.textContent="ملاحظات: "+item.notes;card.append(n)}
+  const schedule=document.createElement("div");schedule.className="schedule-box";
+  const row=document.createElement("div");row.className="schedule-row";
+  const wrap=document.createElement("div"),label=document.createElement("label"),input=document.createElement("input");
+  label.textContent="التاريخ والساعة";input.type="datetime-local";input.value=item.scheduled_at||"";
+  wrap.append(label,input);
+  const save=createButton("حفظ الموعد","",()=>saveScheduledAt(item.id,input.value,save));
+  row.append(wrap,save);schedule.append(row);card.append(schedule);
+  const actions=document.createElement("div");actions.className="actions";
+  if(item.status==="pending"){
+   actions.append(createButton("تأكيد الحجز","btn-green",()=>updateStatus(item.id,"confirmed")),
+    createButton("رفض الطلب","btn-red",()=>updateStatus(item.id,"rejected")));
+  }else if(item.status==="confirmed"){
+   actions.append(createButton("إلغاء الحجز","btn-red",()=>updateStatus(item.id,"cancelled")));
+  }
+  if(actions.children.length)card.append(actions);
+  root.append(card);
+ });
+}
+async function loadAppointments(){
+ setMessage($("dashboardMessage"),"جارٍ تحميل الحجوزات...");
+ $("refreshBtn").disabled=true;
+ try{
+  const {response,data}=await api("/api/admin/appointments");
+  if(!response.ok||data.ok!==true){if(response.status!==401)setMessage($("dashboardMessage"),"تعذر تحميل الحجوزات.");return}
+  appointments=Array.isArray(data.appointments)?data.appointments:[];
+  updateStats();setMessage($("dashboardMessage"),"");renderAppointments();
+ }catch{setMessage($("dashboardMessage"),"تعذر الاتصال بالخادم.")}
+ finally{$("refreshBtn").disabled=false}
+}
+async function saveScheduledAt(id,value,button){
+ button.disabled=true;
+ try{
+  const {response,data}=await api("/api/admin/appointments/update",{method:"POST",body:JSON.stringify({id,scheduled_at:value})});
+  if(!response.ok||!data.ok){setMessage($("dashboardMessage"),data.error==="appointment_conflict"?"هذا الموعد يتعارض مع حجز آخر.":"تعذر حفظ الموعد.");return}
+  await loadAppointments();setMessage($("dashboardMessage"),"تم حفظ الموعد.",true);
+ }catch{setMessage($("dashboardMessage"),"تعذر الاتصال بالخادم.")}
+ finally{button.disabled=false}
+}
+async function updateStatus(id,status){
+ const prompts={confirmed:"هل تريد تأكيد هذا الحجز؟",rejected:"هل تريد رفض الطلب؟",cancelled:"هل تريد إلغاء الحجز؟"};
+ if(!confirm(prompts[status]))return;
+ try{
+  const {response,data}=await api("/api/admin/appointments/update",{method:"POST",body:JSON.stringify({id,status})});
+  if(!response.ok||!data.ok){setMessage($("dashboardMessage"),data.error==="appointment_conflict"?"الموعد يتعارض مع حجز آخر.":"لم يتم تحديث الحالة.");return}
+  await loadAppointments();setMessage($("dashboardMessage"),"تم تحديث حالة الحجز.",true);
+ }catch{setMessage($("dashboardMessage"),"تعذر الاتصال بالخادم.")}
+}
+async function createManualAppointment(event){
+ event.preventDefault();const button=$("manualSubmitBtn");button.disabled=true;
+ const payload={patient_name:$("manualName").value.trim(),phone:$("manualPhone").value.trim(),service_type:$("manualService").value,source:$("manualSource").value};
+ try{
+  const {response,data}=await api("/api/admin/appointments/create",{method:"POST",body:JSON.stringify(payload)});
+  if(!response.ok||!data.ok){setMessage($("manualMessage"),data.error==="invalid_input"?"تحقق من الاسم ورقم الهاتف والخدمة.":"تعذر تسجيل الحجز.");return}
+  $("manualBookingForm").reset();setMessage($("manualMessage"),"تم تسجيل الحجز اليدوي.",true);
+  await loadAppointments();selectView("unscheduled");
+ }catch{setMessage($("manualMessage"),"تعذر الاتصال بالخادم.")}
+ finally{button.disabled=false}
 }
 
-function formatDate(value) {
-  if (!value) return "غير محدد";
-  const parts = value.split("-");
-  if (parts.length !== 3) return value;
-  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+/* التنقل بين أقسام اللوحة */
+function showSection(id){
+ ["appointmentsSection","patientsSection","reportsSection"].forEach(s=>$(s).hidden=s!==id);
+ document.querySelectorAll("[data-section]").forEach(b=>b.classList.toggle("active",b.dataset.section===id));
+ if(id==="patientsSection")loadPatients();
+ if(id==="reportsSection")loadReports();
 }
 
-function formatScheduledAt(value) {
-  if (!value) return "لم يتم تحديد موعد بعد";
-  const [date,time] = value.split("T");
-  return `${formatDate(date)} - ${(time || "").slice(0,5)}`;
+/* المرضى */
+async function loadPatients(){
+ setMessage($("patientsMessage"),"جارٍ تحميل المرضى...");
+ const q=$("patientSearch").value.trim();
+ try{
+  const {response,data}=await api("/api/admin/patients?q="+encodeURIComponent(q));
+  if(!response.ok||!data.ok){setMessage($("patientsMessage"),"تعذر تحميل قائمة المرضى.");return}
+  patients=Array.isArray(data.patients)?data.patients:[];
+  renderPatients();
+  setMessage($("patientsMessage"),patients.length+" مريض");
+ }catch{setMessage($("patientsMessage"),"تعذر الاتصال بالخادم.")}
 }
-
-async function api(path,options={}) {
-  const response = await fetch(path,{
-    ...options,
-    credentials:"same-origin",
-    cache:"no-store",
-    headers:{
-      ...(options.body ? {"Content-Type":"application/json"} : {}),
-      ...(options.headers || {})
-    }
+function renderPatients(){
+ const root=$("patientsList");root.replaceChildren();
+ if(!patients.length){const e=document.createElement("div");e.className="empty";e.textContent="لا يوجد مرضى مطابقون للبحث.";root.append(e);return}
+ patients.forEach(p=>{
+  const row=document.createElement("div");row.className="patient-row";
+  const info=document.createElement("div"),name=document.createElement("strong"),phone=document.createElement("small");
+  name.textContent=p.patient_name;phone.textContent=p.phone+" · "+(p.visits_count||0)+" زيارة";
+  info.append(name,phone);
+  row.append(info,createButton("فتح الملف","btn-light",()=>loadPatientDetails(p.id)));
+  root.append(row);
+ });
+}
+async function createPatient(event){
+ event.preventDefault();const button=$("patientSubmitBtn");button.disabled=true;
+ const payload={patient_name:$("patientName").value.trim(),phone:$("patientPhone").value.trim(),notes:$("patientNotes").value.trim()};
+ try{
+  const {response,data}=await api("/api/admin/patients/create",{method:"POST",body:JSON.stringify(payload)});
+  if(!response.ok||!data.ok){setMessage($("patientMessage"),data.error==="invalid_input"?"تحقق من الاسم ورقم الهاتف.":"تعذرت إضافة المريض.");return}
+  $("patientForm").reset();setMessage($("patientMessage"),"تمت إضافة المريض بنجاح.",true);
+  await loadPatients();
+  if(data.patient?.id)await loadPatientDetails(data.patient.id);
+ }catch{setMessage($("patientMessage"),"تعذر الاتصال بالخادم.")}
+ finally{button.disabled=false}
+}
+async function loadPatientDetails(id){
+ selectedPatientId=id;
+ setMessage($("patientsMessage"),"جارٍ تحميل ملف المريض...");
+ try{
+  const {response,data}=await api("/api/admin/patients/detail?id="+encodeURIComponent(id));
+  if(!response.ok||!data.ok){setMessage($("patientsMessage"),"تعذر تحميل ملف المريض.");return}
+  const p=data.patient;$("patientDetailSection").hidden=false;$("visitPatientId").value=p.id;
+  const detail=$("patientDetail");detail.replaceChildren();
+  const card=document.createElement("div");card.className="patient-detail";
+  const title=document.createElement("strong");title.textContent=p.patient_name;
+  const phone=document.createElement("div");phone.textContent="الهاتف: "+p.phone;
+  const notes=document.createElement("div");notes.textContent="ملاحظات: "+(p.notes||"لا توجد");
+  card.append(title,phone,notes);detail.append(card);
+  renderVisits(data.visits||[]);renderPatientAppointments(data.appointments||[]);
+  $("visitDate").value=localDateString();setMessage($("visitMessage"),"");
+  $("patientDetailSection").scrollIntoView({behavior:"smooth",block:"start"});
+ }catch{setMessage($("patientsMessage"),"تعذر الاتصال بالخادم.")}
+}
+function renderVisits(visits){
+ const root=$("visitHistory");root.replaceChildren();
+ if(!visits.length){const e=document.createElement("div");e.className="empty";e.textContent="لا توجد زيارات مسجلة.";root.append(e);return}
+ visits.forEach(v=>{
+  const card=document.createElement("div");card.className="visit-card";
+  const title=document.createElement("strong");title.textContent=formatDate(v.visit_date)+" · "+(serviceLabels[v.service_type]||v.service_type);
+  card.append(title);
+  [["التشخيص",v.diagnosis],["العلاج",v.treatment],["ملاحظات",v.notes]].forEach(([label,value])=>{
+   if(value){const p=document.createElement("div");p.textContent=label+": "+value;card.append(p)}
   });
+  root.append(card);
+ });
+}
+function renderPatientAppointments(items){
+ const root=$("patientAppointments");root.replaceChildren();
+ if(!items.length){const e=document.createElement("div");e.className="empty";e.textContent="لا توجد حجوزات مرتبطة بهذا الملف.";root.append(e);return}
+ items.forEach(a=>{
+  const card=document.createElement("div");card.className="visit-card";
+  card.textContent=(serviceLabels[a.service_type]||a.service_type)+" · "+formatScheduledAt(a.scheduled_at)+" · "+(statusLabels[a.status]||a.status)+" · "+(a.reference||"");
+  root.append(card);
+ });
+}
+async function createVisit(event){
+ event.preventDefault();const button=$("visitSubmitBtn");button.disabled=true;
+ const payload={
+  patient_id:Number($("visitPatientId").value),
+  visit_date:$("visitDate").value,
+  service_type:$("visitService").value,
+  diagnosis:$("visitDiagnosis").value.trim(),
+  treatment:$("visitTreatment").value.trim(),
+  notes:$("visitNotes").value.trim()
+ };
+ try{
+  const {response,data}=await api("/api/admin/visits",{method:"POST",body:JSON.stringify(payload)});
+  if(!response.ok||!data.ok){setMessage($("visitMessage"),"تعذر حفظ الزيارة. تحقق من البيانات.");return}
+  $("visitForm").reset();$("visitPatientId").value=selectedPatientId;$("visitDate").value=localDateString();
+  setMessage($("visitMessage"),"تم تسجيل الزيارة بنجاح.",true);
+  await loadPatientDetails(selectedPatientId);await loadPatients();
+ }catch{setMessage($("visitMessage"),"تعذر الاتصال بالخادم.")}
+ finally{button.disabled=false}
+}
 
-  let data = {};
-  try { data = await response.json(); } catch {}
+/* التقارير */
+async function loadReports(){
+ if(!$("reportFrom").value)$("reportFrom").value=localDateString();
+ if(!$("reportTo").value)$("reportTo").value=localDateString();
+ const from=$("reportFrom").value,to=$("reportTo").value;
+ if(!from||!to||from>to){setMessage($("reportsMessage"),"تحقق من فترة التقرير.");return}
+ setMessage($("reportsMessage"),"جارٍ إعداد التقرير...");
+ try{
+  const {response,data}=await api("/api/admin/reports?from="+encodeURIComponent(from)+"&to="+encodeURIComponent(to));
+  if(!response.ok||!data.ok){setMessage($("reportsMessage"),"تعذر تحميل التقرير.");return}
+  renderReports(data);setMessage($("reportsMessage"),"تم تحديث التقرير.",true);
+ }catch{setMessage($("reportsMessage"),"تعذر الاتصال بالخادم.")}
+}
+function renderReports(data){
+ const root=$("reportResults");root.replaceChildren();
+ const stats=document.createElement("div");stats.className="report-grid";
+ const addStat=(label,value)=>{
+  const box=document.createElement("div");box.className="report-stat";
+  const strong=document.createElement("strong");strong.textContent=String(value??0);
+  const span=document.createElement("span");span.textContent=label;
+  box.append(strong,span);stats.append(box);
+ };
+ addStat("المرضى الجدد",data.new_patients);
+ addStat("إجمالي الزيارات",data.visits_total);
+ addStat("إجمالي الحجوزات",(data.appointments_by_status||[]).reduce((n,x)=>n+Number(x.total||0),0));
+ root.append(stats);
+ const makeList=(heading,rows,labelFn)=>{
+  const section=document.createElement("div");section.className="section-panel";
+  const h=document.createElement("h2");h.textContent=heading;section.append(h);
+  if(!rows.length){const p=document.createElement("p");p.className="muted";p.textContent="لا توجد بيانات خلال هذه الفترة.";section.append(p)}
+  rows.forEach(item=>{const p=document.createElement("p");p.textContent=labelFn(item);section.append(p)});
+  root.append(section);
+ };
+ makeList("الحجوزات حسب الحالة",data.appointments_by_status||[],x=>(statusLabels[x.status]||x.status)+": "+x.total);
+ makeList("الزيارات حسب الخدمة",data.visits_by_service||[],x=>(serviceLabels[x.service_type]||x.service_type)+": "+x.total);
+ makeList("الزيارات حسب اليوم",data.visits_by_day||[],x=>formatDate(x.visit_date)+": "+x.total);
+}
 
-  if (response.status === 401) {
-    showLogin("انتهت جلسة الدخول. يرجى تسجيل الدخول مجدداً.");
+/* تصدير نسخة احتياطية JSON */
+async function exportBackup(){
+ const button=$("exportBtn");button.disabled=true;button.textContent="جارٍ تجهيز النسخة...";
+ try{
+  const response=await fetch("/api/admin/export",{credentials:"same-origin",cache:"no-store"});
+  if(response.status===401){showLogin("انتهت جلسة الدخول.");return}
+  if(!response.ok){alert("تعذر تصدير النسخة الاحتياطية.");return}
+  const blob=await response.blob();
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement("a");link.href=url;link.download="nova-backup.json";
+  document.body.append(link);link.click();link.remove();URL.revokeObjectURL(url);
+ }catch{alert("تعذر الاتصال بالخادم.")}
+ finally{button.disabled=false;button.textContent="تصدير نسخة احتياطية"}
+}
+
+/* تسجيل الدخول والخروج وربط الأحداث */
+$("loginForm").addEventListener("submit",async event=>{
+ event.preventDefault();const button=$("loginBtn");button.disabled=true;button.textContent="جارٍ التحقق...";
+ setMessage($("loginMessage"),"");
+ try{
+  const {response,data}=await api("/api/admin/login",{method:"POST",body:JSON.stringify({username:$("username").value.trim(),password:$("password").value})});
+  if(!response.ok||data.ok!==true){
+   const msg=data.error==="rate_limited"?"تم إيقاف المحاولات مؤقتاً. حاول لاحقاً.":data.error==="server_configuration_error"?"إعداد حساب الإدارة غير مكتمل.":"اسم المستخدم أو كلمة المرور غير صحيحة.";
+   setMessage($("loginMessage"),msg);return;
   }
-  return {response,data};
-}
-
-function showLogin(message="") {
-  dashboardSection.hidden = true;
-  loginSection.hidden = false;
-  logoutBtn.hidden = true;
-  loginMessage.textContent = message;
-  appointments = [];
-}
-
-function showDashboard() {
-  loginSection.hidden = true;
-  dashboardSection.hidden = false;
-  logoutBtn.hidden = false;
-  loginMessage.textContent = "";
-}
-
-function setMessage(element,message,success=false) {
-  element.textContent = message || "";
-  element.classList.toggle("success-message",Boolean(success));
-}
-
-function addDetail(container,label,value,extraClass="") {
-  const box = document.createElement("div");
-  box.className = "detail";
-  const small = document.createElement("small");
-  small.textContent = label;
-  const valueNode = document.createElement("div");
-  valueNode.textContent = value || "غير محدد";
-  if (extraClass) valueNode.className = extraClass;
-  box.append(small,valueNode);
-  container.append(box);
-}
-
-function createButton(label,className,callback) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "btn " + className;
-  button.textContent = label;
-  button.addEventListener("click",callback);
-  return button;
-}
-
-function getScheduledDate(item) {
-  return item.scheduled_at ? item.scheduled_at.slice(0,10) : "";
-}
-
-function updateStats() {
-  const today = localDateString();
-  $("todayCount").textContent = appointments.filter(item =>
-    item.scheduled_at && getScheduledDate(item) === today &&
-    item.status !== "cancelled" && item.status !== "rejected"
-  ).length;
-
-  $("pendingCount").textContent =
-    appointments.filter(item => item.status === "pending").length;
-
-  $("confirmedCount").textContent =
-    appointments.filter(item => item.status === "confirmed").length;
-
-  $("unscheduledCount").textContent =
-    appointments.filter(item =>
-      !item.scheduled_at &&
-      (item.status === "pending" || item.status === "confirmed")
-    ).length;
-}
-
-function selectView(view) {
-  currentView = view;
-
-  document.querySelectorAll(".view-btn").forEach(button => {
-    const active = button.dataset.view === view;
-    button.classList.toggle("active",active);
-    button.setAttribute("aria-selected",String(active));
-  });
-
-  $("dateTools").hidden = view !== "day";
-  $("listTitle").textContent = view === "day"
-    ? "مواعيد اليوم"
-    : view === "unscheduled"
-      ? "حجوزات دون موعد محدد"
-      : "كل الحجوزات";
-
-  renderAppointments();
-}
-
-function renderAppointments() {
-  const query = $("searchInput").value.trim().toLowerCase();
-  const status = $("statusFilter").value;
-  const source = $("sourceFilter").value;
-  const selectedDate = $("selectedDate").value;
-
-  let filtered = appointments.filter(item => {
-    const searchable = [
-      item.patient_name,
-      item.phone,
-      item.reference
-    ].join(" ").toLowerCase();
-
-    if (!searchable.includes(query)) return false;
-    if (status !== "all" && item.status !== status) return false;
-    if (source !== "all" && item.source !== source) return false;
-
-    if (currentView === "day") {
-      if (!item.scheduled_at || getScheduledDate(item) !== selectedDate) return false;
-    } else if (currentView === "unscheduled") {
-      if (item.scheduled_at) return false;
-      if (item.status !== "pending" && item.status !== "confirmed") return false;
-    }
-    return true;
-  });
-
-  filtered.sort((a,b) => {
-    if (currentView === "all") {
-      const dateA = a.scheduled_at || "9999-99-99T99:99";
-      const dateB = b.scheduled_at || "9999-99-99T99:99";
-      if (dateA !== dateB) return dateA.localeCompare(dateB);
-    } else if (currentView === "unscheduled") {
-      return String(b.created_at || "").localeCompare(String(a.created_at || ""));
-    } else {
-      const timeA = a.scheduled_at || "";
-      const timeB = b.scheduled_at || "";
-      if (timeA !== timeB) return timeA.localeCompare(timeB);
-    }
-    return String(a.patient_name || "").localeCompare(String(b.patient_name || ""));
-  });
-
-  appointmentList.replaceChildren();
-  $("resultCount").textContent = `${filtered.length} نتيجة`;
-
-  if (!filtered.length) {
-    const empty = document.createElement("div");
-    empty.className = "empty";
-    const strong = document.createElement("strong");
-    strong.textContent = currentView === "day"
-      ? "لا توجد مواعيد في هذا التاريخ"
-      : currentView === "unscheduled"
-        ? "كل الحجوزات لديها موعد محدد"
-        : "لا توجد حجوزات مطابقة";
-    const hint = document.createElement("div");
-    hint.textContent = currentView === "day"
-      ? "يمكنك اختيار تاريخ آخر أو مراجعة الطلبات دون موعد."
-      : "جرّب تغيير كلمات البحث أو الفلاتر.";
-    empty.append(strong,hint);
-    appointmentList.append(empty);
-    return;
-  }
-
-  for (const item of filtered) {
-    const card = document.createElement("article");
-    card.className = "appointment";
-
-    if (!item.scheduled_at) card.classList.add("is-unscheduled");
-    if (item.scheduled_at && getScheduledDate(item) === localDateString()) {
-      card.classList.add("is-today");
-    }
-
-    const head = document.createElement("div");
-    head.className = "appointment-head";
-
-    const patient = document.createElement("div");
-    const name = document.createElement("div");
-    name.className = "patient-name";
-    name.textContent = item.patient_name || "مريض";
-
-    const phone = document.createElement("div");
-    phone.className = "patient-phone";
-    phone.textContent = item.phone || "لا يوجد رقم هاتف";
-    patient.append(name,phone);
-
-    const badge = document.createElement("span");
-    badge.className = "status " + (item.status || "pending");
-    badge.textContent = statusLabels[item.status] || item.status || "غير معروف";
-    head.append(patient,badge);
-
-    const details = document.createElement("div");
-    details.className = "details";
-    addDetail(details,"الخدمة",serviceLabels[item.service_type] || item.service_type);
-    addDetail(details,"مصدر الحجز",sourceLabels[item.source] || item.source);
-    addDetail(details,"تاريخ وصول الطلب",item.created_at);
-    addDetail(details,"الموعد المتفق عليه",item.scheduled_at ? formatScheduledAt(item.scheduled_at) : "لم يحدد بعد");
-    addDetail(details,"رقم المرجع",item.reference,"reference");
-
-    card.append(head,details);
-
-    if (item.notes) {
-      const notes = document.createElement("div");
-      notes.className = "notes";
-      notes.textContent = "ملاحظات: " + item.notes;
-      card.append(notes);
-    }
-
-    const scheduleBox = document.createElement("div");
-    scheduleBox.className = "schedule-box";
-
-    const scheduleTitle = document.createElement("div");
-    scheduleTitle.className = "schedule-title";
-    scheduleTitle.textContent = "تحديد الموعد المتفق عليه";
-
-    const scheduleRow = document.createElement("div");
-    scheduleRow.className = "schedule-row";
-
-    const inputWrap = document.createElement("div");
-    const scheduleLabel = document.createElement("label");
-    scheduleLabel.textContent = "التاريخ والساعة";
-    scheduleLabel.htmlFor = "scheduled-" + item.id;
-
-    const scheduleInput = document.createElement("input");
-    scheduleInput.type = "datetime-local";
-    scheduleInput.id = "scheduled-" + item.id;
-    scheduleInput.value = item.scheduled_at || "";
-
-    inputWrap.append(scheduleLabel,scheduleInput);
-
-    const saveButton = createButton(
-      "حفظ الموعد",
-      "",
-      () => saveScheduledAt(item.id,scheduleInput.value,saveButton)
-    );
-
-    scheduleRow.append(inputWrap,saveButton);
-
-    const currentSchedule = document.createElement("div");
-    currentSchedule.className = "schedule-current";
-    if (!item.scheduled_at) currentSchedule.classList.add("no-schedule");
-    currentSchedule.textContent = item.scheduled_at
-      ? "الموعد المحفوظ: " + formatScheduledAt(item.scheduled_at)
-      : "لم يتم تحديد موعد متفق عليه.";
-
-    scheduleBox.append(scheduleTitle,scheduleRow,currentSchedule);
-    card.append(scheduleBox);
-
-    const actions = document.createElement("div");
-    actions.className = "actions";
-
-    if (item.status === "pending") {
-      const confirmButton = createButton("تأكيد الحجز","btn-green",() =>
-        updateStatus(item.id,"confirmed")
-      );
-      if (!item.scheduled_at) {
-        confirmButton.title = "يفضل حفظ الموعد المتفق عليه أولاً";
-      }
-
-      actions.append(
-        confirmButton,
-        createButton("رفض الطلب","btn-red",() => updateStatus(item.id,"rejected"))
-      );
-    } else if (item.status === "confirmed") {
-      actions.append(
-        createButton("إلغاء الحجز","btn-red",() => updateStatus(item.id,"cancelled"))
-      );
-    }
-
-    if (actions.children.length) card.append(actions);
-    appointmentList.append(card);
-  }
-}
-
-async function loadAppointments() {
-  setMessage(dashboardMessage,"جارٍ تحميل الحجوزات...");
-  $("refreshBtn").disabled = true;
-
-  try {
-    const {response,data} = await api("/api/admin/appointments");
-
-    if (!response.ok || data.ok !== true) {
-      if (response.status !== 401) {
-        setMessage(dashboardMessage,"تعذر تحميل الحجوزات. حاول مجدداً.");
-      }
-      return;
-    }
-
-    appointments = Array.isArray(data.appointments) ? data.appointments : [];
-    updateStats();
-    setMessage(dashboardMessage,"");
-    renderAppointments();
-  } catch {
-    setMessage(dashboardMessage,"تعذر الاتصال بالخادم.");
-  } finally {
-    $("refreshBtn").disabled = false;
-  }
-}
-
-async function saveScheduledAt(id,value,button) {
-  button.disabled = true;
-  button.textContent = "جارٍ الحفظ...";
-
-  try {
-    const {response,data} = await api("/api/admin/appointments/update",{
-      method:"POST",
-      body:JSON.stringify({id,scheduled_at:value})
-    });
-
-    if (!response.ok || data.ok !== true) {
-      if (response.status !== 401) {
-        setMessage(
-          dashboardMessage,
-          data.error === "invalid_scheduled_at"
-            ? "التاريخ أو الساعة غير صالحين."
-            : "تعذر حفظ الموعد. حاول مجدداً."
-        );
-      }
-      return;
-    }
-
-    await loadAppointments();
-    setMessage(
-      dashboardMessage,
-      value
-        ? "تم حفظ الموعد بنجاح. يمكنك الآن تأكيد الحجز."
-        : "تم مسح الموعد المحفوظ.",
-      true
-    );
-  } catch {
-    setMessage(dashboardMessage,"تعذر الاتصال بالخادم.");
-  } finally {
-    button.disabled = false;
-    button.textContent = "حفظ الموعد";
-  }
-}
-
-async function createManualAppointment(event) {
-  event.preventDefault();
-  manualSubmitBtn.disabled = true;
-  manualSubmitBtn.textContent = "جارٍ التسجيل...";
-  setMessage(manualMessage,"");
-
-  const payload = {
-    patient_name:$("manualName").value.trim(),
-    phone:$("manualPhone").value.trim(),
-    service_type:$("manualService").value,
-    source:$("manualSource").value
-  };
-
-  try {
-    const {response,data} = await api("/api/admin/appointments/create",{
-      method:"POST",
-      body:JSON.stringify(payload)
-    });
-
-    if (!response.ok || data.ok !== true) {
-      if (response.status !== 401) {
-        setMessage(
-          manualMessage,
-          data.error === "invalid_input"
-            ? "تحقق من الاسم ورقم الهاتف والخدمة."
-            : "تعذر تسجيل الحجز. حاول مجدداً."
-        );
-      }
-      return;
-    }
-
-    manualBookingForm.reset();
-    setMessage(manualMessage,"تم تسجيل الحجز اليدوي بنجاح.",true);
-    await loadAppointments();
-    selectView("unscheduled");
-  } catch {
-    setMessage(manualMessage,"تعذر الاتصال بالخادم.");
-  } finally {
-    manualSubmitBtn.disabled = false;
-    manualSubmitBtn.textContent = "تسجيل الحجز";
-  }
-}
-
-async function updateStatus(id,status) {
-  const confirmation = {
-    confirmed:"هل تريد تأكيد هذا الحجز؟",
-    rejected:"هل تريد رفض طلب الحجز؟",
-    cancelled:"هل تريد إلغاء هذا الحجز؟"
-  };
-
-  if (!window.confirm(confirmation[status])) return;
-
-  try {
-    const {response,data} = await api("/api/admin/appointments/update",{
-      method:"POST",
-      body:JSON.stringify({id,status})
-    });
-
-    if (!response.ok || data.ok !== true) {
-      if (response.status !== 401) {
-        setMessage(dashboardMessage,"لم يتم تحديث حالة الحجز.");
-      }
-      return;
-    }
-
-    await loadAppointments();
-    setMessage(dashboardMessage,"تم تحديث حالة الحجز.",true);
-  } catch {
-    setMessage(dashboardMessage,"تعذر الاتصال بالخادم.");
-  }
-}
-
-loginForm.addEventListener("submit",async event => {
-  event.preventDefault();
-  loginBtn.disabled = true;
-  loginBtn.textContent = "جارٍ التحقق...";
-  setMessage(loginMessage,"");
-
-  try {
-    const {response,data} = await api("/api/admin/login",{
-      method:"POST",
-      body:JSON.stringify({
-        username:$("username").value.trim(),
-        password:$("password").value
-      })
-    });
-
-    if (!response.ok || data.ok !== true) {
-      const message = data.error === "rate_limited"
-        ? "تم إيقاف المحاولات مؤقتاً. حاول بعد 15 دقيقة."
-        : data.error === "server_configuration_error"
-          ? "إعداد حساب السكرتيرة غير مكتمل على الخادم."
-          : "اسم المستخدم أو كلمة المرور غير صحيحة.";
-      setMessage(loginMessage,message);
-      return;
-    }
-
-    $("password").value = "";
-    showDashboard();
-    await loadAppointments();
-  } catch {
-    setMessage(loginMessage,"تعذر الاتصال بالخادم.");
-  } finally {
-    loginBtn.disabled = false;
-    loginBtn.textContent = "تسجيل الدخول";
-  }
+  $("password").value="";showDashboard();await loadAppointments();
+ }catch{setMessage($("loginMessage"),"تعذر الاتصال بالخادم.")}
+ finally{button.disabled=false;button.textContent="تسجيل الدخول"}
 });
-
-manualBookingForm.addEventListener("submit",createManualAppointment);
-
-logoutBtn.addEventListener("click",async () => {
-  try {
-    await api("/api/admin/logout",{method:"POST"});
-  } finally {
-    showLogin("تم تسجيل الخروج.");
-  }
+$("logoutBtn").addEventListener("click",async()=>{
+ try{await api("/api/admin/logout",{method:"POST"})}finally{showLogin("تم تسجيل الخروج.")}
 });
-
+$("manualBookingForm").addEventListener("submit",createManualAppointment);
 $("refreshBtn").addEventListener("click",loadAppointments);
+$("exportBtn").addEventListener("click",exportBackup);
 $("searchInput").addEventListener("input",renderAppointments);
 $("statusFilter").addEventListener("change",renderAppointments);
 $("sourceFilter").addEventListener("change",renderAppointments);
 $("selectedDate").addEventListener("change",renderAppointments);
-
-document.querySelectorAll(".view-btn").forEach(button => {
-  button.addEventListener("click",() => selectView(button.dataset.view));
+document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>selectView(b.dataset.view)));
+document.querySelectorAll("[data-section]").forEach(b=>b.addEventListener("click",()=>showSection(b.dataset.section)));
+$("patientForm").addEventListener("submit",createPatient);
+$("visitForm").addEventListener("submit",createVisit);
+$("loadReportsBtn").addEventListener("click",loadReports);
+$("closePatientBtn").addEventListener("click",()=>{$("patientDetailSection").hidden=true;selectedPatientId=null});
+$("patientSearch").addEventListener("input",()=>{
+ clearTimeout(patientSearchTimer);
+ patientSearchTimer=setTimeout(loadPatients,300);
 });
 
-async function restoreSession() {
-  $("selectedDate").value = localDateString();
-
-  try {
-    const {response,data} = await api("/api/admin/session");
-    if (response.ok && data.authenticated === true) {
-      showDashboard();
-      await loadAppointments();
-    } else {
-      showLogin();
-    }
-  } catch {
-    showLogin("تعذر الاتصال بالخادم.");
-  }
+async function restoreSession(){
+ $("selectedDate").value=localDateString();
+ $("visitDate").value=localDateString();
+ $("reportFrom").value=localDateString();
+ $("reportTo").value=localDateString();
+ try{
+  const {response,data}=await api("/api/admin/session");
+  if(response.ok&&data.authenticated===true){showDashboard();await loadAppointments()}
+  else showLogin();
+ }catch{showLogin("تعذر الاتصال بالخادم.")}
 }
-
 restoreSession();
 </script>
 </body>
