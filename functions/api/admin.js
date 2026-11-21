@@ -448,7 +448,8 @@ export async function adminCreateAppointment({ request, env }) {
         preferred_date,
         status,
         reference,
-        source
+        source,
+        created_at
       )
       VALUES (?, ?, ?, '', 'pending', ?, ?)
       RETURNING id, patient_name, phone, service_type,
