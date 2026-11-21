@@ -93,7 +93,7 @@ async function createSession(env) {
   return `${payload}.${signature}`;
 }
 
-async function hasAdminSession(request, env) {
+export async function hasAdminSession(request, env) {
   if (!env.ADMIN_SESSION_SECRET) return false;
 
   const token = getCookie(request, SESSION_COOKIE);
@@ -423,6 +423,11 @@ export async function adminUpdateAppointment({ request, env }) {
     return json({ ok: true, appointment: result });
   } catch (error) {
     console.error("adminUpdateAppointment error:", error);
+
+    if (String(error?.message || "").includes("appointment_conflict")) {
+      return json({ ok: false, error: "appointment_conflict" }, 409);
+    }
+
     return json({ ok: false, error: "database_error" }, 503);
   }
 }
