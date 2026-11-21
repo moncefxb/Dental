@@ -114,10 +114,7 @@ async function hasAdminSession(request, env) {
   const issued = Number(issuedAt);
   const now = Math.floor(Date.now() / 1000);
 
-  if (
-    issued > now + 30 ||
-    now - issued > SESSION_SECONDS
-  ) {
+  if (issued > now + 30 || now - issued > SESSION_SECONDS) {
     return false;
   }
 
@@ -198,9 +195,7 @@ async function loginRateLimit(ipHash, env, now) {
     LOGIN_WINDOW_SECONDS
   ).first();
 
-  return {
-    blocked: state?.blocked_until > now
-  };
+  return { blocked: state?.blocked_until > now };
 }
 
 export async function adminLogin({ request, env }) {
@@ -319,6 +314,7 @@ export async function adminListAppointments({ request, env }) {
         phone,
         service_type,
         preferred_date,
+        scheduled_at,
         notes,
         status,
         reference,
@@ -333,7 +329,8 @@ export async function adminListAppointments({ request, env }) {
       ok: true,
       appointments: result.results || []
     });
-  } catch {
+  } catch (error) {
+    console.error("adminListAppointments error:", error);
     return json({ ok: false, error: "database_error" }, 503);
   }
 }
@@ -348,23 +345,70 @@ export async function adminUpdateAppointment({ request, env }) {
   }
 
   const body = await readJson(request);
-
   const id = Number(body?.id);
-  const allowedStatuses = new Set([
-    "confirmed",
-    "rejected",
-    "cancelled"
-  ]);
 
-  if (
-    !Number.isSafeInteger(id) ||
-    id < 1 ||
-    !allowedStatuses.has(body?.status)
-  ) {
+  if (!Number.isSafeInteger(id) || id < 1) {
     return json({ ok: false, error: "invalid_input" }, 400);
   }
 
   try {
+    if (typeof body.scheduled_at === "string") {
+      const value = body.scheduled_at.trim();
+
+      if (value !== "") {
+        const match = value.match(
+          /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/
+        );
+
+        if (!match) {
+          return json({ ok: false, error: "invalid_date" }, 400);
+        }
+
+        const [, year, month, day, hour, minute] = match;
+
+        const date = new Date(Date.UTC(
+          Number(year),
+          Number(month) - 1,
+          Number(day),
+          Number(hour),
+          Number(minute)
+        ));
+
+        if (
+          date.getUTCFullYear() !== Number(year) ||
+          date.getUTCMonth() !== Number(month) - 1 ||
+          date.getUTCDate() !== Number(day) ||
+          Number(hour) > 23 ||
+          Number(minute) > 59
+        ) {
+          return json({ ok: false, error: "invalid_date" }, 400);
+        }
+      }
+
+      const result = await env.DB.prepare(`
+        UPDATE appointments
+        SET scheduled_at = ?
+        WHERE id = ?
+        RETURNING id, scheduled_at
+      `).bind(value || null, id).first();
+
+      if (!result) {
+        return json({ ok: false, error: "not_found" }, 404);
+      }
+
+      return json({ ok: true, appointment: result });
+    }
+
+    const allowedStatuses = new Set([
+      "confirmed",
+      "rejected",
+      "cancelled"
+    ]);
+
+    if (!allowedStatuses.has(body?.status)) {
+      return json({ ok: false, error: "invalid_input" }, 400);
+    }
+
     const result = await env.DB.prepare(`
       UPDATE appointments
       SET status = ?
@@ -377,7 +421,8 @@ export async function adminUpdateAppointment({ request, env }) {
     }
 
     return json({ ok: true, appointment: result });
-  } catch {
+  } catch (error) {
+    console.error("adminUpdateAppointment error:", error);
     return json({ ok: false, error: "database_error" }, 503);
   }
 }
@@ -453,7 +498,8 @@ export async function adminCreateAppointment({ request, env }) {
       )
       VALUES (?, ?, ?, '', 'pending', ?, ?)
       RETURNING id, patient_name, phone, service_type,
-                preferred_date, status, reference, source, created_at
+                preferred_date, scheduled_at, status,
+                reference, source, created_at
     `).bind(
       name,
       phone,
