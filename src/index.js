@@ -1,3 +1,4 @@
+import { onRequestGet as healthGet } from "../health.js";
 
 import {
   onRequestPost,
@@ -50,6 +51,13 @@ export default {
     const method = request.method;
 
     try {
+      // Operational health check
+      if (path === "/api/health") {
+        return method === "GET"
+          ? healthGet({ request, env, ctx })
+          : methodNotAllowed("GET");
+      }
+
       // Public appointment requests
       if (path === "/api/appointments") {
         if (method === "POST") {
