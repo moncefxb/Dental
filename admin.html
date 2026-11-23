@@ -283,8 +283,8 @@ async function api(path,options={}){
  return {response,data};
 }
 function showLogin(message=""){
- $("dashboardSection").hidden=true;$("loginSection").hidden=false;$("logoutBtn").hidden=true;
- $("loginMessage").textContent=message;appointments=[];
+ $("dashboardSection").hidden=true;$("loginSection").hidden=false;$("logoutBtn").hidden=true;appointments=[];
+ $("loginMessage").textContent=message;
 }
 function showDashboard(){
  $("loginSection").hidden=true;$("dashboardSection").hidden=false;$("logoutBtn").hidden=false;
@@ -547,19 +547,68 @@ function renderReports(data){
  makeList("الزيارات حسب اليوم",data.visits_by_day||[],x=>formatDate(x.visit_date)+": "+x.total);
 }
 
-/* تصدير نسخة احتياطية JSON */
+/* تصدير النسخة الاحتياطية - النسخة المحسنة */
 async function exportBackup(){
- const button=$("exportBtn");button.disabled=true;button.textContent="جارٍ تجهيز النسخة...";
+ const button=$("exportBtn");
+ button.disabled=true;
+ button.textContent="جارٍ تجهيز النسخة...";
+
  try{
-  const response=await fetch("/api/admin/export",{credentials:"same-origin",cache:"no-store"});
-  if(response.status===401){showLogin("انتهت جلسة الدخول.");return}
-  if(!response.ok){alert("تعذر تصدير النسخة الاحتياطية.");return}
+  const response=await fetch("/api/admin/export",{
+   method:"GET",
+   credentials:"same-origin",
+   cache:"no-store",
+   headers:{"Accept":"application/json"}
+  });
+
+  if(response.status===401){
+   showLogin("انتهت جلسة الدخول. سجل الدخول مجددًا.");
+   return;
+  }
+
+  if(!response.ok){
+   const errorText=await response.text();
+   console.error("Export failed:",response.status,errorText);
+   alert("فشل التصدير. رمز الخطأ: "+response.status);
+   return;
+  }
+
+  const contentType=response.headers.get("content-type")||"";
+  if(!contentType.includes("application/json")){
+   console.error("Unexpected export content type:",contentType);
+   alert("استجابة الخادم ليست ملف JSON. تحقق من إعدادات API.");
+   return;
+  }
+
   const blob=await response.blob();
+
+  if(!blob.size){
+   alert("ملف النسخة الاحتياطية فارغ.");
+   return;
+  }
+
   const url=URL.createObjectURL(blob);
-  const link=document.createElement("a");link.href=url;link.download="nova-backup.json";
-  document.body.append(link);link.click();link.remove();URL.revokeObjectURL(url);
- }catch{alert("تعذر الاتصال بالخادم.")}
- finally{button.disabled=false;button.textContent="تصدير نسخة احتياطية"}
+  const link=document.createElement("a");
+  link.href=url;
+  link.download="nova-backup-"+localDateString()+".json";
+  link.style.display="none";
+  link.setAttribute("aria-hidden","true");
+
+  document.body.appendChild(link);
+  link.click();
+
+  setTimeout(()=>{
+   link.remove();
+   URL.revokeObjectURL(url);
+  },60000);
+
+ }catch(error){
+  console.error("Export error:",error);
+  alert("تعذر الاتصال بالخادم أو تنزيل الملف. حاول مجددًا.");
+ }finally{
+  button.disabled=false;
+  button.textContent="تصدير نسخة احتياطية";
+ }
 }
 
 /* تسجيل الدخول والخروج وربط الأحداث */
