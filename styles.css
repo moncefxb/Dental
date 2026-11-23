@@ -266,3 +266,66 @@ a,button{-webkit-tap-highlight-color:transparent}
 @media(prefers-reduced-motion:reduce){
   .hero-roundel{animation:none}
 }
+
+
+/* NOVA premium experience layer */
+:root{--nova-deep:#132e2a;--nova-cream:#f4f1e8;--nova-gold:#c6a56b;--nova-mint:#dce8d8}
+.nova-scroll-progress{position:fixed;inset:0 0 auto;height:3px;z-index:9999;pointer-events:none;background:transparent}
+.nova-scroll-progress span{display:block;width:0;height:100%;background:linear-gradient(90deg,var(--rust),var(--nova-gold));transform-origin:right center}
+.nova-hero-art{isolation:isolate}
+.nova-tooth-stage{position:absolute;z-index:2;top:0;inset-inline-start:5%;width:78%;height:505px;overflow:hidden;background:radial-gradient(ellipse at 52% 45%,#f8f6ed 0%,#e5e4d7 45%,#d1d9ce 100%);box-shadow:0 28px 80px rgba(24,45,37,.12)}
+.nova-tooth-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;outline:0}
+.nova-hero-fallback{transition:opacity .5s ease}
+.nova-3d-ready .nova-hero-fallback{opacity:0;pointer-events:none}
+.tooth-stage-label{position:absolute;z-index:2;top:24px;inset-inline-start:25px;display:grid;gap:7px;pointer-events:none}
+.tooth-stage-label span,.tooth-stage-caption{font:600 8px var(--sans);letter-spacing:.16em;color:#65746a}
+.tooth-stage-label strong{font:500 14px var(--display);color:#263d34}
+.tooth-stage-caption{position:absolute;bottom:20px;inset-inline-end:22px;z-index:2}
+.tooth-stage-orbit{position:absolute;z-index:1;left:50%;top:49%;border:1px solid rgba(181,151,99,.34);border-radius:50%;transform:translate(-50%,-50%) rotate(-23deg);pointer-events:none}
+.tooth-stage-orbit-a{width:310px;height:390px}
+.tooth-stage-orbit-b{width:390px;height:260px;transform:translate(-50%,-50%) rotate(38deg);border-color:rgba(38,72,59,.14)}
+.nova-tooth-stage::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,rgba(255,255,255,.2),transparent 35%,rgba(255,255,255,.13))}
+.hero-image-inset{z-index:4}
+.hero-roundel{z-index:4}
+.digital-care-section{background:var(--nova-deep);color:#f5f1e8;overflow:hidden;position:relative}
+.digital-care-grid{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:10%;min-height:490px}
+.digital-care-copy .eyebrow{color:#c9d4c9}
+.digital-care-copy h2{font-size:clamp(38px,5vw,66px);line-height:1.1;letter-spacing:-.05em;margin:24px 0}
+.digital-care-copy h2 em{font-family:var(--display);font-weight:500;color:#d6bd8c}
+.digital-care-copy p{max-width:490px;color:rgba(245,241,232,.7);font-size:14px;line-height:2.1}
+.digital-care-copy .text-link{color:#f5f1e8;margin-top:25px}
+.digital-care-visual{position:relative;min-height:390px;display:grid;place-items:center}
+.digital-care-orb{width:min(330px,75vw);aspect-ratio:1;position:relative;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle at 38% 32%,rgba(236,226,199,.2),rgba(198,165,107,.06) 45%,transparent 70%)}
+.digital-care-core{width:130px;height:130px;border:1px solid rgba(221,204,165,.6);border-radius:50%;display:grid;place-items:center;font:600 56px var(--display);color:#e9ddc1;box-shadow:0 0 80px rgba(198,165,107,.14),inset 0 0 35px rgba(198,165,107,.12)}
+.digital-care-core span{font:20px var(--sans);color:#d6bd8c;position:absolute;transform:translate(43px,-48px)}
+.orb-ring{position:absolute;inset:0;border:1px solid rgba(219,202,160,.22);border-radius:50%}
+.ring-one{transform:rotateX(67deg) rotateZ(-20deg);animation:orb-spin 18s linear infinite}
+.ring-two{transform:rotateY(67deg) rotateZ(25deg);animation:orb-spin 24s linear infinite reverse}
+.ring-three{inset:16%;transform:rotateX(70deg) rotateZ(40deg);border-style:dashed;animation:orb-spin 30s linear infinite}
+.digital-care-note{position:absolute;bottom:6%;inset-inline-end:0;display:grid;gap:6px;padding:13px 17px;border-inline-start:1px solid rgba(219,202,160,.55);background:rgba(255,255,255,.04);backdrop-filter:blur(10px)}
+.digital-care-note span{font:600 8px var(--sans);letter-spacing:.16em;color:#d6bd8c}
+.digital-care-note b{font-size:13px;font-weight:500}
+@keyframes orb-spin{to{transform:rotate(360deg)}}
+@media(max-width:850px){
+ .nova-tooth-stage{height:430px;width:83%;inset-inline-start:3%}
+ .nova-hero-art .hero-image-main{height:430px;width:83%}
+ .digital-care-grid{grid-template-columns:1fr;gap:10px;padding-block:30px}
+ .digital-care-visual{min-height:310px}
+}
+@media(max-width:560px){
+ .nova-hero-art{min-height:430px}
+ .nova-tooth-stage{height:370px;width:90%;inset-inline-start:0}
+ .nova-hero-art .hero-image-main{height:370px;width:90%}
+ .tooth-stage-label{top:16px;inset-inline-start:15px}
+ .tooth-stage-orbit-a{width:250px;height:310px}
+ .tooth-stage-orbit-b{width:300px;height:210px}
+ .tooth-stage-caption{font-size:7px;bottom:14px}
+ .digital-care-visual{min-height:270px}
+ .digital-care-orb{width:250px}
+}
+@media(prefers-reduced-motion:reduce){
+ .orb-ring,.nova-tooth-stage *{animation:none!important;transition:none!important}
+ html{scroll-behavior:auto}
+}
+
+.nova-tooth-stage{visibility:hidden}.nova-tooth-stage.is-3d-ready{visibility:visible}

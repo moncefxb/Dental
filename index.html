@@ -9,7 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css"><link rel="icon" href="favicon.svg" type="image/svg+xml">
 </head>
-<body data-page="home"><a class="skip-link" href="#main-content" data-i18n="skipLink">تجاوز إلى المحتوى</a>
+<body data-page="home">
+<div class="nova-scroll-progress" aria-hidden="true"><span id="nova-scroll-progress-bar"></span></div>
+<a class="skip-link" href="#main-content" data-i18n="skipLink">تجاوز إلى المحتوى</a>
   <div class="announcement"><span class="announcement-dot"></span><span data-i18n="announcement">رعاية دقيقة، بتجربة أكثر هدوءاً.</span><a href="contact.html" data-i18n="announcementCta">تواصل معنا <b>↗</b></a></div>
   <header class="site-header" id="top">
     <div class="nav-shell">
@@ -29,8 +31,14 @@
           <div class="hero-actions"><a class="button button-accent" href="contact.html"><span data-i18n="homeCta">لنبدأ من هنا</span><span class="button-arrow">↗</span></a><a class="text-link" href="services.html"><span data-i18n="exploreCare">اكتشف العلاجات</span><span>↓</span></a></div>
           <div class="hero-footnote"><span class="footnote-symbol">✳</span><span data-i18n="homeNote">وقتٌ كافٍ للأسئلة. وخطةٌ واضحة قبل أي خطوة.</span></div>
         </div>
-        <div class="hero-art reveal reveal-delay">
-          <div class="hero-image-main"><img src="https://belleza-orofacial.com/images/clinic_interior.png" alt="مساحة استقبال عيادة أسنان بتصميم هادئ ومعاصر" fetchpriority="high"><div class="image-label"><span data-i18n="imageLabel">مساحة صُممت لراحتك</span><b>01 — 04</b></div></div>
+        <div class="hero-art nova-hero-art reveal reveal-delay">
+          <div class="nova-tooth-stage" id="nova-tooth-stage" aria-label="نموذج ثلاثي الأبعاد لسن بشري" role="img">
+            <canvas id="nova-tooth-canvas" aria-hidden="true"></canvas>
+            <div class="tooth-stage-label"><span>01 / DIGITAL ANATOMY</span><strong>Precision in every detail</strong></div>
+            <div class="tooth-stage-orbit tooth-stage-orbit-a"></div><div class="tooth-stage-orbit tooth-stage-orbit-b"></div>
+            <span class="tooth-stage-caption">NOVA · 3D EXPERIENCE</span>
+          </div>
+          <div class="hero-image-main nova-hero-fallback"><img src="https://belleza-orofacial.com/images/clinic_interior.png" alt="مساحة استقبال عيادة أسنان بتصميم هادئ ومعاصر" fetchpriority="high"><div class="image-label"><span data-i18n="imageLabel">مساحة صُممت لراحتك</span><b>01 — 04</b></div></div>
           <div class="hero-image-inset"><img src="https://renaissanceclinique.fr/images/soins-dentaires/garantie-dentaire-hero.jpg" alt="استشارة طبيب أسنان مع مريضة" loading="lazy"></div>
           <div class="hero-roundel" aria-label="NOVA Dental Studio"><span>CARE · CLARITY · CONFIDENCE · </span><b>✳</b></div>
           <div class="hero-side-note"><span>36° 45′ N</span><i></i><span>ALGERIA</span></div>
@@ -50,11 +58,25 @@
 
     <section class="image-story section-pad"><div class="page-width story-grid"><div class="story-visual reveal"><img src="https://www.iconic-world.de/files/uploads/produktbilder/iaia/2025/IAIA2025-11993_1.jpg" alt="تصميم استقبال عيادة أسنان معاصر" loading="lazy"><span class="story-stamp">NOVA<br>STUDIO</span><span class="story-caption" data-i18n="storyCaption">مساحة هادئة. اهتمام بالتفاصيل.</span></div><div class="story-copy reveal reveal-delay"><div class="eyebrow"><span class="eyebrow-line"></span><span data-i18n="storyKicker">تجربة الزيارة</span></div><h2 data-i18n="storyTitle">مساحة تمنحك<br><em>وقتاً لتطمئن.</em></h2><p data-i18n="storyText">نعمل على أن تكون زيارتك واضحة ومريحة: من استقبال هادئ، إلى شرح مفهوم، وصولاً إلى متابعة تعرف فيها الخطوة التالية.</p><div class="story-points"><div><b>01</b><span data-i18n="storyPoint1">نستمع قبل أن نقترح</span></div><div><b>02</b><span data-i18n="storyPoint2">نشرح بلغة بسيطة</span></div><div><b>03</b><span data-i18n="storyPoint3">نحترم وقتك وقرارك</span></div></div><a href="studio.html" class="button button-outline"><span data-i18n="exploreStudio">اكتشف العيادة</span><span class="button-arrow">↗</span></a></div></div></section>
 
-    <section class="journey section-pad"><div class="page-width"><div class="section-heading reveal"><div><div class="eyebrow"><span class="eyebrow-line"></span><span data-i18n="journeyKicker">بخطوات واضحة</span></div><h2 data-i18n="journeyTitle">رحلتك معنا،<br><em>من دون غموض.</em></h2></div><div class="section-side"><p data-i18n="journeyIntro">نعرف أن زيارة طبيب الأسنان قد تثير أسئلة. لذلك نشرح لك ما ينتظرك، خطوة بخطوة.</p></div></div><div class="journey-steps"><article class="journey-step reveal"><span>01</span><div><h3 data-i18n="step1Title">تواصل أولي</h3><p data-i18n="step1Text">أخبرنا بما تحتاجه، وسنساعدك في تحديد الخطوة المناسبة.</p></div></article><article class="journey-step reveal reveal-delay"><span>02</span><div><h3 data-i18n="step2Title">فحص واستماع</h3><p data-i18n="step2Text">نفهم تاريخك واحتياجاتك ونقيّم الحالة قبل اقتراح العلاج.</p></div></article><article class="journey-step reveal reveal-delay-2"><span>03</span><div><h3 data-i18n="step3Title">خطة واضحة</h3><p data-i18n="step3Text">نناقش الخيارات والخطوات والتكاليف المتوقعة بوضوح.</p></div></article><article class="journey-step reveal reveal-delay-3"><span>04</span><div><h3 data-i18n="step4Title">عناية ومتابعة</h3><p data-i18n="step4Text">ننطلق وفق الخطة المتفق عليها ونوضح لك إرشادات المتابعة.</p></div></article></div></div></section>
+    <section class="digital-care-section section-pad">
+  <div class="page-width digital-care-grid">
+   <div class="digital-care-copy reveal">
+    <div class="eyebrow"><span class="eyebrow-line"></span><span data-i18n="digitalKicker">THE NOVA METHOD · 02</span></div>
+    <h2 data-i18n="digitalTitle">Technology with a<br><em>human purpose.</em></h2>
+    <p data-i18n="digitalText">نستخدم التوضيح البصري والتقنيات الرقمية لدعم فهمك لخيارات الرعاية. التقنية وسيلة لشرح الخطة، وليست بديلاً عن الفحص السريري ورأي الطبيب.</p>
+    <a class="text-link" href="services.html"><span data-i18n="digitalLink">اكتشف مجالات الرعاية</span><span>↗</span></a>
+   </div>
+   <div class="digital-care-visual reveal reveal-delay">
+    <div class="digital-care-orb"><div class="digital-care-core">N<span>✳</span></div><i class="orb-ring ring-one"></i><i class="orb-ring ring-two"></i><i class="orb-ring ring-three"></i></div>
+    <div class="digital-care-note"><span>VISUAL CLARITY</span><b data-i18n="digitalNote">شرح واضح. قرار واعٍ.</b></div>
+   </div>
+  </div>
+ </section>
+ <section class="journey section-pad"><div class="page-width"><div class="section-heading reveal"><div><div class="eyebrow"><span class="eyebrow-line"></span><span data-i18n="journeyKicker">بخطوات واضحة</span></div><h2 data-i18n="journeyTitle">رحلتك معنا،<br><em>من دون غموض.</em></h2></div><div class="section-side"><p data-i18n="journeyIntro">نعرف أن زيارة طبيب الأسنان قد تثير أسئلة. لذلك نشرح لك ما ينتظرك، خطوة بخطوة.</p></div></div><div class="journey-steps"><article class="journey-step reveal"><span>01</span><div><h3 data-i18n="step1Title">تواصل أولي</h3><p data-i18n="step1Text">أخبرنا بما تحتاجه، وسنساعدك في تحديد الخطوة المناسبة.</p></div></article><article class="journey-step reveal reveal-delay"><span>02</span><div><h3 data-i18n="step2Title">فحص واستماع</h3><p data-i18n="step2Text">نفهم تاريخك واحتياجاتك ونقيّم الحالة قبل اقتراح العلاج.</p></div></article><article class="journey-step reveal reveal-delay-2"><span>03</span><div><h3 data-i18n="step3Title">خطة واضحة</h3><p data-i18n="step3Text">نناقش الخيارات والخطوات والتكاليف المتوقعة بوضوح.</p></div></article><article class="journey-step reveal reveal-delay-3"><span>04</span><div><h3 data-i18n="step4Title">عناية ومتابعة</h3><p data-i18n="step4Text">ننطلق وفق الخطة المتفق عليها ونوضح لك إرشادات المتابعة.</p></div></article></div></div></section>
 
     <section class="closing-cta"><div class="page-width closing-inner"><div class="closing-mark">NOVA <span>✳</span></div><div><p class="eyebrow eyebrow-light" data-i18n="closingKicker">خطوتك الأولى تبدأ بسؤال</p><h2 data-i18n="closingTitle">لنتحدث عن<br><em>ابتسامتك.</em></h2></div><a href="contact.html" class="button button-white"><span data-i18n="closingCta">اطلب موعداً</span><span class="button-arrow">↗</span></a></div></section>
   </main>
   <footer class="site-footer"><div class="page-width"><div class="footer-main"><div class="footer-brand"><a class="brand brand-footer" href="index.html"><span class="brand-mark"><svg viewBox="0 0 48 48" fill="none"><path d="M24 3.5 44.5 15v18L24 44.5 3.5 33V15L24 3.5Z" stroke="currentColor" stroke-width="1.3"/><path d="M15 32V16l18 16V16" stroke="currentColor" stroke-width="2.2"/></svg></span><span class="brand-copy"><strong>NOVA</strong><small>DENTAL STUDIO</small></span></a><p data-i18n="footerTag">صحة فمك تستحق عناية واعية، وابتسامتك تستحق أن تُسمع قصتها.</p></div><div class="footer-col"><b data-i18n="footerExplore">اكتشف</b><a href="services.html" data-i18n="navServices">العلاجات</a><a href="team.html" data-i18n="navTeam">الفريق</a><a href="studio.html" data-i18n="navStudio">العيادة</a></div><div class="footer-col"><b data-i18n="footerVisit">زيارتك</b><a href="contact.html" data-i18n="navContact">اتصل بنا</a><a href="contact.html#booking-form" data-i18n="bookNow">احجز موعداً</a><span data-i18n="footerLocation">الجزائر · يضاف العنوان عند الإطلاق</span></div><div class="footer-contact"><span data-i18n="footerSay">يسعدنا سماعك</span><span class="footer-mail" data-i18n="footerMailPlaceholder">تُضاف معلومات الاتصال الرسمية</span><span data-i18n="footerPhone">يضاف رقم الهاتف عند الإطلاق</span></div></div><div class="footer-bottom"><span>© <span id="year"></span> NOVA DENTAL STUDIO</span><span data-i18n="footerDisclaimer">المعلومات الواردة تعريفية ولا تُغني عن استشارة طبيب الأسنان.</span><a href="#top" data-i18n="backTop">العودة للأعلى ↑</a></div></div></footer>
   <a class="floating-book" href="contact.html" aria-label="Book an appointment"><span>↗</span><b data-i18n="floatingBook">موعدك</b></a>
-  <script src="script.js" defer></script>
+  <script src="script.js" defer></script><script type="module" src="nova-enhancements.js"></script>
 </body></html>

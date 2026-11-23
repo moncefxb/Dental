@@ -1,4 +1,3 @@
-
 {
   "$schema": "https://developers.cloudflare.com/workers/wrangler/config-schema.json",
   "name": "dental",
@@ -7,8 +6,10 @@
   "assets": {
     "directory": ".",
     "binding": "ASSETS",
-"run_worker_first": [
-  "/api/*"
+    "run_worker_first": [
+      "/api/*",
+      "/admin",
+      "/admin/*"
     ]
   },
   "d1_databases": [
