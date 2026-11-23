@@ -202,12 +202,56 @@ export async function adminCreateVisit({ request, env }) {
 
     if (appointmentId !== null) {
       const appointment = await env.DB.prepare(
-        "SELECT id FROM appointments WHERE id = ?"
+        "SELECT id, patient_id FROM appointments WHERE id = ?"
       ).bind(appointmentId).first();
 
       if (!appointment) {
         return json({ ok: false, error: "appointment_not_found" }, 404);
       }
+
+      if (appointment.patient_id !== null && appointment.patient_id !== patientId) {
+        return json({ ok: false, error: "appointment_patient_mismatch" }, 409);
+      }
+
+      // Attach an unlinked appointment to this patient and create the visit
+      // in one D1 batch. The conditional INSERT prevents cross-patient links
+      // if another request changes the appointment between the read and write.
+      const results = await env.DB.batch([
+        env.DB.prepare(`
+          UPDATE appointments
+          SET patient_id = ?
+          WHERE id = ? AND (patient_id IS NULL OR patient_id = ?)
+        `).bind(patientId, appointmentId, patientId),
+        env.DB.prepare(`
+          INSERT INTO visits (
+            patient_id, appointment_id, visit_date,
+            service_type, diagnosis, treatment, notes
+          )
+          SELECT ?, ?, ?, ?, ?, ?, ?
+          WHERE EXISTS (
+            SELECT 1 FROM appointments
+            WHERE id = ? AND patient_id = ?
+          )
+          RETURNING id, patient_id, appointment_id, visit_date,
+                    service_type, diagnosis, treatment, notes, created_at
+        `).bind(
+          patientId,
+          appointmentId,
+          visitDate,
+          service,
+          diagnosis,
+          treatment,
+          notes,
+          appointmentId,
+          patientId
+        )
+      ]);
+
+      const visit = results[1]?.results?.[0];
+      if (!visit) {
+        return json({ ok: false, error: "appointment_patient_mismatch" }, 409);
+      }
+      return json({ ok: true, visit }, 201);
     }
 
     const visit = await env.DB.prepare(`
@@ -215,18 +259,21 @@ export async function adminCreateVisit({ request, env }) {
         patient_id, appointment_id, visit_date,
         service_type, diagnosis, treatment, notes
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, NULL, ?, ?, ?, ?, ?)
       RETURNING id, patient_id, appointment_id, visit_date,
                 service_type, diagnosis, treatment, notes, created_at
     `).bind(
       patientId,
-      appointmentId,
       visitDate,
       service,
       diagnosis,
       treatment,
       notes
     ).first();
+
+    if (!visit) {
+      return json({ ok: false, error: "database_write_failed" }, 503);
+    }
 
     return json({ ok: true, visit }, 201);
   } catch (error) {
