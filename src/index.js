@@ -6,6 +6,10 @@ import {
 } from "../functions/api/appointments.js";
 
 import {
+  bookingOptions, availability, book, manageLookup, manageCancel, manageReschedule
+} from "../functions/api/booking.js";
+
+import {
   adminLogin,
   adminSession,
   adminLogout,
@@ -23,6 +27,9 @@ import {
   adminReports,
   adminExport
 } from "../functions/api/records.js";
+
+import { adminManage, adminSetStatus } from "../functions/api/manage.js";
+import { adminChangePassword } from "../functions/api/auth.js";
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -70,6 +77,23 @@ export default {
 
         return methodNotAllowed("GET, POST");
       }
+
+      // SEO: generated from the request origin so it is correct on any domain
+      if (path === "/robots.txt" && method === "GET") {
+        return new Response(`User-agent: *\nDisallow: /admin\nDisallow: /api/\nDisallow: /manage.html\n\nSitemap: ${url.origin}/sitemap.xml\n`, { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=3600" } });
+      }
+      if (path === "/sitemap.xml" && method === "GET") {
+        const pages = ["/", "/services.html", "/team.html", "/studio.html", "/contact.html"];
+        return new Response(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map(p => `  <url><loc>${url.origin}${p}</loc></url>`).join("\n")}\n</urlset>\n`, { headers: { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=3600" } });
+      }
+
+      // Real booking system
+      if (path === "/api/booking/options") return method === "GET" ? bookingOptions({ request, env, ctx }) : methodNotAllowed("GET");
+      if (path === "/api/availability") return method === "GET" ? availability({ request, env, ctx }) : methodNotAllowed("GET");
+      if (path === "/api/book") return method === "POST" ? book({ request, env, ctx }) : methodNotAllowed("POST");
+      if (path === "/api/booking/manage") return method === "GET" ? manageLookup({ request, env, ctx }) : methodNotAllowed("GET");
+      if (path === "/api/booking/cancel") return method === "POST" ? manageCancel({ request, env, ctx }) : methodNotAllowed("POST");
+      if (path === "/api/booking/reschedule") return method === "POST" ? manageReschedule({ request, env, ctx }) : methodNotAllowed("POST");
 
       // Admin authentication
       if (path === "/api/admin/login") {
@@ -148,6 +172,12 @@ export default {
           ? adminExport({ request, env })
           : methodNotAllowed("GET");
       }
+
+      // Platform management (services, dentists, hours, time off, settings, audit, users)
+      const m = path.match(/^\/api\/admin\/(services|dentists|hours|timeoff|settings|audit|users)$/);
+      if (m) return method === "GET" || method === "POST" ? adminManage({ request, env, ctx }, m[1]) : methodNotAllowed("GET, POST");
+      if (path === "/api/admin/appointments/status") return method === "POST" ? adminSetStatus({ request, env, ctx }) : methodNotAllowed("POST");
+      if (path === "/api/admin/password") return method === "POST" ? adminChangePassword({ request, env }) : methodNotAllowed("POST");
 
       // Admin dashboard
       if (path === "/admin" || path === "/admin/") {
