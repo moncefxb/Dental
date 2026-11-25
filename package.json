@@ -1,0 +1,13 @@
+{
+  "name": "nova-dental",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "cd tests && node --no-warnings booking.test.mjs && node --no-warnings admin.test.mjs && node --no-warnings seo.test.mjs",
+    "test:e2e": "cd tests && node --no-warnings e2e.mjs",
+    "dev": "wrangler dev",
+    "migrate:local": "wrangler d1 migrations apply dental --local",
+    "migrate:remote": "wrangler d1 migrations apply dental --remote",
+    "deploy": "wrangler deploy"
+  }
+}

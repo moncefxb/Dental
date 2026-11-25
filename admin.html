@@ -478,6 +478,8 @@ function renderAppointments(){
   addDetail(details,"المصدر",sourceLabels[item.source]||item.source);
   addDetail(details,"تاريخ الطلب",item.created_at);
   addDetail(details,"الموعد",formatScheduledAt(item.scheduled_at));
+  if(item.dentist_name)addDetail(details,"الطبيب",item.dentist_name);
+  if(item.email)addDetail(details,"البريد الإلكتروني",item.email);
   addDetail(details,"رقم المرجع",item.reference,"reference");
   card.append(details);
   if(item.notes){const n=document.createElement("div");n.className="notes";n.textContent="ملاحظات: "+item.notes;card.append(n)}
@@ -523,7 +525,7 @@ async function updateStatus(id,status){
  const prompts={confirmed:"هل تريد تأكيد هذا الحجز؟",rejected:"هل تريد رفض الطلب؟",cancelled:"هل تريد إلغاء الحجز؟"};
  if(!confirm(prompts[status]))return;
  try{
-  const {response,data}=await api("/api/admin/appointments/update",{method:"POST",body:JSON.stringify({id,status})});
+  const {response,data}=await api("/api/admin/appointments/status",{method:"POST",body:JSON.stringify({id,status})});
   if(!response.ok||!data.ok){setMessage($("dashboardMessage"),data.error==="appointment_conflict"?"الموعد يتعارض مع حجز آخر.":"لم يتم تحديث الحالة.");return}
   await loadAppointments();setMessage($("dashboardMessage"),"تم تحديث حالة الحجز.",true);
  }catch{setMessage($("dashboardMessage"),"تعذر الاتصال بالخادم.")}
@@ -542,10 +544,11 @@ async function createManualAppointment(event){
 
 /* التنقل بين أقسام اللوحة */
 function showSection(id){
- ["appointmentsSection","patientsSection","reportsSection"].forEach(s=>$(s).hidden=s!==id);
+ ["appointmentsSection","patientsSection","reportsSection","setupSection"].forEach(s=>$(s).hidden=s!==id);
  document.querySelectorAll("[data-section]").forEach(b=>b.classList.toggle("active",b.dataset.section===id));
  if(id==="patientsSection")loadPatients();
  if(id==="reportsSection")loadReports();
+ if(id==="setupSection"&&window.loadSetup)window.loadSetup();
 }
 
 /* المرضى */
@@ -748,6 +751,7 @@ $("patientSearch").addEventListener("input",()=>{
  patientSearchTimer=setTimeout(loadPatients,300);
 });
 
+window.showSection=showSection;
 async function restoreSession(){
  $("selectedDate").value=localDateString();
  $("visitDate").value=localDateString();
@@ -761,5 +765,6 @@ async function restoreSession(){
 }
 restoreSession();
 </script>
+<script src="admin-setup.js"></script>
 </body>
 </html>

@@ -329,3 +329,11 @@ a,button{-webkit-tap-highlight-color:transparent}
 }
 
 .nova-tooth-stage{visibility:hidden}.nova-tooth-stage.is-3d-ready{visibility:visible}
+
+/* Live booking widget */
+#live-booking{margin-bottom:34px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+.lb-slots{border:0;padding:0;margin:18px 0 0;min-inline-size:0}.lb-slots legend{font-size:10px;font-weight:700;color:#43544a;padding:0 0 8px}
+.lb-slot-grid{display:flex;flex-wrap:wrap;gap:8px}.lb-slot{min-width:72px;min-height:44px;padding:0 14px;border:1px solid var(--green);background:transparent;color:var(--green);font-size:12px;font-weight:700;cursor:pointer}
+.lb-slot[aria-pressed="true"]{background:var(--green);color:var(--white)}.lb-slot:focus-visible,.form-field input:focus-visible,.form-field select:focus-visible{outline:2px solid var(--rust);outline-offset:2px}
+.lb-done{padding:6px 0}.lb-manage-link{word-break:break-all;font-size:11px;text-decoration:underline}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
