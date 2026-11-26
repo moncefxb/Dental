@@ -304,32 +304,13 @@ if (year) {
                         }
 
 
-// User-requested treatment-card interaction: visible press animation + selected state.
+// Subtle hover response for treatment cards (no click/selection behavior).
 document.querySelectorAll('.service-detail-card.interactive-treatment').forEach((card) => {
-  const activateCard = () => {
-    const isSelected = card.classList.toggle('is-selected');
-    card.setAttribute('aria-pressed', String(isSelected));
-    card.classList.remove('is-animating');
-    // Force layout so the press animation restarts on every click.
-    void card.offsetWidth;
-    card.classList.add('is-animating');
-  };
-
-  card.addEventListener('click', (event) => {
-    // Preserve the action of any actual link/button inside the card.
-    if (event.target.closest('a, button')) return;
-    activateCard();
+  card.addEventListener('pointerenter', (event) => {
+    if (event.pointerType === 'touch') return;
+    card.classList.add('is-hovered');
   });
-
-  card.addEventListener('keydown', (event) => {
-    if (event.target !== card) return;
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      activateCard();
-    }
-  });
-
-  card.addEventListener('animationend', (event) => {
-    if (event.animationName === 'treatment-card-press') card.classList.remove('is-animating');
+  card.addEventListener('pointerleave', () => {
+    card.classList.remove('is-hovered');
   });
 });
