@@ -21,4 +21,4 @@
 - Patients can cancel/reschedule online only up to the configured minimum notice before the slot.
 - Slots are stored as clinic-local naive times (`Africa/Algiers` default). DST zones are handled for "now" but not for the hour that does not exist/repeats.
 - Legacy bookings without a dentist conflict only with other dentist-less bookings.
-- All site images are now local files in `images/` and are **generated placeholders**; replace them with the clinic's own photos (same file names). See `images/README.md`. Google Fonts are still loaded from Google.
+- All site images are local files in `images/` and are **illustrations I generated** (not photographs of the clinic). Replace them with the clinic's own licensed photos using the same file names; see `images/README.md`. Google Fonts are still loaded from Google.

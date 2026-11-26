@@ -317,12 +317,12 @@ a,button{-webkit-tap-highlight-color:transparent}
 .lb-done{padding:6px 0}.lb-manage-link{word-break:break-all;font-size:11px;text-decoration:underline}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 
-/* Tooth shape (replaces the old "N" marks) */
-.tooth-mark{display:block;height:auto}
-.manifesto-mark{font-size:0;line-height:0;bottom:-6%;inset-inline-end:3%;color:rgba(255,255,255,.07)}
-.manifesto-mark .tooth-mark{width:clamp(180px,26vw,360px)}
-.digital-care-core .tooth-mark{width:52px;color:#e9ddc1}
+/* Detailed glass tooth (replaces the old "N" marks) */
+.tooth-mark{display:block;height:auto;overflow:visible}
+.manifesto-mark{font-size:0;line-height:0;bottom:-6%;inset-inline-end:3%;color:#fff;opacity:.22}
+.manifesto-mark .tooth-mark{width:clamp(150px,19vw,270px)}
 .digital-care-core{font-size:0}
-.studio-intro-number{display:flex;align-items:flex-end;gap:14px;letter-spacing:0}
-.studio-intro-number .tooth-mark{width:clamp(70px,9vw,120px);color:var(--lime)}
+.digital-care-core .tooth-mark{width:64px;color:#e9ddc1;opacity:.9}
+.studio-intro-number{display:flex;align-items:flex-end;gap:16px;letter-spacing:0}
+.studio-intro-number .tooth-mark{width:clamp(80px,9.5vw,128px);color:var(--lime);opacity:.8}
 .studio-intro-number span{font:500 clamp(28px,3.4vw,44px)/1 var(--display);color:var(--rust);vertical-align:baseline;padding-bottom:.2em}
