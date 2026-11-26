@@ -275,13 +275,13 @@ a,button{-webkit-tap-highlight-color:transparent}
 .nova-hero-fallback{transition:opacity .5s ease}
 .hero-image-inset{z-index:4}
 .hero-roundel{z-index:4}
-.digital-care-section{background:var(--nova-deep);color:#f5f1e8;overflow:hidden;position:relative}
-.digital-care-grid{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:10%;min-height:490px}
+.digital-care-section{background:var(--nova-deep);color:#f5f1e8;overflow:hidden;position:relative;padding-block:clamp(42px,5vw,68px)}
+.digital-care-grid{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;gap:0;min-height:0}
 .digital-care-copy .eyebrow{color:#c9d4c9}
-.digital-care-copy h2{font-size:clamp(38px,5vw,66px);line-height:1.1;letter-spacing:-.05em;margin:24px 0}
+.digital-care-copy h2{font-size:clamp(34px,4.2vw,54px);line-height:1.1;letter-spacing:-.05em;margin:14px 0}
 .digital-care-copy h2 em{font-family:var(--display);font-weight:500;color:#d6bd8c}
-.digital-care-copy p{max-width:490px;color:rgba(245,241,232,.7);font-size:14px;line-height:2.1}
-.digital-care-copy .text-link{color:#f5f1e8;margin-top:25px}
+.digital-care-copy p{max-width:680px;color:rgba(245,241,232,.7);font-size:13px;line-height:1.9;margin:0}
+.digital-care-copy .text-link{color:#f5f1e8;margin-top:14px}
 .digital-care-visual{position:relative;min-height:390px;display:grid;place-items:center}
 .digital-care-orb{width:min(330px,75vw);aspect-ratio:1;position:relative;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle at 38% 32%,rgba(236,226,199,.2),rgba(198,165,107,.06) 45%,transparent 70%)}
 .digital-care-core{width:130px;height:130px;border:1px solid rgba(221,204,165,.6);border-radius:50%;display:grid;place-items:center;font:600 56px var(--display);color:#e9ddc1;box-shadow:0 0 80px rgba(198,165,107,.14),inset 0 0 35px rgba(198,165,107,.12)}
@@ -331,10 +331,19 @@ a,button{-webkit-tap-highlight-color:transparent}
 /* Requested home-page and interaction refinements */
 .hero-bottom{justify-content:flex-start}
 .scroll-hint{padding-block:5px}
-.closing-cta .eyebrow-light{color:var(--lime)}
+/* Place the exploration cue opposite the language reading start. */
+html[dir="rtl"] .hero-bottom .scroll-hint,html[dir="ltr"] .hero-bottom .scroll-hint{margin-inline-start:auto;margin-inline-end:0}
+.closing-cta .eyebrow-light{color:#fffefa!important;text-shadow:0 1px 8px rgba(65,25,16,.28)}
 .interactive-treatment{cursor:pointer;position:relative;transition:background .35s ease,transform .35s ease,box-shadow .35s ease}
 .interactive-treatment:focus-visible{outline:2px solid var(--rust);outline-offset:5px}
-.interactive-treatment.is-selected{background:rgba(219,231,179,.22);padding-inline:20px;box-shadow:inset 3px 0 0 var(--rust)}
+.interactive-treatment.is-selected{background:rgba(219,231,179,.34);padding-inline:24px;box-shadow:inset 4px 0 0 var(--rust),0 14px 32px rgba(24,63,55,.10);transform:translateY(-3px)}
+.interactive-treatment.is-selected .service-detail-icon{color:var(--rust);transform:rotate(12deg) scale(1.18)}
+.interactive-treatment .service-detail-icon{transition:transform .4s var(--ease),color .4s ease}
+.interactive-treatment.is-selected .service-detail-copy h3{color:var(--green)}
+.interactive-treatment.is-selected .service-detail-copy li::before{transform:scale(1.5)}
+.interactive-treatment .service-detail-copy li::before{transition:transform .3s ease}
 .interactive-treatment.treatment-tap{animation:treatmentTap .48s var(--ease)}
-@keyframes treatmentTap{0%{transform:scale(1)}45%{transform:scale(.992)}100%{transform:scale(1)}}
+@keyframes treatmentTap{0%{transform:scale(1) translateY(0)}35%{transform:scale(.985) translateY(2px)}70%{transform:scale(1.008) translateY(-4px)}100%{transform:scale(1) translateY(-3px)}}
 @media(prefers-reduced-motion:reduce){.interactive-treatment.treatment-tap{animation:none}}
+
+@media(max-width:760px){.digital-care-section{padding-block:38px}.digital-care-grid{padding-block:0!important}.digital-care-copy h2{font-size:clamp(30px,8vw,42px)}.digital-care-copy p{font-size:11px}}
