@@ -304,25 +304,32 @@ if (year) {
                         }
 
 
-// Treatment cards: visible click animation and persistent selected state.
-document.querySelectorAll(".interactive-treatment").forEach((card) => {
-  const activate = () => {
-    const selected = card.classList.toggle("is-selected");
-    card.setAttribute("aria-pressed", String(selected));
-    card.classList.remove("treatment-tap");
+// User-requested treatment-card interaction: visible press animation + selected state.
+document.querySelectorAll('.service-detail-card.interactive-treatment').forEach((card) => {
+  const activateCard = () => {
+    const isSelected = card.classList.toggle('is-selected');
+    card.setAttribute('aria-pressed', String(isSelected));
+    card.classList.remove('is-animating');
+    // Force layout so the press animation restarts on every click.
     void card.offsetWidth;
-    card.classList.add("treatment-tap");
-    card.addEventListener("animationend", () => card.classList.remove("treatment-tap"), { once: true });
+    card.classList.add('is-animating');
   };
-  card.addEventListener("click", (event) => {
-    if (event.target.closest("a, button")) return;
-    activate();
+
+  card.addEventListener('click', (event) => {
+    // Preserve the action of any actual link/button inside the card.
+    if (event.target.closest('a, button')) return;
+    activateCard();
   });
-  card.addEventListener("keydown", (event) => {
+
+  card.addEventListener('keydown', (event) => {
     if (event.target !== card) return;
-    if (event.key === "Enter" || event.key === " ") {
+    if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      activate();
+      activateCard();
     }
+  });
+
+  card.addEventListener('animationend', (event) => {
+    if (event.animationName === 'treatment-card-press') card.classList.remove('is-animating');
   });
 });

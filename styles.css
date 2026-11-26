@@ -328,34 +328,33 @@ a,button{-webkit-tap-highlight-color:transparent}
 .studio-intro-number span{font:500 clamp(28px,3.4vw,44px)/1 var(--display);color:var(--rust);vertical-align:baseline;padding-bottom:.2em}
 
 
-/* Final requested refinements */
-.hero-bottom{justify-content:flex-start}
-.hero-bottom .scroll-hint{margin-inline-start:auto;margin-inline-end:0}
-.hero-roundel{position:absolute;top:26px;inset-inline-start:0;width:116px;height:116px;border-radius:50%;background:var(--lime);color:var(--green);display:flex;align-items:center;justify-content:center;z-index:3;box-shadow:0 12px 35px rgba(20,40,30,.1);transform:rotate(-15deg);animation:roundel-float 7s ease-in-out infinite}
-.hero-roundel span{position:absolute;inset:12px;border:1px dashed rgba(24,63,55,.4);border-radius:50%;display:grid;place-items:center;font:600 7px var(--sans);letter-spacing:.14em;text-align:center;padding:8px}
-@keyframes roundel-float{0%,100%{translate:0 0}50%{translate:0 -7px}}
-/* Text-only technology section: remove the empty visual-column height. */
-.digital-care-section{padding-block:clamp(42px,5vw,68px)!important}
-.digital-care-grid{min-height:0!important;grid-template-columns:minmax(0,1fr)!important;gap:0!important;padding-block:0!important}
-.digital-care-copy{max-width:760px}
-.digital-care-copy h2{margin-block:12px 16px}
-.digital-care-copy p{margin-block:0}
-.digital-care-copy .text-link{margin-top:14px}
-/* High contrast for the closing prompt. */
-.closing-cta .eyebrow-light{color:#fffefa!important;text-shadow:0 1px 8px rgba(65,25,16,.28)}
-/* Visible feedback on treatment-card activation. */
-.interactive-treatment{cursor:pointer;position:relative;transform-origin:center;transition:background .35s ease,transform .35s ease,box-shadow .35s ease,border-color .35s ease}
-.interactive-treatment:focus-visible{outline:2px solid var(--rust);outline-offset:5px}
-.interactive-treatment.is-selected{background:rgba(219,231,179,.38)!important;padding-inline:20px;box-shadow:inset 4px 0 0 var(--rust),0 14px 32px rgba(24,63,55,.12);transform:translateY(-4px)}
-.interactive-treatment .service-detail-icon{transition:transform .45s cubic-bezier(.2,.75,.25,1),color .35s ease}
-.interactive-treatment.is-selected .service-detail-icon{color:var(--rust);transform:rotate(18deg) scale(1.28)}
-.interactive-treatment.is-selected .service-detail-copy h3{color:var(--green)}
-.interactive-treatment .service-detail-copy li::before{transition:transform .3s ease}
-.interactive-treatment.is-selected .service-detail-copy li::before{transform:scale(1.7)}
-.interactive-treatment.treatment-tap{animation:treatmentActivate .72s cubic-bezier(.2,.75,.25,1)}
-@keyframes treatmentActivate{0%{transform:scale(1) translateY(0)}28%{transform:scale(.982) translateY(3px)}62%{transform:scale(1.012) translateY(-6px)}82%{transform:scale(.998) translateY(-3px)}100%{transform:scale(1) translateY(-4px)}}
-@media(max-width:820px){.digital-care-section{padding-block:38px!important}.digital-care-copy h2{font-size:clamp(30px,8vw,42px)}}
-@media(max-width:560px){.hero-roundel{width:76px;height:76px;top:3px}.hero-roundel span{inset:7px;font-size:5.5px;letter-spacing:.08em}}
-@media(prefers-reduced-motion:reduce){.hero-roundel{animation:none}.interactive-treatment.treatment-tap{animation:none}}
-
-.closing-cta .eyebrow-light{color:#fffefa!important;text-shadow:0 1px 8px rgba(65,25,16,.28)}
+/* === User-requested final visual corrections (authoritative overrides) === */
+/* The scroll cue sits opposite the language's reading-start edge: left in RTL, right in LTR. */
+.hero-bottom{justify-content:flex-start!important;}
+.hero-bottom .scroll-hint{margin-inline-start:auto!important;margin-inline-end:0!important;}
+/* The hero image is intentionally clean: no white caption or coordinates remain. */
+.hero-image-main .image-label,.hero-side-note{display:none!important;}
+.hero-roundel{width:116px;height:116px;}
+.hero-roundel span{inset:12px;display:grid;place-items:center;padding:9px;font-size:7px;line-height:1.65;letter-spacing:.1em;text-align:center;}
+.hero-roundel b{display:none!important;}
+/* Technology section is text-only and compact after removing the tooth/orbit artwork. */
+.digital-care-section{padding-block:48px!important;}
+.digital-care-grid{display:block!important;min-height:0!important;padding-block:0!important;}
+.digital-care-copy{max-width:760px;margin-inline:auto;}
+.digital-care-copy h2{margin:12px 0 14px!important;}
+.digital-care-copy p{max-width:680px;margin:0;}
+.digital-care-copy .text-link{margin-top:16px!important;}
+/* High-contrast label on the rust background: visibly different from its background. */
+.closing-cta .eyebrow-light{color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.16);}
+/* Treatment cards animate on every press and remain visibly selected. */
+.service-detail-card.interactive-treatment{cursor:pointer;transform:translateZ(0);transition:background-color .28s ease,box-shadow .28s ease,padding .28s ease;}
+.service-detail-card.interactive-treatment:focus-visible{outline:2px solid var(--rust);outline-offset:5px;}
+.service-detail-card.interactive-treatment.is-selected{background:rgba(219,231,179,.62)!important;box-shadow:inset 4px 0 0 var(--rust),0 12px 28px rgba(24,63,55,.12);padding-inline:22px;}
+.service-detail-card.interactive-treatment .service-detail-icon{transition:transform .45s cubic-bezier(.2,.75,.25,1),color .3s ease;}
+.service-detail-card.interactive-treatment.is-selected .service-detail-icon{color:var(--rust);transform:rotate(22deg) scale(1.3);}
+.service-detail-card.interactive-treatment.is-selected .service-detail-copy h3{color:var(--green);}
+.service-detail-card.interactive-treatment.is-animating{animation:treatment-card-press .68s cubic-bezier(.2,.75,.25,1);}
+@keyframes treatment-card-press{0%{transform:scale(1)}25%{transform:scale(.985) translateY(3px)}60%{transform:scale(1.012) translateY(-5px)}100%{transform:scale(1) translateY(0)}}
+@media(max-width:820px){.digital-care-section{padding-block:40px!important;}.digital-care-grid{padding-block:0!important;}}
+@media(max-width:560px){.hero-roundel{width:76px;height:76px;}.hero-roundel span{inset:7px;padding:5px;font-size:5.3px;line-height:1.45;}.digital-care-section{padding-block:34px!important;}}
+@media(prefers-reduced-motion:reduce){.service-detail-card.interactive-treatment.is-animating{animation:none!important;}}
