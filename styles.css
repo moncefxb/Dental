@@ -326,3 +326,15 @@ a,button{-webkit-tap-highlight-color:transparent}
 .studio-intro-number{display:flex;align-items:flex-end;gap:16px;letter-spacing:0}
 .studio-intro-number .tooth-mark{width:clamp(80px,9.5vw,128px);color:var(--lime);opacity:.8}
 .studio-intro-number span{font:500 clamp(28px,3.4vw,44px)/1 var(--display);color:var(--rust);vertical-align:baseline;padding-bottom:.2em}
+
+
+/* Requested home-page and interaction refinements */
+.hero-bottom{justify-content:flex-start}
+.scroll-hint{padding-block:5px}
+.closing-cta .eyebrow-light{color:var(--lime)}
+.interactive-treatment{cursor:pointer;position:relative;transition:background .35s ease,transform .35s ease,box-shadow .35s ease}
+.interactive-treatment:focus-visible{outline:2px solid var(--rust);outline-offset:5px}
+.interactive-treatment.is-selected{background:rgba(219,231,179,.22);padding-inline:20px;box-shadow:inset 3px 0 0 var(--rust)}
+.interactive-treatment.treatment-tap{animation:treatmentTap .48s var(--ease)}
+@keyframes treatmentTap{0%{transform:scale(1)}45%{transform:scale(.992)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.interactive-treatment.treatment-tap{animation:none}}

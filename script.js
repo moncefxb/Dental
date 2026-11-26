@@ -302,3 +302,26 @@ const year = document.getElementById("year");
 if (year) {
   year.textContent = new Date().getFullYear();
                         }
+
+
+// Treatment cards: lightweight interaction feedback on pointer and keyboard.
+document.querySelectorAll(".interactive-treatment").forEach((card) => {
+  const activate = () => {
+    const selected = card.classList.toggle("is-selected");
+    card.setAttribute("aria-pressed", String(selected));
+    card.classList.remove("treatment-tap");
+    void card.offsetWidth;
+    card.classList.add("treatment-tap");
+  };
+  card.addEventListener("click", (event) => {
+    if (event.target.closest("a, button")) return;
+    activate();
+  });
+  card.addEventListener("keydown", (event) => {
+    if (event.target !== card) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      activate();
+    }
+  });
+});
