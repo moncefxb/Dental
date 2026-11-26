@@ -304,7 +304,7 @@ if (year) {
                         }
 
 
-// Treatment cards: lightweight interaction feedback on pointer and keyboard.
+// Treatment cards: visible click animation and persistent selected state.
 document.querySelectorAll(".interactive-treatment").forEach((card) => {
   const activate = () => {
     const selected = card.classList.toggle("is-selected");
@@ -312,6 +312,7 @@ document.querySelectorAll(".interactive-treatment").forEach((card) => {
     card.classList.remove("treatment-tap");
     void card.offsetWidth;
     card.classList.add("treatment-tap");
+    card.addEventListener("animationend", () => card.classList.remove("treatment-tap"), { once: true });
   };
   card.addEventListener("click", (event) => {
     if (event.target.closest("a, button")) return;
