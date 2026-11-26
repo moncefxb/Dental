@@ -8,7 +8,7 @@
 - Public dentist profile pages (dentists can be entered in admin and appear in booking, but the Team page is still the existing philosophy page).
 - Contact map and opening-hours display (no real clinic address/hours were supplied; none were invented). Hours entered in admin are used for booking only.
 - Service pricing display on the public Services page (`price_from` is stored/editable but not rendered).
-- GSAP; new 3D work (the existing Three.js hero is unchanged and still loads from jsDelivr).
+- GSAP. The 3D tooth hero and its Three.js CDN dependency were **removed** at the owner's request; the hero is now the photo slot.
 - French/Arabic text for `manage.html` (English only). Booking widget is fully ar/fr/en.
 - Admin analytics are still computed from the latest 200 appointments (unchanged from the previous release); no billing/revenue.
 - GDPR: no patient erasure/anonymisation tool or retention job; consent checkbox and minimal data collection only. Email is stored on appointments.
@@ -21,4 +21,4 @@
 - Patients can cancel/reschedule online only up to the configured minimum notice before the slot.
 - Slots are stored as clinic-local naive times (`Africa/Algiers` default). DST zones are handled for "now" but not for the hour that does not exist/repeats.
 - Legacy bookings without a dentist conflict only with other dentist-less bookings.
-- The existing reference images on public pages are third-party placeholders (see previous notes) and must be replaced before launch.
+- All site images are now local files in `images/` and are **generated placeholders**; replace them with the clinic's own photos (same file names). See `images/README.md`. Google Fonts are still loaded from Google.
