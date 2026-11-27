@@ -73,8 +73,12 @@
     @media(max-width:760px){main{padding:15px 12px 35px}.nova-shell{grid-template-columns:1fr;gap:13px}.nova-sidebar{position:static;min-height:0;padding:10px;border-radius:15px}.nova-side-brand,.nova-nav-label,.nova-sidebar-foot{display:none}.nova-nav{display:flex;overflow-x:auto;gap:5px;scrollbar-width:thin}.nova-nav button{flex:0 0 auto;width:auto;white-space:nowrap;padding:10px 12px}.nova-nav button:hover{transform:none}.nova-nav-icon{width:24px;height:24px;flex-basis:24px}.nova-toolbar{align-items:flex-start;margin-bottom:15px;padding-bottom:15px}.nova-welcome{padding:20px}.nova-toolbar-actions{flex-shrink:0}}
     @media(max-width:520px){.topbar-inner{min-height:65px}.brand{font-size:18px}.nova-toolbar{display:block}.nova-toolbar-actions{margin-top:13px}.nova-toolbar-actions .btn{flex:1}.nova-welcome{display:block}.nova-welcome h2{font-size:20px}.nova-welcome-date{display:inline-block;margin-top:14px}.stats{gap:9px}.stat{padding:15px}.stat strong{font-size:25px}.nova-shortcuts{grid-template-columns:1fr}.section-panel,.manual-form{padding:15px}.filters{grid-template-columns:1fr 1fr}.filters input{grid-column:1/-1}.details{grid-template-columns:repeat(2,minmax(0,1fr))}}
     /* Full-width fixed masthead and language-safe responsive layout. */
-    .topbar{position:fixed!important;inset:0 0 auto 0!important;width:100%!important;z-index:1000!important;isolation:isolate}
-    .topbar-inner{width:100%!important;max-width:none!important;margin:0!important;min-height:76px;padding-inline:clamp(16px,3vw,42px)!important}
+    /* Full-bleed masthead: keep the bar and its controls laid out left-to-right
+       in every language; only the text direction changes with the selected locale. */
+    .topbar{position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:auto!important;width:100%!important;max-width:none!important;margin:0!important;z-index:1000!important;isolation:isolate}
+    .topbar-inner{display:flex!important;flex-direction:row!important;direction:ltr!important;align-items:center!important;justify-content:space-between!important;gap:16px!important;width:100%!important;max-width:none!important;margin:0!important;min-height:76px;padding-inline:clamp(16px,3vw,42px)!important;box-sizing:border-box!important}
+    .topbar-inner>div:first-child{flex:0 1 auto;min-width:0;max-width:calc(100% - 150px);text-align:left;direction:ltr}
+    .topbar-inner #logoutBtn{flex:0 0 auto;margin-left:auto;margin-right:0;white-space:nowrap}
     body{padding-top:76px!important;overflow-x:clip}
     .topbar-inner>div{min-width:0}
     #dashboardSection,.nova-shell,.nova-workspace,.nova-page-content{width:100%;max-width:100%;min-width:0}
