@@ -304,13 +304,4 @@ if (year) {
                         }
 
 
-// Subtle hover response for treatment cards (no click/selection behavior).
-document.querySelectorAll('.service-detail-card.interactive-treatment').forEach((card) => {
-  card.addEventListener('pointerenter', (event) => {
-    if (event.pointerType === 'touch') return;
-    card.classList.add('is-hovered');
-  });
-  card.addEventListener('pointerleave', () => {
-    card.classList.remove('is-hovered');
-  });
-});
+
