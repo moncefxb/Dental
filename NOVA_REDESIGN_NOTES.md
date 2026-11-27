@@ -19,7 +19,9 @@
   - service demand
   - booking channel distribution
 - Kept the chart scope explicit: the current appointments API returns at most 200 recent records.
-- Added CSV export for the currently loaded appointments; existing JSON backup remains available.
+- Replaced the admin layout with a focused RTL workspace: overview, appointments, patients, reports, and clinic setup.
+- Removed demo-only finance, inventory, and odontogram screens from the basic admin interface.
+- Removed backup and CSV export controls from the admin UI as requested.
 - Corrected Cloudflare Worker asset routing so `/admin` and `/api/health` reach the Worker instead of falling through to static assets.
 - Added the health-check route to the Worker and excluded its source module from public static assets.
 - Hardened visit creation so an appointment cannot be attached to a different patient; an unlinked appointment is associated atomically when a visit is created.
@@ -31,7 +33,7 @@
 2. Revenue and profitability metrics are intentionally not fabricated; the current schema has no invoices or payments.
 3. Team names, professional credentials, clinic address, phone number, opening hours, and real clinic photography still need to be supplied and approved by the clinic. Existing image assets are reference imagery, not verified NOVA clinic photographs.
 4. The 3D model loads Three.js from jsDelivr. If the CDN or WebGL is unavailable, the existing photographic hero remains visible.
-5. The analytics visualizations are calculated from the latest 200 appointments returned by the current API, not from the entire database. The reporting API remains date-scoped.
+5. The overview counters use the currently loaded appointment set; no revenue or other unsupported metrics are fabricated.
 6. No live deployment was performed. This package contains source changes only.
 
 ## Cloudflare deployment checklist

@@ -190,8 +190,6 @@ input:focus,select:focus,textarea:focus{border-color:#557b68;box-shadow:0 0 0 3p
   <div><span class="admin-eyebrow">NOVA DENTAL STUDIO / CONTROL CENTER</span><h1>لوحة إدارة NOVA</h1><div class="muted">الحجوزات والمرضى والزيارات والتقارير</div></div>
   <div class="toolbar-actions">
    <button id="refreshBtn" class="btn btn-light">تحديث الحجوزات</button>
-   <button id="csvBtn" class="btn btn-light" type="button">تصدير CSV</button>
-   <button id="exportBtn" class="btn btn-light">نسخة احتياطية</button>
   </div>
  </div>
 
@@ -685,36 +683,6 @@ function renderReports(data){
  makeList("الزيارات حسب اليوم",data.visits_by_day||[],x=>formatDate(x.visit_date)+": "+x.total);
 }
 
-/* تصدير نسخة احتياطية JSON */
-async function exportBackup(){
- const button=$("exportBtn");button.disabled=true;button.textContent="جارٍ تجهيز النسخة...";
- try{
-  const response=await fetch("/api/admin/export",{credentials:"same-origin",cache:"no-store"});
-  if(response.status===401){showLogin("انتهت جلسة الدخول.");return}
-  if(!response.ok){alert("تعذر تصدير النسخة الاحتياطية.");return}
-  const blob=await response.blob();
-  const url=URL.createObjectURL(blob);
-  const link=document.createElement("a");link.href=url;link.download="nova-backup.json";
-  document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
- }catch{alert("تعذر الاتصال بالخادم.")}
- finally{button.disabled=false;button.textContent="تصدير نسخة احتياطية"}
-}
-
-/* CSV export for the latest server-loaded appointments. */
-function exportAppointmentsCsv(){
- const columns=["patient_name","phone","service_type","status","source","scheduled_at","reference","created_at"];
- const safe=value=>{
-  let text=String(value??"");
-  if(/^[=+@\- \t\r]/.test(text))text="'"+text;
-  return '"'+text.replace(/"/g,'""')+'"';
- };
- const rows=[columns.join(","),...appointments.map(item=>columns.map(key=>safe(item[key])).join(","))];
- const blob=new Blob(["\uFEFF"+rows.join("\r\n")],{type:"text/csv;charset=utf-8"});
- const url=URL.createObjectURL(blob),link=document.createElement("a");
- link.href=url;link.download="nova-appointments-"+localDateString()+".csv";
- document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
-}
-
 /* تسجيل الدخول والخروج وربط الأحداث */
 $("loginForm").addEventListener("submit",async event=>{
  event.preventDefault();const button=$("loginBtn");button.disabled=true;button.textContent="جارٍ التحقق...";
@@ -734,8 +702,6 @@ $("logoutBtn").addEventListener("click",async()=>{
 });
 $("manualBookingForm").addEventListener("submit",createManualAppointment);
 $("refreshBtn").addEventListener("click",loadAppointments);
-$("exportBtn").addEventListener("click",exportBackup);
-$("csvBtn")?.addEventListener("click",exportAppointmentsCsv);
 $("searchInput").addEventListener("input",renderAppointments);
 $("statusFilter").addEventListener("change",renderAppointments);
 $("sourceFilter").addEventListener("change",renderAppointments);

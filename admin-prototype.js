@@ -1,36 +1,176 @@
-/* NOVA admin prototype modules. Finance/inventory/odontogram are local demo-only until APIs and schema are approved. */
-(()=>{
- const $=id=>document.getElementById(id); const money=n=>new Intl.NumberFormat('ar-DZ',{style:'currency',currency:'DZD',maximumFractionDigits:0}).format(n);
- const read=(k,f)=>{try{return JSON.parse(localStorage.getItem('nova-demo-'+k))??f}catch{return f}};
- const write=(k,v)=>localStorage.setItem('nova-demo-'+k,JSON.stringify(v));
- const css=`.nova-shell{display:grid;grid-template-columns:235px minmax(0,1fr);gap:22px;align-items:start}.nova-side{position:sticky;top:94px;background:#203b33;color:#f6f4eb;border-radius:20px;padding:18px;box-shadow:0 16px 36px #203b331c}.nova-side .side-brand{font:800 18px system-ui;letter-spacing:.04em;padding:5px 9px 18px;border-bottom:1px solid #ffffff20}.nova-side .side-brand span{color:#d8c59b}.nova-side .side-label{font-size:10px;color:#b9c6bc;margin:20px 9px 8px}.nova-side button{width:100%;text-align:start;border:0;background:transparent;color:#e5ebe5;padding:11px 12px;border-radius:11px;margin:2px 0;font-weight:650}.nova-side button:hover,.nova-side button.active{background:#ffffff18;color:#fff}.nova-side button.active{box-shadow:inset -3px 0 #d6bf8e}.nova-content{min-width:0}.nova-pagehead{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:18px}.nova-pagehead p{margin:5px 0 0;color:#77837a;font-size:12px}.nova-kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}.nova-kpi{background:#fffefa;border:1px solid #e2e6dc;border-radius:17px;padding:17px;box-shadow:0 8px 25px #243d3010}.nova-kpi small{color:#7a867d}.nova-kpi strong{display:block;font:750 26px system-ui;color:#244f43;margin:8px 0 3px}.nova-kpi em{font-style:normal;font-size:11px;color:#718078}.nova-grid-2{display:grid;grid-template-columns:1.3fr 1fr;gap:14px}.nova-box{background:#fffefa;border:1px solid #e2e6dc;border-radius:18px;padding:18px;margin:14px 0;min-width:0}.nova-box h2{font-size:16px}.nova-list{display:grid;gap:9px}.nova-line{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #edf0e9;font-size:13px}.nova-line:last-child{border:0}.nova-pill{border-radius:30px;background:#edf2eb;padding:5px 9px;font-size:10px;color:#345b49}.nova-bars{height:160px;display:flex;align-items:end;gap:10px;padding:12px 4px 0}.nova-bars i{display:block;flex:1;min-width:10px;background:linear-gradient(180deg,#9db9a3,#315d4c);border-radius:7px 7px 2px 2px;position:relative}.nova-bars i:after{content:attr(data-day);position:absolute;top:calc(100% + 7px);left:50%;transform:translateX(-50%);font-size:10px;color:#78847b}.nova-actions{display:flex;flex-wrap:wrap;gap:8px}.nova-actions button,.nova-form button{border:0;border-radius:10px;padding:10px 14px;background:#244f43;color:white;font-weight:700}.nova-actions .secondary{background:#e9eee6;color:#28473b}.nova-table{width:100%;border-collapse:collapse;font-size:12px}.nova-table th,.nova-table td{text-align:start;padding:12px 9px;border-bottom:1px solid #edf0e9;white-space:nowrap}.nova-table th{color:#7b877d;font-size:10px}.nova-form{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0}.nova-form input,.nova-form select{max-width:220px}.nova-demo-note{border:1px solid #e7d8b8;background:#fbf6e9;color:#725b32;padding:11px 13px;border-radius:12px;font-size:11px;line-height:1.7;margin:12px 0}.nova-teeth{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;direction:ltr;margin:18px 0}.nova-tooth{border:1px solid #d8dfd5;background:#f7f8f3;border-radius:12px;min-height:72px;color:#315344;font-weight:800}.nova-tooth.selected{background:#dce9dd;border:2px solid #315d4c}.nova-tooth small{display:block;font-size:9px;font-weight:500;color:#718078}.nova-mobile-nav{display:none}@media(max-width:900px){.nova-shell{grid-template-columns:1fr}.nova-side{position:static;display:flex;gap:5px;overflow:auto;padding:9px}.nova-side .side-brand,.nova-side .side-label{display:none}.nova-side button{white-space:nowrap;width:auto;flex:0 0 auto}.nova-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.nova-grid-2{grid-template-columns:1fr}.nova-pagehead{align-items:start;display:block}.nova-teeth{grid-template-columns:repeat(4,minmax(0,1fr))}.nova-box{padding:14px}.nova-kpi{padding:13px}.nova-kpi strong{font-size:22px}.nova-table-wrap{overflow:auto}}`;
- const style=document.createElement('style');style.textContent=css;document.head.append(style);
- const dashboard=document.querySelector('#dashboardSection'); if(!dashboard)return;
- const oldViews=document.querySelector('.views'); if(oldViews)oldViews.style.display='none';
- const shell=document.createElement('div');shell.className='nova-shell';
- const side=document.createElement('aside');side.className='nova-side';side.innerHTML='<div class="side-brand">NOVA <span>Dental</span><div style="font-size:10px;font-weight:500;color:#b9c6bc;margin-top:4px">STUDIO MANAGEMENT</div></div><div class="side-label">إدارة العيادة</div>';
- const content=document.createElement('div');content.className='nova-content';
- const pages=[['overview','▦','نظرة عامة'],['appointmentsSection','▣','الحجوزات'],['patientsSection','♙','المرضى'],['reportsSection','▤','التقارير'],['finance','د.ج','المالية'],['inventory','▥','المخزون'],['odontogram','✧','خريطة الأسنان'],['setupSection','⚙','إعداد العيادة']];
- const head=document.querySelector('.nova-admin-toolbar');
- const add=(id,title,desc,html)=>{const s=document.createElement('section');s.id='nova-'+id;s.className='nova-extra-section';s.hidden=true;s.innerHTML=`<div class="nova-pagehead"><div><span class="admin-eyebrow">NOVA / ${id.toUpperCase()}</span><h1>${title}</h1><p>${desc}</p></div></div>${html}`;content.append(s);return s};
- const overview=add('overview','نظرة عامة','ملخص تشغيلي سريع للعيادة.','<div class="nova-demo-note">الأرقام التشغيلية المرتبطة بالحجوزات والمرضى تُحمّل من الخادم داخل الأقسام الأصلية. مؤشرات الإيرادات هنا نموذج أولي ببيانات تجريبية.</div><div class="nova-kpi-grid"><div class="nova-kpi"><small>مواعيد اليوم</small><strong id="ov-appts">—</strong><em>من نظام الحجوزات</em></div><div class="nova-kpi"><small>طلبات الانتظار</small><strong id="ov-pending">—</strong><em>تحتاج متابعة</em></div><div class="nova-kpi"><small>المرضى المسجلون</small><strong id="ov-patients">—</strong><em>من قاعدة البيانات</em></div><div class="nova-kpi"><small>مصروفات تجريبية</small><strong id="ov-expenses">0 دج</strong><em>محفوظة محليًا على هذا المتصفح</em></div></div><div class="nova-grid-2"><div class="nova-box"><h2>نشاط العيادة</h2><div class="nova-bars"><i style="height:45%" data-day="س"></i><i style="height:68%" data-day="أ"></i><i style="height:54%" data-day="ث"></i><i style="height:82%" data-day="ر"></i><i style="height:61%" data-day="خ"></i><i style="height:92%" data-day="ج"></i><i style="height:72%" data-day="س"></i></div></div><div class="nova-box"><h2>اختصارات سريعة</h2><div class="nova-actions"><button data-go="appointmentsSection">إدارة الحجوزات</button><button class="secondary" data-go="patientsSection">ملفات المرضى</button><button class="secondary" data-go="finance">تسجيل مصروف</button><button class="secondary" data-go="inventory">إضافة مخزون</button></div><div class="nova-list" style="margin-top:14px"><div class="nova-line"><span>متابعة الطلبات الجديدة</span><span class="nova-pill">يوميًا</span></div><div class="nova-line"><span>مراجعة المواد منخفضة المخزون</span><span class="nova-pill">أسبوعيًا</span></div><div class="nova-line"><span>مطابقة الدفعات والفواتير</span><span class="nova-pill">يوميًا</span></div></div></div></div>');
- const finance=add('finance','الإيرادات والمصروفات','سجل مالي أولي؛ البيانات تجريبية ومحفوظة في متصفحك فقط.','<div class="nova-demo-note">وضع النموذج الأولي: لا توجد أي عملية مالية حقيقية أو فاتورة مرتبطة بقاعدة بيانات العيادة. لا تدخل بيانات مرضى أو معاملات فعلية هنا.</div><div class="nova-kpi-grid"><div class="nova-kpi"><small>إجمالي الإيرادات</small><strong id="fin-income">0 دج</strong></div><div class="nova-kpi"><small>المصروفات</small><strong id="fin-expense">0 دج</strong></div><div class="nova-kpi"><small>الصافي</small><strong id="fin-net">0 دج</strong></div><div class="nova-kpi"><small>عدد القيود</small><strong id="fin-count">0</strong></div></div><div class="nova-box"><h2>إضافة قيد تجريبي</h2><form id="fin-form" class="nova-form"><select id="fin-type"><option value="income">إيراد</option><option value="expense">مصروف</option></select><input id="fin-desc" placeholder="الوصف" required maxlength="90"><input id="fin-amount" type="number" min="1" placeholder="المبلغ بالدينار" required><input id="fin-date" type="date" required><button>حفظ القيد</button></form></div><div class="nova-box"><h2>سجل العمليات</h2><div class="nova-table-wrap"><table class="nova-table"><thead><tr><th>التاريخ</th><th>النوع</th><th>الوصف</th><th>المبلغ</th><th></th></tr></thead><tbody id="fin-rows"></tbody></table></div></div>');
- const inventory=add('inventory','المخزون والمستلزمات','متابعة أولية للكميات والتنبيه عند انخفاض المخزون.','<div class="nova-demo-note">بيانات المخزون تجريبية ومحلية فقط. ربط الاستهلاك بالمواعيد والمشتريات يتطلب اعتماد مخطط قاعدة بيانات وواجهات API.</div><div class="nova-box"><h2>إضافة صنف</h2><form id="inv-form" class="nova-form"><input id="inv-name" placeholder="اسم الصنف" required maxlength="80"><input id="inv-qty" type="number" min="0" placeholder="الكمية" required><input id="inv-min" type="number" min="0" placeholder="حد التنبيه" required><input id="inv-unit" placeholder="الوحدة (علبة/قطعة)" maxlength="20"><button>إضافة للمخزون</button></form></div><div class="nova-box"><h2>قائمة المخزون</h2><div class="nova-table-wrap"><table class="nova-table"><thead><tr><th>الصنف</th><th>الكمية</th><th>حد التنبيه</th><th>الحالة</th><th></th></tr></thead><tbody id="inv-rows"></tbody></table></div></div>');
- const odontogram=add('odontogram','خريطة الأسنان','واجهة تفاعلية تجريبية لتحديد السن وتدوين ملاحظة أولية.','<div class="nova-demo-note">هذه خريطة واجهة أولية وليست سجلًا طبيًا. لا تحفظ تشخيصًا حقيقيًا أو تعتمد عليها سريريًا قبل بناء صلاحيات الطبيب وسجل طبي موثق.</div><div class="nova-box"><h2>اختر السن</h2><p class="muted">ترقيم FDI · اضغط على السن لعرض التحديد</p><div class="nova-teeth" id="teeth-top"></div><div style="height:1px;background:#e5e9e1;margin:15px 0"></div><div class="nova-teeth" id="teeth-bottom"></div><div class="nova-line"><strong id="tooth-selected">لم يتم اختيار سن</strong><span class="nova-pill">تحديد تجريبي</span></div><label for="tooth-note">ملاحظة تجريبية</label><textarea id="tooth-note" placeholder="اكتب ملاحظة توضيحية غير طبية..."></textarea><button class="btn" id="tooth-save" style="margin-top:10px">حفظ الملاحظة محليًا</button><div id="tooth-saved" class="muted" style="margin-top:8px"></div></div>');
- pages.forEach(([id,icon,label])=>{const b=document.createElement('button');b.type='button';b.textContent=icon+'  '+label;b.dataset.page=id;b.onclick=()=>show(id);side.append(b)});
- const wrap=document.createElement('div');wrap.append(side,content);if(head)head.after(wrap);else dashboard.prepend(wrap);
- // Move existing app sections into the content workspace without changing their IDs or event handlers.
- ['appointmentsSection','patientsSection','reportsSection','setupSection'].forEach(id=>{const el=$(id);if(el){el.hidden=true;content.append(el)}});
- const show=id=>{content.querySelectorAll(':scope > section').forEach(s=>s.hidden=(s.id!==(id.startsWith('nova-')?id:'nova-'+id) && s.id!==id));side.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));if(id==='appointmentsSection'||id==='patientsSection'||id==='reportsSection'||id==='setupSection'){if(window.showSection)window.showSection(id);content.querySelectorAll(':scope > section').forEach(s=>{if(s.id!==id)s.hidden=true});} if(id==='overview')syncOverview();if(id==='finance')renderFinance();if(id==='inventory')renderInventory();};
- window.novaShowAdminPage=show;
- // Wrap original section switching so existing buttons/functions remain valid.
- const original=window.showSection;window.showSection=(id)=>{show(id);if(original)original(id);content.querySelectorAll(':scope > section').forEach(s=>{if(s.id!==id)s.hidden=true})};
- document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go)));
- const finForm=$('fin-form');finForm.addEventListener('submit',e=>{e.preventDefault();const rows=read('finance',[]);rows.unshift({id:Date.now(),type:$('fin-type').value,desc:$('fin-desc').value.trim(),amount:Number($('fin-amount').value),date:$('fin-date').value});write('finance',rows);finForm.reset();renderFinance()});$('fin-date').value=new Date().toISOString().slice(0,10);
- function renderFinance(){const rows=read('finance',[]),inc=rows.filter(x=>x.type==='income').reduce((a,x)=>a+x.amount,0),exp=rows.filter(x=>x.type==='expense').reduce((a,x)=>a+x.amount,0);$('fin-income').textContent=money(inc);$('fin-expense').textContent=money(exp);$('fin-net').textContent=money(inc-exp);$('fin-count').textContent=rows.length;$('ov-expenses').textContent=money(exp);$('fin-rows').replaceChildren();rows.forEach(x=>{const tr=document.createElement('tr');[x.date,x.type==='income'?'إيراد':'مصروف',x.desc,money(x.amount)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});const td=document.createElement('td'),b=document.createElement('button');b.className='btn btn-light';b.textContent='حذف';b.onclick=()=>{write('finance',read('finance',[]).filter(y=>y.id!==x.id));renderFinance()};td.append(b);tr.append(td);$('fin-rows').append(tr)})}
- $('inv-form').addEventListener('submit',e=>{e.preventDefault();const rows=read('inventory',[]);rows.push({id:Date.now(),name:$('inv-name').value.trim(),qty:Number($('inv-qty').value),min:Number($('inv-min').value),unit:$('inv-unit').value.trim()||'وحدة'});write('inventory',rows);e.target.reset();renderInventory()});
- function renderInventory(){const rows=read('inventory',[]);$('inv-rows').replaceChildren();rows.forEach(x=>{const tr=document.createElement('tr');[x.name,x.qty+' '+x.unit,String(x.min),x.qty<=x.min?'منخفض':'متوفر'].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});const td=document.createElement('td'),b=document.createElement('button');b.className='btn btn-light';b.textContent='حذف';b.onclick=()=>{write('inventory',read('inventory',[]).filter(y=>y.id!==x.id));renderInventory()};td.append(b);tr.append(td);$('inv-rows').append(tr)})}
- let selected=null;const drawTeeth=(root,nums)=>nums.forEach(n=>{const b=document.createElement('button');b.className='nova-tooth';b.innerHTML=`${n}<small>سن</small>`;b.onclick=()=>{selected=n;document.querySelectorAll('.nova-tooth').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');$('tooth-selected').textContent='السن المحدد: '+n;$('tooth-note').value=read('teeth',{})[n]||''};root.append(b)});drawTeeth($('teeth-top'),[18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28]);drawTeeth($('teeth-bottom'),[48,47,46,45,44,43,42,41,31,32,33,34,35,36,37,38]);$('tooth-save').onclick=()=>{if(!selected){$('tooth-saved').textContent='اختر سنًا أولًا.';return}const data=read('teeth',{});data[selected]=$('tooth-note').value;write('teeth',data);$('tooth-saved').textContent='حُفظت الملاحظة محليًا لهذا النموذج.'};
- function syncOverview(){ $('ov-appts').textContent=$('todayCount')?.textContent||'—';$('ov-pending').textContent=$('pendingCount')?.textContent||'—';$('ov-patients').textContent=patientsCount();}function patientsCount(){return $('patientsList')?.children.length||'—'}
- show('overview');
+/* NOVA Dental admin layout — essential clinic features with a refined, responsive workspace. */
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const dashboard = $('dashboardSection');
+  if (!dashboard) return;
+
+  const css = `
+    :root{--nova-ink:#182f35;--nova-muted:#718187;--nova-line:#e5eceb;--nova-bg:#f5f8f7;--nova-teal:#176d70;--nova-teal-dark:#124f54;--nova-mint:#e7f2ef;--nova-gold:#c5a56a;--nova-card:#fff}
+    body{background:var(--nova-bg);color:var(--nova-ink);font-family:"Noto Sans Arabic","Segoe UI",system-ui,sans-serif}
+    .topbar{background:rgba(255,255,255,.94);border-bottom:1px solid var(--nova-line);box-shadow:0 3px 18px rgba(20,55,58,.035)}
+    .topbar-inner{max-width:1600px;min-height:76px;padding:12px clamp(16px,3vw,42px)}
+    .brand{font-size:21px;letter-spacing:.025em;color:var(--nova-ink)}.brand span{color:var(--nova-teal)}
+    .subtitle{color:var(--nova-muted);font-size:11px}
+    main{max-width:1600px;margin:0 auto;padding:24px clamp(12px,2.8vw,40px) 50px}
+    #dashboardSection{min-width:0}
+    .nova-shell{display:grid;grid-template-columns:248px minmax(0,1fr);gap:24px;align-items:start;direction:rtl}
+    .nova-sidebar{position:sticky;top:96px;min-height:calc(100vh - 120px);padding:20px 14px;background:linear-gradient(165deg,#174e52,#123d43);border-radius:22px;color:#eff8f6;box-shadow:0 18px 42px rgba(17,65,69,.14)}
+    .nova-side-brand{padding:5px 12px 22px;border-bottom:1px solid rgba(255,255,255,.13);margin-bottom:18px}
+    .nova-side-brand strong{display:block;font-size:20px;letter-spacing:.06em}.nova-side-brand strong span{color:#d6bd8b}
+    .nova-side-brand small{display:block;margin-top:5px;color:#b7d0ce;font-size:9px;letter-spacing:.16em;direction:ltr;text-align:right}
+    .nova-nav-label{padding:8px 12px;color:#9dbfbc;font-size:10px;font-weight:800;letter-spacing:.08em}
+    .nova-nav{display:grid;gap:5px}
+    .nova-nav button{width:100%;display:flex;align-items:center;gap:12px;border:0;border-radius:12px;background:transparent;color:#d8e9e7;text-align:right;padding:12px 13px;font:600 13px inherit;cursor:pointer;transition:background .18s,color .18s,transform .18s}
+    .nova-nav button:hover{background:rgba(255,255,255,.09);color:#fff;transform:translateX(-2px)}
+    .nova-nav button.active{background:#f4f8f5;color:#174f53;box-shadow:0 7px 18px rgba(0,0,0,.09)}
+    .nova-nav-icon{width:27px;height:27px;display:grid;place-items:center;border-radius:9px;background:rgba(255,255,255,.1);font-size:14px;flex:0 0 27px}
+    .nova-nav button.active .nova-nav-icon{background:var(--nova-mint);color:var(--nova-teal)}
+    .nova-sidebar-foot{position:absolute;inset:auto 22px 20px;color:#a8c6c3;font-size:10px;line-height:1.8}
+    .nova-workspace{min-width:0}
+    .nova-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 22px;padding:4px 2px 20px;border-bottom:1px solid var(--nova-line)}
+    .nova-toolbar h1{margin:0;color:var(--nova-ink);font-size:clamp(23px,2.5vw,31px);font-weight:800;letter-spacing:-.04em}
+    .nova-toolbar p{margin:6px 0 0;color:var(--nova-muted);font-size:12px}
+    .nova-toolbar .admin-eyebrow{display:block;color:#9b8253;font-size:9px;font-weight:800;letter-spacing:.16em;margin-bottom:7px;direction:ltr;text-align:right}
+    .nova-toolbar-actions{display:flex;gap:8px;align-items:center}
+    .nova-toolbar-actions .btn{min-height:41px;border-radius:11px;padding-inline:15px}
+    .btn{background:var(--nova-teal);border-radius:11px;box-shadow:none;transition:background .18s,transform .18s,box-shadow .18s}
+    .btn:hover{background:var(--nova-teal-dark);transform:translateY(-1px);box-shadow:0 7px 16px rgba(23,109,112,.14)}
+    .btn-light{background:#edf4f2;color:#28565a}.btn-light:hover{background:#e1eeeb;color:#174f53}
+    .btn-green{background:#278064}.btn-red{background:#b75d55}
+    .nova-overview{display:grid;gap:18px}
+    .nova-welcome{position:relative;overflow:hidden;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:25px 28px;border-radius:20px;background:linear-gradient(112deg,#174e52,#216f70);color:#fff;box-shadow:0 14px 30px rgba(23,91,94,.13)}
+    .nova-welcome:after{content:"";position:absolute;width:250px;height:250px;border:1px solid rgba(255,255,255,.11);border-radius:50%;left:-85px;top:-150px;box-shadow:0 0 0 26px rgba(255,255,255,.025),0 0 0 54px rgba(255,255,255,.02)}
+    .nova-welcome small{display:block;color:#c2dbd7;font-size:10px;letter-spacing:.12em;direction:ltr;text-align:right}
+    .nova-welcome h2{margin:8px 0 5px;font-size:23px;color:#fff}.nova-welcome p{margin:0;color:#d2e4e1;font-size:12px}
+    .nova-welcome-date{z-index:1;white-space:nowrap;padding:10px 13px;border:1px solid rgba(255,255,255,.2);border-radius:12px;color:#e5efed;font-size:11px}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:0}
+    .stat{position:relative;overflow:hidden;padding:20px 19px;background:var(--nova-card);border:1px solid var(--nova-line);border-radius:17px;box-shadow:0 7px 22px rgba(21,57,60,.035)}
+    .stat:after{content:"";position:absolute;left:-23px;bottom:-35px;width:95px;height:95px;border:1px solid #e8f0ed;border-radius:50%}
+    .stat strong{display:block;margin-bottom:7px;color:var(--nova-ink);font-size:30px;font-weight:800;line-height:1.2}
+    .stat span{color:var(--nova-muted);font-size:11px}
+    .stat.today,.stat.pending,.stat.confirmed,.stat.unscheduled{border-top:1px solid var(--nova-line);border-inline-start:3px solid var(--nova-teal)}
+    .stat.pending{border-inline-start-color:#c69a50}.stat.confirmed{border-inline-start-color:#39866c}.stat.unscheduled{border-inline-start-color:#8b9ca0}
+    .nova-overview-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:15px}
+    .nova-card{min-width:0;padding:21px;background:#fff;border:1px solid var(--nova-line);border-radius:17px;box-shadow:0 7px 22px rgba(21,57,60,.03)}
+    .nova-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
+    .nova-card h2{margin:0;font-size:15px;color:var(--nova-ink)}
+    .nova-card-head small{color:var(--nova-muted);font-size:10px}
+    .nova-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .nova-shortcut{display:flex;align-items:center;gap:11px;padding:13px;border:1px solid var(--nova-line);border-radius:13px;background:#fbfdfc;color:var(--nova-ink);text-align:right;font:600 12px inherit;cursor:pointer;transition:border-color .18s,background .18s,transform .18s}
+    .nova-shortcut:hover{border-color:#a9cbc5;background:#f2f8f6;transform:translateY(-1px)}
+    .nova-shortcut i{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--nova-mint);color:var(--nova-teal);font-style:normal;font-size:15px}
+    .nova-info-list{display:grid;gap:0}.nova-info-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #edf1ef;font-size:12px}.nova-info-row:last-child{border-bottom:0}.nova-info-row span{color:var(--nova-muted)}.nova-info-row strong{font-weight:700;color:var(--nova-ink)}
+    .section-panel,.manual-form,.appointment,.record-card{background:#fff;border:1px solid var(--nova-line);border-radius:17px;box-shadow:0 7px 22px rgba(21,57,60,.03)}
+    .section-panel{padding:21px;margin-top:0;margin-bottom:15px}.manual-form{padding:21px;margin:0 0 17px}.appointment{padding:19px}.patient-row{border:1px solid var(--nova-line);border-radius:13px;background:#fff}.patient-detail,.schedule-box,.notes,.report-stat{background:#f3f8f6}
+    input,select,textarea{border-color:#dce7e4;background:#fff;border-radius:11px;min-height:45px}input:focus,select:focus,textarea:focus{border-color:#5c9b91;box-shadow:0 0 0 3px rgba(42,125,119,.12)}
+    .views{padding:5px;border:1px solid var(--nova-line);border-radius:13px;background:#f7faf9;width:max-content;max-width:100%}.view-btn{border:0;border-radius:9px;background:transparent;padding:9px 14px;color:var(--nova-muted)}.view-btn.active{background:var(--nova-teal);color:#fff}
+    .filters{gap:10px}.date-tools{max-width:270px}.view-heading{margin-top:19px}
+    .status{border-radius:8px}.empty{border-color:#dbe7e3;background:#fff;border-radius:14px}
+    .footer-note{padding:18px 0;color:#9aa8a7}
+    #insightsPanel,.insights-panel{display:none!important}
+    .nova-mobile-caption{display:none}
+    @media(max-width:1100px){.nova-shell{grid-template-columns:210px minmax(0,1fr);gap:16px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.nova-overview-grid{grid-template-columns:1fr}}
+    @media(max-width:760px){main{padding:15px 12px 35px}.nova-shell{grid-template-columns:1fr;gap:13px}.nova-sidebar{position:static;min-height:0;padding:10px;border-radius:15px}.nova-side-brand,.nova-nav-label,.nova-sidebar-foot{display:none}.nova-nav{display:flex;overflow-x:auto;gap:5px;scrollbar-width:thin}.nova-nav button{flex:0 0 auto;width:auto;white-space:nowrap;padding:10px 12px}.nova-nav button:hover{transform:none}.nova-nav-icon{width:24px;height:24px;flex-basis:24px}.nova-toolbar{align-items:flex-start;margin-bottom:15px;padding-bottom:15px}.nova-welcome{padding:20px}.nova-toolbar-actions{flex-shrink:0}}
+    @media(max-width:520px){.topbar-inner{min-height:65px}.brand{font-size:18px}.nova-toolbar{display:block}.nova-toolbar-actions{margin-top:13px}.nova-toolbar-actions .btn{flex:1}.nova-welcome{display:block}.nova-welcome h2{font-size:20px}.nova-welcome-date{display:inline-block;margin-top:14px}.stats{gap:9px}.stat{padding:15px}.stat strong{font-size:25px}.nova-shortcuts{grid-template-columns:1fr}.section-panel,.manual-form{padding:15px}.filters{grid-template-columns:1fr 1fr}.filters input{grid-column:1/-1}.details{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  `;
+  const style = document.createElement('style');
+  style.id = 'nova-admin-design-system';
+  style.textContent = css;
+  document.head.append(style);
+
+  const oldToolbar = dashboard.querySelector('.nova-admin-toolbar');
+  const oldNav = dashboard.querySelector('.views[role="tablist"]');
+  const appointmentSection = $('appointmentsSection');
+  const stats = appointmentSection?.querySelector('.stats');
+  const insights = appointmentSection?.querySelector('.insights-panel');
+  if (oldNav) oldNav.remove();
+  if (insights) insights.remove();
+
+  const shell = document.createElement('div'); shell.className = 'nova-shell';
+  const sidebar = document.createElement('aside'); sidebar.className = 'nova-sidebar';
+  sidebar.innerHTML = `
+    <div class="nova-side-brand"><strong>NOVA <span>Dental</span></strong><small>STUDIO MANAGEMENT</small></div>
+    <div class="nova-nav-label">القائمة الرئيسية</div>
+    <nav class="nova-nav" aria-label="التنقل الرئيسي"></nav>
+    <div class="nova-sidebar-foot">NOVA Dental Studio<br>إدارة العيادة اليومية</div>`;
+  const nav = sidebar.querySelector('.nova-nav');
+  const workspace = document.createElement('div'); workspace.className = 'nova-workspace';
+  const overview = document.createElement('section'); overview.className = 'nova-overview'; overview.id = 'nova-overview';
+  overview.innerHTML = `
+    <div class="nova-welcome"><div><small>NOVA DENTAL STUDIO / OVERVIEW</small><h2>مرحباً بك في لوحة العيادة</h2><p>نظرة سريعة على سير العمل اليومي وإدارة المرضى والمواعيد.</p></div><div class="nova-welcome-date" id="nova-today-date"></div></div>
+    <div class="nova-overview-grid">
+      <div class="nova-card"><div class="nova-card-head"><h2>الوصول السريع</h2><small>المهام الأساسية</small></div><div class="nova-shortcuts">
+        <button class="nova-shortcut" data-nova-go="appointmentsSection"><i>▦</i><span>إدارة المواعيد</span></button>
+        <button class="nova-shortcut" data-nova-go="patientsSection"><i>♙</i><span>ملفات المرضى</span></button>
+        <button class="nova-shortcut" data-nova-go="reportsSection"><i>▤</i><span>عرض التقارير</span></button>
+        <button class="nova-shortcut" data-nova-go="setupSection"><i>⚙</i><span>إعداد العيادة</span></button>
+      </div></div>
+      <div class="nova-card"><div class="nova-card-head"><h2>ملخص العمل</h2><small>من بيانات النظام</small></div><div class="nova-info-list">
+        <div class="nova-info-row"><span>حالات بانتظار التأكيد</span><strong id="nova-pending-summary">—</strong></div>
+        <div class="nova-info-row"><span>حجوزات مؤكدة</span><strong id="nova-confirmed-summary">—</strong></div>
+        <div class="nova-info-row"><span>حجوزات دون موعد</span><strong id="nova-unscheduled-summary">—</strong></div>
+      </div></div>
+    </div>`;
+
+  const header = document.createElement('div'); header.className = 'nova-toolbar';
+  const heading = document.createElement('div'); heading.innerHTML = `<span class="admin-eyebrow">NOVA DENTAL STUDIO / WORKSPACE</span><h1 id="nova-page-title">نظرة عامة</h1><p id="nova-page-description">ملخص العيادة والمهام اليومية.</p>`;
+  const actions = document.createElement('div'); actions.className = 'nova-toolbar-actions';
+  const refresh = $('refreshBtn');
+  if (refresh) { refresh.textContent = 'تحديث البيانات'; refresh.classList.add('btn-light'); actions.append(refresh); }
+  header.append(heading, actions);
+
+  const navItems = [
+    ['overview','⌂','نظرة عامة','ملخص العيادة والمهام اليومية.'],
+    ['appointmentsSection','▦','المواعيد','تنظيم الحجوزات ومتابعة حالاتها.'],
+    ['patientsSection','♙','المرضى','إدارة ملفات المرضى وسجل الزيارات.'],
+    ['reportsSection','▤','التقارير','ملخص النشاط خلال فترة محددة.'],
+    ['setupSection','⚙','الإعدادات','بيانات العيادة والأطباء وساعات العمل.']
+  ];
+  const buttons = new Map();
+  navItems.forEach(([id,icon,label]) => {
+    const b = document.createElement('button'); b.type = 'button'; b.dataset.novaPage = id;
+    b.innerHTML = `<span class="nova-nav-icon" aria-hidden="true">${icon}</span><span>${label}</span>`;
+    b.addEventListener('click', () => showPage(id)); nav.append(b); buttons.set(id,b);
+  });
+
+  // Put the original functional sections into the new visual workspace.
+  const content = document.createElement('div'); content.className = 'nova-page-content';
+  if (stats) overview.insertBefore(stats, overview.querySelector('.nova-overview-grid'));
+  if (appointmentSection) appointmentSection.insertBefore(overview, appointmentSection.firstChild);
+  if (oldToolbar) oldToolbar.remove();
+  const sections = ['appointmentsSection','patientsSection','reportsSection','setupSection'].map($).filter(Boolean);
+  sections.forEach(section => { content.append(section); });
+  // Overview is the landing page; the appointment section remains the source of the original KPI elements.
+  content.prepend(overview);
+  workspace.append(header, content);
+  shell.append(sidebar, workspace);
+  dashboard.replaceChildren(shell);
+
+  const titles = Object.fromEntries(navItems.map(([id,,label,description]) => [id,{label,description}]));
+  const originalShowSection = window.showSection;
+  function showPage(id) {
+    overview.hidden = id !== 'overview';
+    sections.forEach(section => { section.hidden = section.id !== id; });
+    buttons.forEach((button,key) => button.classList.toggle('active', key === id));
+    const meta = titles[id] || titles.overview;
+    $('nova-page-title').textContent = meta.label;
+    $('nova-page-description').textContent = meta.description;
+    if (id !== 'overview' && typeof originalShowSection === 'function') originalShowSection(id);
+    if (id === 'overview') syncSummary();
+    if (id === 'appointmentsSection') $('selectedDate')?.dispatchEvent(new Event('change'));
+  }
+  window.showSection = (id) => showPage(id);
+  window.novaShowAdminPage = showPage;
+  document.querySelectorAll('[data-nova-go]').forEach(button => button.addEventListener('click', () => showPage(button.dataset.novaGo)));
+
+  function syncSummary() {
+    $('nova-pending-summary').textContent = $('pendingCount')?.textContent || '0';
+    $('nova-confirmed-summary').textContent = $('confirmedCount')?.textContent || '0';
+    $('nova-unscheduled-summary').textContent = $('unscheduledCount')?.textContent || '0';
+  }
+  const date = new Intl.DateTimeFormat('ar-DZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date());
+  $('nova-today-date').textContent = date;
+  const observer = new MutationObserver(syncSummary);
+  ['pendingCount','confirmedCount','unscheduledCount'].forEach(id => { const el = $(id); if (el) observer.observe(el,{childList:true,characterData:true,subtree:true}); });
+  showPage('overview');
 })();
