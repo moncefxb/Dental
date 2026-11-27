@@ -72,6 +72,40 @@
     @media(max-width:1100px){.nova-shell{grid-template-columns:210px minmax(0,1fr);gap:16px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.nova-overview-grid{grid-template-columns:1fr}}
     @media(max-width:760px){main{padding:15px 12px 35px}.nova-shell{grid-template-columns:1fr;gap:13px}.nova-sidebar{position:static;min-height:0;padding:10px;border-radius:15px}.nova-side-brand,.nova-nav-label,.nova-sidebar-foot{display:none}.nova-nav{display:flex;overflow-x:auto;gap:5px;scrollbar-width:thin}.nova-nav button{flex:0 0 auto;width:auto;white-space:nowrap;padding:10px 12px}.nova-nav button:hover{transform:none}.nova-nav-icon{width:24px;height:24px;flex-basis:24px}.nova-toolbar{align-items:flex-start;margin-bottom:15px;padding-bottom:15px}.nova-welcome{padding:20px}.nova-toolbar-actions{flex-shrink:0}}
     @media(max-width:520px){.topbar-inner{min-height:65px}.brand{font-size:18px}.nova-toolbar{display:block}.nova-toolbar-actions{margin-top:13px}.nova-toolbar-actions .btn{flex:1}.nova-welcome{display:block}.nova-welcome h2{font-size:20px}.nova-welcome-date{display:inline-block;margin-top:14px}.stats{gap:9px}.stat{padding:15px}.stat strong{font-size:25px}.nova-shortcuts{grid-template-columns:1fr}.section-panel,.manual-form{padding:15px}.filters{grid-template-columns:1fr 1fr}.filters input{grid-column:1/-1}.details{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    /* Full-width fixed masthead and language-safe responsive layout. */
+    .topbar{position:fixed!important;inset:0 0 auto 0!important;width:100%!important;z-index:1000!important;isolation:isolate}
+    .topbar-inner{width:100%!important;max-width:none!important;margin:0!important;min-height:76px;padding-inline:clamp(16px,3vw,42px)!important}
+    body{padding-top:76px!important;overflow-x:clip}
+    .topbar-inner>div{min-width:0}
+    #dashboardSection,.nova-shell,.nova-workspace,.nova-page-content{width:100%;max-width:100%;min-width:0}
+    .nova-shell{grid-template-columns:248px minmax(0,1fr)}
+    .nova-sidebar,.nova-workspace,.nova-overview,.nova-overview-grid,.nova-overview-grid>*{min-width:0}
+    .nova-toolbar{min-width:0;flex-wrap:wrap;align-items:flex-start}
+    .nova-toolbar>div:first-child{flex:1 1 260px;min-width:0;max-width:100%}
+    .nova-toolbar h1,.nova-toolbar p,.nova-toolbar .admin-eyebrow{max-width:100%;overflow-wrap:anywhere;white-space:normal}
+    .nova-toolbar-actions{flex:0 1 auto;max-width:100%;min-width:0;flex-wrap:wrap}
+    .nova-toolbar-actions .btn{max-width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere}
+    .nova-welcome{min-width:0;flex-wrap:wrap}
+    .nova-welcome>div:first-child{flex:1 1 280px;min-width:0;max-width:100%}
+    .nova-welcome h2,.nova-welcome p{max-width:100%;overflow-wrap:anywhere}
+    .nova-welcome-date{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+    .nova-card,.nova-card-head,.nova-shortcuts,.nova-shortcut,.nova-info-row{min-width:0;max-width:100%}
+    .nova-card-head{flex-wrap:wrap}
+    .nova-shortcut{white-space:normal;overflow-wrap:anywhere;text-align:start}
+    .nova-shortcut span{min-width:0;overflow-wrap:anywhere}
+    .views{width:fit-content;max-width:100%;flex-wrap:wrap}
+    .view-btn{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+    .filters{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr)}
+    .appointment-head,.section-title,.toolbar,.view-heading{min-width:0;flex-wrap:wrap}
+    .appointment-head>* ,.section-title>*{min-width:0;max-width:100%;overflow-wrap:anywhere}
+    .details,.form-grid,.report-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media(max-width:1100px){.nova-shell{grid-template-columns:210px minmax(0,1fr)}.nova-toolbar-actions{flex:1 1 100%}}
+    @media(max-width:760px){body{padding-top:76px!important}.nova-shell{grid-template-columns:minmax(0,1fr)}.nova-sidebar{width:100%;max-width:100%;overflow:hidden}.nova-nav{min-width:0;max-width:100%}.nova-nav button{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}.nova-workspace{width:100%;max-width:100%}.nova-toolbar{display:flex;flex-direction:column;align-items:stretch}.nova-toolbar-actions{width:100%;display:flex;flex-wrap:wrap}.nova-toolbar-actions .btn{flex:1 1 150px}.nova-welcome{align-items:flex-start}}
+    @media(max-width:520px){body{padding-top:65px!important}.topbar-inner{min-height:65px!important;padding-inline:14px!important}.brand{font-size:18px}.subtitle{font-size:10px}.nova-toolbar-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.nova-toolbar-actions .btn{width:100%;padding-inline:9px;font-size:11px}.nova-welcome-date{display:inline-block;margin-top:12px}.details,.form-grid,.report-grid{grid-template-columns:minmax(0,1fr)}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.filters input{grid-column:1/-1}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    :root[dir="ltr"] .nova-nav button,:root[dir="ltr"] .nova-shortcut{text-align:left}
+    :root[dir="ltr"] .nova-info-row{gap:10px;flex-wrap:wrap}
+    :root[dir="ltr"] .nova-info-row>*{min-width:0;overflow-wrap:anywhere}
+    :root[dir="ltr"] .nova-setting-card{min-width:0}
   `;
   const style = document.createElement('style');
   style.id = 'nova-admin-design-system';
