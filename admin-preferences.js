@@ -1,74 +1,213 @@
-/* NOVA admin preferences: system/light/dark theme and Arabic/French/English UI. */
+/* NOVA admin preferences: complete Arabic/French/English localization and coherent light/dark themes. */
 (() => {
   const root = document.documentElement;
   const translations = {
     en: {
-      "لوحة إدارة NOVA":"NOVA Admin Dashboard","نظرة عامة":"Overview","المواعيد":"Appointments","الحجوزات":"Bookings","المرضى":"Patients","التقارير":"Reports","الإعدادات":"Settings","إدارة العيادة اليومية":"Daily clinic management","القائمة الرئيسية":"Main menu","مرحباً بك في لوحة العيادة":"Welcome to your clinic dashboard","نظرة سريعة على سير العمل اليومي وإدارة المرضى والمواعيد.":"A quick view of daily operations, patients and appointments.","الوصول السريع":"Quick access","المهام الأساسية":"Essential tasks","إدارة المواعيد":"Manage appointments","ملفات المرضى":"Patient records","عرض التقارير":"View reports","إعداد العيادة":"Clinic setup","ملخص العمل":"Activity summary","من بيانات النظام":"From system data","حالات بانتظار التأكيد":"Awaiting confirmation","حجوزات مؤكدة":"Confirmed bookings","حجوزات دون موعد":"Unscheduled bookings","تحديث البيانات":"Refresh data","تحديث الحجوزات":"Refresh bookings","إضافة حجز يدوي":"Add booking manually","للحجوزات القادمة عبر الهاتف أو واتساب أو الحضور المباشر.":"For bookings received by phone, WhatsApp or walk-in.","اسم المريض":"Patient name","رقم الهاتف":"Phone number","الخدمة":"Service","مصدر الحجز":"Booking source","تسجيل الحجز":"Create booking","مواعيد اليوم":"Today's appointments","دون موعد":"Unscheduled","كل الحجوزات":"All bookings","عرض مواعيد تاريخ":"Show appointments for date","كل الحالات":"All statuses","بانتظار التأكيد":"Pending confirmation","مؤكد":"Confirmed","مرفوض":"Rejected","ملغي":"Cancelled","كل المصادر":"All sources","ابحث بالاسم أو الهاتف أو المرجع":"Search name, phone or reference","الموقع الإلكتروني":"Website","الهاتف":"Phone","واتساب":"WhatsApp","حضور مباشر":"Walk-in","إدارة المرضى":"Patient management","إضافة المرضى والبحث في السجل الطبي.":"Add patients and search medical records.","ملاحظات أولية":"Initial notes","إضافة المريض":"Add patient","قائمة المرضى":"Patient list","البحث بالاسم أو الهاتف":"Search by name or phone","اكتب اسم المريض أو رقم هاتفه":"Enter patient name or phone","ملف المريض":"Patient record","إغلاق":"Close","تسجيل زيارة جديدة":"Record a new visit","تاريخ الزيارة":"Visit date","التشخيص":"Diagnosis","العلاج المقدم":"Treatment provided","ملاحظات":"Notes","حفظ الزيارة":"Save visit","سجل الزيارات":"Visit history","حجوزات المريض":"Patient bookings","التقارير والإحصائيات":"Reports & statistics","من تاريخ":"From date","إلى تاريخ":"To date","عرض التقرير":"Run report","تصدير CSV":"Export CSV","تصدير المواعيد CSV":"Export appointments CSV","تصدير المرضى CSV":"Export patients CSV","المرضى الجدد":"New patients","إجمالي الزيارات":"Total visits","إجمالي الحجوزات":"Total bookings","الحجوزات حسب الحالة":"Bookings by status","الزيارات حسب الخدمة":"Visits by service","الزيارات حسب اليوم":"Visits by day","الخدمات":"Services","الأطباء":"Dentists","ساعات العمل":"Working hours","الإجازات والإغلاق":"Time off & closures","المظهر واللغة":"Appearance & language","إعدادات الحجز":"Booking settings","المستخدمون":"Users","سجل التدقيق":"Audit log","كلمة المرور":"Password","مظهر لوحة الإدارة":"Dashboard appearance","لغة الواجهة":"Interface language","حسب إعداد الجهاز":"Use device setting","فاتح":"Light","داكن":"Dark","لغة النظام (افتراضي)":"System language (default)","العربية":"Arabic","تم تسجيل الخروج.":"You have been logged out.","تسجيل الدخول":"Sign in","كلمة المرور":"Password","البريد الإلكتروني":"Email","لا توجد حجوزات مطابقة.":"No matching bookings.","لا يوجد مرضى مطابقون للبحث.":"No matching patients.","فتح الملف":"Open record","حفظ الموعد":"Save appointment","تأكيد الحجز":"Confirm booking","رفض الطلب":"Reject request","إلغاء الحجز":"Cancel booking","التاريخ والساعة":"Date and time","رقم المرجع":"Reference number","الطبيب":"Dentist","البريد الإلكتروني":"Email","الزيارات":"Visits","المصدر":"Source","تاريخ الطلب":"Request date","الموعد":"Appointment","بيانات العيادة والأطباء وساعات العمل.":"Clinic, dentists and working hours.","طلبات الانتظار":"Pending requests","مواعيد اليوم":"Today's appointments","خدمات العيادة":"Clinic services","الاسم بالعربية":"Name in Arabic","Nom (FR)":"Nom (FR)","Name (EN)":"Name (EN)","المدة (دقيقة)":"Duration (minutes)","السعر ابتداءً من (اختياري)":"Starting price (optional)","الترتيب":"Order","قابل للحجز عبر الموقع":"Bookable online","نشط":"Active","حفظ الخدمة":"Save service","إضافة / تعديل خدمة":"Add / edit service","اللقب – عربي":"Title – Arabic","Titre – FR":"Titre – FR","Titre – EN":"Titre – EN","حفظ الطبيب":"Save dentist","إضافة / تعديل طبيب":"Add / edit dentist","الجدول":"Schedule","حفظ الجدول":"Save schedule","العيادة كلها":"Entire clinic","إضافة إغلاق / إجازة":"Add closure / time off","إضافة":"Add","حفظ الإعدادات":"Save settings","المنطقة الزمنية (IANA)":"Time zone (IANA)","خطوة المواعيد":"Appointment interval","أقل مهلة قبل الموعد (دقيقة)":"Minimum notice (minutes)","أقصى مدة للحجز المسبق (يوم)":"Maximum advance booking (days)","تفعيل الحجز المباشر عبر الموقع":"Enable online booking","إضافة مستخدم":"Add user","إنشاء":"Create","موظف (استقبال)":"Staff (reception)","مدير":"Administrator","سجل النشاط":"Activity log","الحالة":"Status","كل الخدمات":"All services","علاج عام":"General dentistry","تجميل الأسنان":"Cosmetic dentistry","تقويم الأسنان":"Orthodontics","ترميم الأسنان":"Restorative dentistry","زراعة الأسنان":"Dental implants","طب أسنان الأطفال":"Pediatric dentistry","خدمة أخرى":"Other service","عدد الزيارات":"Visits"
+      "لوحة إدارة NOVA":"NOVA Admin Dashboard","لوحة الإدارة الداخلية":"Internal Admin Dashboard","إدارة العيادة اليومية":"Daily Clinic Management","التنقل الرئيسي":"Main Navigation","تصدير المواعيد CSV":"Export Appointments CSV","دخول السكرتيرة":"Staff Sign In","تسجيل الدخول للوصول إلى لوحة إدارة العيادة.":"Sign in to access the clinic dashboard.","اسم المستخدم":"Username","كلمة المرور":"Password","تسجيل الدخول":"Sign in","تسجيل الخروج":"Sign out","الحجوزات والتقارير وإدارة العيادة":"Bookings, reports and clinic operations",
+      "القائمة الرئيسية":"Main Menu","نظرة عامة":"Overview","المواعيد":"Appointments","الحجوزات":"Bookings","تنظيم الحجوزات ومتابعة حالاتها.":"Organize bookings and track their status.","ملخص النشاط خلال فترة محددة.":"Activity summary for a selected period.","مرحباً بك في لوحة العيادة":"Welcome to your clinic dashboard","نظرة سريعة على سير العمل اليومي والحجوزات.":"A clear view of daily clinic operations and bookings.","الوصول السريع":"Quick Access","المهام الأساسية":"Essential Tasks","إدارة المواعيد":"Manage Appointments","عرض التقارير":"View Reports","الإعدادات":"Settings","تغيير لغة النظام ومظهره.":"Change the system language and appearance.","ملخص العمل":"Activity Summary","من بيانات النظام":"Live system data","حالات بانتظار التأكيد":"Awaiting Confirmation","حجوزات مؤكدة":"Confirmed Bookings","حجوزات دون موعد":"Unscheduled Bookings","ملخص العيادة والمهام اليومية.":"Clinic overview and daily tasks.",
+      "تحديث البيانات":"Refresh Data","جارٍ تحديث البيانات":"Refreshing data","تم التحديث":"Updated","تعذّر التحديث":"Refresh failed","إضافة حجز يدوي":"Add Manual Booking","للحجوزات القادمة عبر الهاتف أو واتساب أو الحضور المباشر.":"For bookings received by phone, WhatsApp or walk-in.","اسم المريض":"Patient Name","رقم الهاتف":"Phone Number","الخدمة":"Service","مصدر الحجز":"Booking Source","تسجيل الحجز":"Create Booking","مواعيد اليوم":"Today's Appointments","طلبات الانتظار":"Pending Requests","حجوزات مؤكدة":"Confirmed Bookings","دون موعد محدد":"Unscheduled","دون موعد":"Unscheduled","كل الحجوزات":"All Bookings","عرض مواعيد تاريخ":"Show appointments for","كل الحالات":"All Statuses","بانتظار التأكيد":"Awaiting Confirmation","مؤكد":"Confirmed","مرفوض":"Rejected","ملغي":"Cancelled","كل المصادر":"All Sources","ابحث بالاسم أو الهاتف أو المرجع":"Search by name, phone or reference","الموقع الإلكتروني":"Website","الهاتف":"Phone","واتساب":"WhatsApp","حضور مباشر":"Walk-in",
+      "الطلبات خلال 7 أيام":"Requests over 7 days","توزيع الحالات":"Status Breakdown","الطلب حسب الخدمة":"Bookings by Service","مصادر الطلب":"Booking Sources","آخر تحديث":"Last updated","لا توجد بيانات كافية بعد.":"Not enough data yet.","الفحص والوقاية":"Examination & Prevention","تجميل الأسنان":"Cosmetic Dentistry","تقويم الأسنان":"Orthodontics","ترميم الأسنان":"Restorative Dentistry","زراعة الأسنان":"Dental Implants","أسنان الأطفال":"Pediatric Dentistry","أخرى":"Other","علاج عام":"General Dentistry","طب أسنان الأطفال":"Pediatric Dentistry","خدمة أخرى":"Other Service","المصدر":"Source","الحالة":"Status","المرجع":"Reference","لم يتم تحديد موعد":"No appointment scheduled","تاريخ الطلب":"Request Date","ملاحظات:":"Notes:","الموعد":"Appointment","الطبيب":"Dentist","البريد الإلكتروني":"Email","رقم المرجع":"Reference","ملاحظات":"Notes","التاريخ والساعة":"Date & Time","حفظ الموعد":"Save Appointment","تأكيد الحجز":"Confirm Booking","رفض الطلب":"Reject Request","إلغاء الحجز":"Cancel Booking","هل تريد تأكيد هذا الحجز؟":"Confirm this booking?","هل تريد رفض الطلب؟":"Reject this request?","هل تريد إلغاء الحجز؟":"Cancel this booking?","هذا الموعد يتعارض مع حجز آخر.":"This time conflicts with another booking.","الموعد يتعارض مع حجز آخر.":"This time conflicts with another booking.","تعذر تحميل الحجوزات.":"Could not load bookings.","تعذر الاتصال بالخادم.":"Could not connect to the server.","جارٍ تحميل الحجوزات...":"Loading bookings...","لا توجد حجوزات مطابقة.":"No matching bookings.","تم حفظ الموعد.":"Appointment saved.","تم تحديث حالة الحجز.":"Booking status updated.","لم يتم تحديث الحالة.":"The status was not updated.","تعذر حفظ الموعد.":"Could not save the appointment.","تحقق من الاسم ورقم الهاتف والخدمة.":"Check the name, phone number and service.","تعذر تسجيل الحجز.":"Could not create the booking.","تم تسجيل الحجز اليدوي.":"Manual booking created.","لا توجد بيانات كافية بعد.":"Not enough data yet.",
+      "التقارير والإحصائيات":"Reports & Statistics","التقارير":"Reports","من تاريخ":"From Date","إلى تاريخ":"To Date","عرض التقرير":"Generate Report","تصدير CSV":"Export CSV","تصدير المواعيد CSV":"Export Appointments CSV","المرضى الجدد":"New Patients","إجمالي الزيارات":"Total Visits","إجمالي الحجوزات":"Total Bookings","الحجوزات حسب الحالة":"Bookings by Status","الزيارات حسب الخدمة":"Visits by Service","الزيارات حسب اليوم":"Visits by Day","تحقق من فترة التقرير.":"Check the report date range.","جارٍ إعداد التقرير...":"Preparing report...","تعذر تحميل التقرير.":"Could not load the report.","تم تحديث التقرير.":"Report updated.","لا توجد بيانات خلال هذه الفترة.":"No data for this period.","القسم":"Section","البند":"Item","القيمة":"Value","ملخص":"Summary","نتيجة":"results","الزيارات":"Visits","غير محدد":"Not specified","مريض":"Patient",
+      "الإعدادات":"Settings","خصص لغة واجهة الإدارة ومظهرها.":"Personalize the dashboard language and appearance.","لغة النظام":"System Language","اختر العربية أو الفرنسية أو الإنجليزية.":"Choose Arabic, French or English.","مظهر النظام":"System Theme","اختر الوضع الفاتح أو الداكن أو حسب الجهاز.":"Choose light, dark or follow device settings.","لغة النظام (افتراضي)":"System language (default)","حسب إعداد الجهاز":"Follow device","العربية":"Arabic","فاتح":"Light","داكن":"Dark","يتم تطبيق التغييرات على كامل لوحة الإدارة وحفظها تلقائياً.":"Changes apply across the entire dashboard and are saved automatically.","لغة الواجهة":"Interface Language","مظهر لوحة الإدارة":"Dashboard Theme",
+      "جارٍ التحقق...":"Signing in...","تم إيقاف المحاولات مؤقتاً. حاول لاحقاً.":"Sign-in temporarily blocked. Try again later.","إعداد حساب الإدارة غير مكتمل.":"Admin account setup is incomplete.","اسم المستخدم أو كلمة المرور غير صحيحة.":"Incorrect username or password.","انتهت جلسة الدخول. يرجى تسجيل الدخول مجدداً.":"Your session expired. Please sign in again.","تم تسجيل الخروج.":"You have signed out.","تعذر الاتصال بالخادم.":"Could not connect to the server.","الاسم":"Name","عدد الزيارات":"Visit Count","NOVA Dental Studio · لوحة إدارة داخلية":"NOVA Dental Studio · Internal Administration"
     },
     fr: {
-      "لوحة إدارة NOVA":"Tableau de bord NOVA","نظرة عامة":"Vue d’ensemble","المواعيد":"Rendez-vous","الحجوزات":"Réservations","المرضى":"Patients","التقارير":"Rapports","الإعدادات":"Paramètres","إدارة العيادة اليومية":"Gestion quotidienne du cabinet","القائمة الرئيسية":"Menu principal","مرحباً بك في لوحة العيادة":"Bienvenue dans votre espace clinique","نظرة سريعة على سير العمل اليومي وإدارة المرضى والمواعيد.":"Vue rapide des activités, patients et rendez-vous.","الوصول السريع":"Accès rapide","المهام الأساسية":"Actions essentielles","إدارة المواعيد":"Gérer les rendez-vous","ملفات المرضى":"Dossiers patients","عرض التقارير":"Voir les rapports","إعداد العيادة":"Configuration du cabinet","ملخص العمل":"Résumé de l’activité","من بيانات النظام":"Données du système","حالات بانتظار التأكيد":"En attente de confirmation","حجوزات مؤكدة":"Réservations confirmées","حجوزات دون موعد":"Réservations sans horaire","تحديث البيانات":"Actualiser les données","تحديث الحجوزات":"Actualiser les réservations","إضافة حجز يدوي":"Ajouter une réservation","للحجوزات القادمة عبر الهاتف أو واتساب أو الحضور المباشر.":"Pour les demandes par téléphone, WhatsApp ou sur place.","اسم المريض":"Nom du patient","رقم الهاتف":"Téléphone","الخدمة":"Service","مصدر الحجز":"Source de réservation","تسجيل الحجز":"Enregistrer la réservation","مواعيد اليوم":"Rendez-vous du jour","دون موعد":"Sans horaire","كل الحجوزات":"Toutes les réservations","عرض مواعيد تاريخ":"Afficher les rendez-vous du","كل الحالات":"Tous les statuts","بانتظار التأكيد":"En attente","مؤكد":"Confirmé","مرفوض":"Refusé","ملغي":"Annulé","كل المصادر":"Toutes les sources","ابحث بالاسم أو الهاتف أو المرجع":"Rechercher nom, téléphone ou référence","الموقع الإلكتروني":"Site web","الهاتف":"Téléphone","واتساب":"WhatsApp","حضور مباشر":"Sans rendez-vous","إدارة المرضى":"Gestion des patients","إضافة المرضى والبحث في السجل الطبي.":"Ajouter des patients et rechercher dans les dossiers.","ملاحظات أولية":"Notes initiales","إضافة المريض":"Ajouter le patient","قائمة المرضى":"Liste des patients","البحث بالاسم أو الهاتف":"Rechercher par nom ou téléphone","اكتب اسم المريض أو رقم هاتفه":"Saisir un nom ou un numéro","ملف المريض":"Dossier patient","إغلاق":"Fermer","تسجيل زيارة جديدة":"Enregistrer une visite","تاريخ الزيارة":"Date de visite","التشخيص":"Diagnostic","العلاج المقدم":"Traitement effectué","ملاحظات":"Notes","حفظ الزيارة":"Enregistrer la visite","سجل الزيارات":"Historique des visites","حجوزات المريض":"Réservations du patient","التقارير والإحصائيات":"Rapports et statistiques","من تاريخ":"Du","إلى تاريخ":"Au","عرض التقرير":"Générer le rapport","تصدير CSV":"Exporter CSV","تصدير المواعيد CSV":"Exporter les rendez-vous CSV","تصدير المرضى CSV":"Exporter les patients CSV","المرضى الجدد":"Nouveaux patients","إجمالي الزيارات":"Total des visites","إجمالي الحجوزات":"Total des réservations","الحجوزات حسب الحالة":"Réservations par statut","الزيارات حسب الخدمة":"Visites par service","الزيارات حسب اليوم":"Visites par jour","الخدمات":"Services","الأطباء":"Dentistes","ساعات العمل":"Horaires","الإجازات والإغلاق":"Congés et fermetures","المظهر واللغة":"Apparence et langue","إعدادات الحجز":"Paramètres de réservation","المستخدمون":"Utilisateurs","سجل التدقيق":"Journal d’audit","كلمة المرور":"Mot de passe","مظهر لوحة الإدارة":"Apparence du tableau de bord","لغة الواجهة":"Langue de l’interface","حسب إعداد الجهاز":"Selon l’appareil","فاتح":"Clair","داكن":"Sombre","لغة النظام (افتراضي)":"Langue du système (par défaut)","العربية":"Arabe","تم تسجيل الخروج.":"Vous êtes déconnecté.","تسجيل الدخول":"Connexion","لا توجد حجوزات مطابقة.":"Aucune réservation correspondante.","لا يوجد مرضى مطابقون للبحث.":"Aucun patient correspondant.","فتح الملف":"Ouvrir le dossier","حفظ الموعد":"Enregistrer le rendez-vous","تأكيد الحجز":"Confirmer","رفض الطلب":"Refuser","إلغاء الحجز":"Annuler le rendez-vous","التاريخ والساعة":"Date et heure","رقم المرجع":"Référence","الطبيب":"Dentiste","البريد الإلكتروني":"E-mail","الزيارات":"Visites","المصدر":"Source","تاريخ الطلب":"Date de demande","الموعد":"Rendez-vous","بيانات العيادة والأطباء وساعات العمل.":"Cabinet, dentistes et horaires.","طلبات الانتظار":"Demandes en attente","خدمات العيادة":"Services du cabinet","الاسم بالعربية":"Nom en arabe","المدة (دقيقة)":"Durée (minutes)","السعر ابتداءً من (اختياري)":"Prix à partir de (facultatif)","الترتيب":"Ordre","قابل للحجز عبر الموقع":"Réservable en ligne","نشط":"Actif","حفظ الخدمة":"Enregistrer le service","إضافة / تعديل خدمة":"Ajouter / modifier un service","اللقب – عربي":"Titre – arabe","حفظ الطبيب":"Enregistrer le dentiste","إضافة / تعديل طبيب":"Ajouter / modifier un dentiste","الجدول":"Planning","حفظ الجدول":"Enregistrer le planning","العيادة كلها":"Tout le cabinet","إضافة إغلاق / إجازة":"Ajouter une fermeture / absence","إضافة":"Ajouter","حفظ الإعدادات":"Enregistrer les paramètres","المنطقة الزمنية (IANA)":"Fuseau horaire (IANA)","خطوة المواعيد":"Intervalle des rendez-vous","أقل مهلة قبل الموعد (دقيقة)":"Délai minimum (minutes)","أقصى مدة للحجز المسبق (يوم)":"Réservation à l’avance maximale (jours)","تفعيل الحجز المباشر عبر الموقع":"Activer la réservation en ligne","إضافة مستخدم":"Ajouter un utilisateur","إنشاء":"Créer","موظف (استقبال)":"Personnel (accueil)","مدير":"Administrateur","سجل النشاط":"Journal d’activité","الحالة":"Statut","كل الخدمات":"Tous les services","علاج عام":"Soins généraux","تجميل الأسنان":"Dentisterie esthétique","تقويم الأسنان":"Orthodontie","ترميم الأسنان":"Soins restaurateurs","زراعة الأسنان":"Implants dentaires","طب أسنان الأطفال":"Dentisterie pédiatrique","خدمة أخرى":"Autre service","عدد الزيارات":"Nombre de visites"
+      "لوحة إدارة NOVA":"Tableau de bord NOVA","لوحة الإدارة الداخلية":"Administration interne","إدارة العيادة اليومية":"Gestion quotidienne du cabinet","التنقل الرئيسي":"Navigation principale","تصدير المواعيد CSV":"Exporter les rendez-vous CSV","دخول السكرتيرة":"Connexion du personnel","تسجيل الدخول للوصول إلى لوحة إدارة العيادة.":"Connectez-vous pour accéder au tableau de bord du cabinet.","اسم المستخدم":"Nom d’utilisateur","كلمة المرور":"Mot de passe","تسجيل الدخول":"Se connecter","تسجيل الخروج":"Se déconnecter","الحجوزات والتقارير وإدارة العيادة":"Réservations, rapports et gestion du cabinet",
+      "القائمة الرئيسية":"Menu principal","نظرة عامة":"Vue d’ensemble","المواعيد":"Rendez-vous","الحجوزات":"Réservations","تنظيم الحجوزات ومتابعة حالاتها.":"Organiser les réservations et suivre leur statut.","ملخص النشاط خلال فترة محددة.":"Résumé de l’activité sur une période donnée.","مرحباً بك في لوحة العيادة":"Bienvenue dans votre tableau de bord","نظرة سريعة على سير العمل اليومي والحجوزات.":"Une vue claire des activités quotidiennes et des réservations.","الوصول السريع":"Accès rapide","المهام الأساسية":"Actions essentielles","إدارة المواعيد":"Gérer les rendez-vous","عرض التقارير":"Voir les rapports","الإعدادات":"Paramètres","تغيير لغة النظام ومظهره.":"Modifier la langue et l’apparence du système.","ملخص العمل":"Résumé de l’activité","من بيانات النظام":"Données du système","حالات بانتظار التأكيد":"En attente de confirmation","حجوزات مؤكدة":"Réservations confirmées","حجوزات دون موعد":"Réservations sans horaire","ملخص العيادة والمهام اليومية.":"Vue d’ensemble du cabinet et tâches quotidiennes.",
+      "تحديث البيانات":"Actualiser les données","جارٍ تحديث البيانات":"Actualisation en cours","تم التحديث":"Mis à jour","تعذّر التحديث":"Échec de l’actualisation","إضافة حجز يدوي":"Ajouter une réservation","للحجوزات القادمة عبر الهاتف أو واتساب أو الحضور المباشر.":"Pour les demandes reçues par téléphone, WhatsApp ou sur place.","اسم المريض":"Nom du patient","رقم الهاتف":"Téléphone","الخدمة":"Service","مصدر الحجز":"Source de réservation","تسجيل الحجز":"Créer la réservation","مواعيد اليوم":"Rendez-vous du jour","طلبات الانتظار":"Demandes en attente","حجوزات مؤكدة":"Réservations confirmées","دون موعد محدد":"Sans horaire","دون موعد":"Sans horaire","كل الحجوزات":"Toutes les réservations","عرض مواعيد تاريخ":"Afficher les rendez-vous du","كل الحالات":"Tous les statuts","بانتظار التأكيد":"En attente de confirmation","مؤكد":"Confirmé","مرفوض":"Refusé","ملغي":"Annulé","كل المصادر":"Toutes les sources","ابحث بالاسم أو الهاتف أو المرجع":"Rechercher par nom, téléphone ou référence","الموقع الإلكتروني":"Site web","الهاتف":"Téléphone","واتساب":"WhatsApp","حضور مباشر":"Sans rendez-vous",
+      "الطلبات خلال 7 أيام":"Demandes sur 7 jours","توزيع الحالات":"Répartition des statuts","الطلب حسب الخدمة":"Demandes par service","مصادر الطلب":"Sources des demandes","آخر تحديث":"Dernière mise à jour","لا توجد بيانات كافية بعد.":"Pas encore assez de données.","الفحص والوقاية":"Examen et prévention","تجميل الأسنان":"Dentisterie esthétique","تقويم الأسنان":"Orthodontie","ترميم الأسنان":"Soins restaurateurs","زراعة الأسنان":"Implants dentaires","أسنان الأطفال":"Dentisterie pédiatrique","أخرى":"Autre","علاج عام":"Soins généraux","طب أسنان الأطفال":"Dentisterie pédiatrique","خدمة أخرى":"Autre service","المصدر":"Source","الحالة":"Statut","المرجع":"Référence","لم يتم تحديد موعد":"Aucun rendez-vous planifié","تاريخ الطلب":"Date de demande","ملاحظات:":"Notes :","الموعد":"Rendez-vous","الطبيب":"Dentiste","البريد الإلكتروني":"E-mail","رقم المرجع":"Référence","ملاحظات":"Notes","التاريخ والساعة":"Date et heure","حفظ الموعد":"Enregistrer le rendez-vous","تأكيد الحجز":"Confirmer la réservation","رفض الطلب":"Refuser la demande","إلغاء الحجز":"Annuler la réservation","هل تريد تأكيد هذا الحجز؟":"Confirmer cette réservation ?","هل تريد رفض الطلب؟":"Refuser cette demande ?","هل تريد إلغاء الحجز؟":"Annuler cette réservation ?","هذا الموعد يتعارض مع حجز آخر.":"Ce créneau chevauche une autre réservation.","الموعد يتعارض مع حجز آخر.":"Ce créneau chevauche une autre réservation.","تعذر تحميل الحجوزات.":"Impossible de charger les réservations.","تعذر الاتصال بالخادم.":"Impossible de contacter le serveur.","جارٍ تحميل الحجوزات...":"Chargement des réservations...","لا توجد حجوزات مطابقة.":"Aucune réservation correspondante.","تم حفظ الموعد.":"Rendez-vous enregistré.","تم تحديث حالة الحجز.":"Statut de réservation mis à jour.","لم يتم تحديث الحالة.":"Le statut n’a pas été modifié.","تعذر حفظ الموعد.":"Impossible d’enregistrer le rendez-vous.","تحقق من الاسم ورقم الهاتف والخدمة.":"Vérifiez le nom, le téléphone et le service.","تعذر تسجيل الحجز.":"Impossible de créer la réservation.","تم تسجيل الحجز اليدوي.":"Réservation manuelle créée.",
+      "التقارير والإحصائيات":"Rapports et statistiques","التقارير":"Rapports","من تاريخ":"Du","إلى تاريخ":"Au","عرض التقرير":"Générer le rapport","تصدير CSV":"Exporter CSV","تصدير المواعيد CSV":"Exporter les rendez-vous CSV","المرضى الجدد":"Nouveaux patients","إجمالي الزيارات":"Nombre total de visites","إجمالي الحجوزات":"Nombre total de réservations","الحجوزات حسب الحالة":"Réservations par statut","الزيارات حسب الخدمة":"Visites par service","الزيارات حسب اليوم":"Visites par jour","تحقق من فترة التقرير.":"Vérifiez la période du rapport.","جارٍ إعداد التقرير...":"Préparation du rapport...","تعذر تحميل التقرير.":"Impossible de charger le rapport.","تم تحديث التقرير.":"Rapport mis à jour.","لا توجد بيانات خلال هذه الفترة.":"Aucune donnée pour cette période.","القسم":"Section","البند":"Élément","القيمة":"Valeur","ملخص":"Résumé","نتيجة":"résultats","الزيارات":"Visites","غير محدد":"Non spécifié","مريض":"Patient",
+      "الإعدادات":"Paramètres","خصص لغة واجهة الإدارة ومظهرها.":"Personnalisez la langue et l’apparence du tableau de bord.","لغة النظام":"Langue du système","اختر العربية أو الفرنسية أو الإنجليزية.":"Choisissez l’arabe, le français ou l’anglais.","مظهر النظام":"Thème du système","اختر الوضع الفاتح أو الداكن أو حسب الجهاز.":"Choisissez le mode clair, sombre ou celui de l’appareil.","لغة النظام (افتراضي)":"Langue du système (par défaut)","حسب إعداد الجهاز":"Selon l’appareil","العربية":"Arabe","فاتح":"Clair","داكن":"Sombre","يتم تطبيق التغييرات على كامل لوحة الإدارة وحفظها تلقائياً.":"Les changements s’appliquent à tout le tableau de bord et sont enregistrés automatiquement.","لغة الواجهة":"Langue de l’interface","مظهر لوحة الإدارة":"Thème du tableau de bord",
+      "جارٍ التحقق...":"Connexion en cours...","تم إيقاف المحاولات مؤقتاً. حاول لاحقاً.":"Connexion temporairement bloquée. Réessayez plus tard.","إعداد حساب الإدارة غير مكتمل.":"La configuration du compte administrateur est incomplète.","اسم المستخدم أو كلمة المرور غير صحيحة.":"Nom d’utilisateur ou mot de passe incorrect.","انتهت جلسة الدخول. يرجى تسجيل الدخول مجدداً.":"Votre session a expiré. Veuillez vous reconnecter.","تم تسجيل الخروج.":"Vous êtes déconnecté.","الاسم":"Nom","عدد الزيارات":"Nombre de visites","NOVA Dental Studio · لوحة إدارة داخلية":"NOVA Dental Studio · Administration interne"
     }
   };
+
   const originalText = new WeakMap();
   const originalAttrs = new WeakMap();
+  const reverseTranslations = Object.entries(translations).flatMap(([lang, dict]) =>
+    Object.entries(dict).map(([source, translated]) => [translated, source, lang])
+  ).sort((a, b) => String(b[0]).length - String(a[0]).length);
+  function normalizeSource(value) {
+    let result = String(value ?? '');
+    for (const [translated, source] of reverseTranslations) {
+      if (!translated || translated === source) continue;
+      if (result === translated) return source;
+    }
+    for (const [translated, source] of reverseTranslations) {
+      if (translated && translated !== source && result.includes(translated)) {
+        result = result.split(translated).join(source);
+      }
+    }
+    return result;
+  }
   const systemLanguage = () => {
-    const l = (navigator.languages?.[0] || navigator.language || "ar").toLowerCase();
-    return l.startsWith("fr") ? "fr" : l.startsWith("en") ? "en" : "ar";
+    const l = (navigator.languages?.[0] || navigator.language || 'ar').toLowerCase();
+    return l.startsWith('fr') ? 'fr' : l.startsWith('en') ? 'en' : 'ar';
   };
-  const language = () => { const v = localStorage.getItem("nova-admin-language") || "system"; return v === "system" ? systemLanguage() : v; };
-  const theme = () => { const v = localStorage.getItem("nova-admin-theme") || "system"; return v === "system" ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : v; };
-  function translateTree(node, lang) {
+  const selectedLanguage = () => localStorage.getItem('nova-admin-language') || 'system';
+  const language = () => { const v = selectedLanguage(); return v === 'system' ? systemLanguage() : v; };
+  const selectedTheme = () => localStorage.getItem('nova-admin-theme') || 'system';
+  const theme = () => { const v = selectedTheme(); return v === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : v; };
+
+  function translateValue(value, lang) {
     const dict = translations[lang] || {};
+    const clean = String(value ?? '').trim();
+    if (!clean || lang === 'ar') return value;
+    if (dict[clean]) return String(value).replace(clean, dict[clean]);
+    // Translate mixed UI strings while leaving names, references and other data intact.
+    let result = String(value);
+    for (const key of Object.keys(dict).sort((a, b) => b.length - a.length)) {
+      if (key.length < 3 || !result.includes(key)) continue;
+      result = result.split(key).join(dict[key]);
+    }
+    return result;
+  }
+
+  function translateTree(node, lang) {
+    if (!node) return;
     const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
     let textNode;
     while ((textNode = walker.nextNode())) {
-      if (!originalText.has(textNode)) originalText.set(textNode, textNode.nodeValue);
-      const original = originalText.get(textNode).trim();
-      if (!original) continue;
-      const translated = dict[original];
-      if (translated) textNode.nodeValue = textNode.nodeValue.replace(original, translated);
-      else if (lang === "ar") textNode.nodeValue = originalText.get(textNode);
+      if (!originalText.has(textNode)) originalText.set(textNode, normalizeSource(textNode.nodeValue));
+      const original = normalizeSource(originalText.get(textNode));
+      originalText.set(textNode, original);
+      if (!original?.trim()) continue;
+      textNode.nodeValue = translateValue(original, lang);
     }
-    const els = node.nodeType === 1 ? [node, ...node.querySelectorAll("[placeholder],[aria-label],[title]")] : [...node.querySelectorAll?.("[placeholder],[aria-label],[title]") || []];
-    for (const el of els) for (const attr of ["placeholder","aria-label","title"]) {
-      if (!el.hasAttribute?.(attr)) continue;
-      let saved = originalAttrs.get(el); if (!saved) { saved = {}; originalAttrs.set(el, saved); }
-      if (!(attr in saved)) saved[attr] = el.getAttribute(attr);
-      el.setAttribute(attr, dict[saved[attr]] || (lang === "ar" ? saved[attr] : el.getAttribute(attr)));
+    const elements = node.nodeType === 1 ? [node, ...node.querySelectorAll('[placeholder],[aria-label],[title]')] : [...(node.querySelectorAll?.('[placeholder],[aria-label],[title]') || [])];
+    const dict = translations[lang] || {};
+    for (const el of elements) {
+      for (const attr of ['placeholder', 'aria-label', 'title']) {
+        if (!el.hasAttribute?.(attr)) continue;
+        let saved = originalAttrs.get(el);
+        if (!saved) { saved = {}; originalAttrs.set(el, saved); }
+        if (!(attr in saved)) saved[attr] = normalizeSource(el.getAttribute(attr));
+        else saved[attr] = normalizeSource(saved[attr]);
+        el.setAttribute(attr, translateValue(saved[attr], lang));
+      }
     }
   }
+
   function apply() {
-    const lang = language(), dir = lang === "ar" ? "rtl" : "ltr", t = theme();
-    root.lang = lang; root.dir = dir; root.dataset.theme = t;
-    document.body.dataset.theme = t;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", t === "dark" ? "#142522" : "#f5f8f7");
+    const lang = language();
+    const dir = lang === 'ar' ? 'rtl' : 'ltr';
+    const activeTheme = theme();
+    root.lang = lang;
+    root.dir = dir;
+    root.dataset.theme = activeTheme;
+    document.body.dataset.theme = activeTheme;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', activeTheme === 'dark' ? '#14211f' : '#f4f7f5');
     translateTree(document.body, lang);
-    window.dispatchEvent(new Event("nova:preferences-changed"));
-    document.querySelectorAll("[data-nova-language]").forEach(x => x.value = localStorage.getItem("nova-admin-language") || "system");
-    document.querySelectorAll("[data-nova-theme]").forEach(x => x.value = localStorage.getItem("nova-admin-theme") || "system");
+    const title = { ar: 'NOVA | لوحة الإدارة', en: 'NOVA | Admin Dashboard', fr: 'NOVA | Administration' }[lang];
+    document.title = title;
+    document.querySelectorAll('[data-nova-language]').forEach(el => { el.value = selectedLanguage(); });
+    document.querySelectorAll('[data-nova-theme]').forEach(el => { el.value = selectedTheme(); });
+    window.dispatchEvent(new Event('nova:preferences-changed'));
   }
-  window.NOVAAdminPreferences = { apply, translate: (value) => (translations[language()] || {})[value] || value, currentLanguage: language };
-  const css = document.createElement("style");
-  css.textContent = `
-    :root[data-theme="dark"]{color-scheme:dark;--nova-ink:#e4eeeb;--nova-muted:#9eafaa;--nova-line:#30433f;--nova-bg:#14211f;--nova-card:#1d302c;--nova-teal:#4a9c94;--nova-mint:#29443e}
-    :root[data-theme="dark"] body{background:#14211f!important;color:#e4eeeb!important}
-    :root[data-theme="dark"] .topbar,:root[data-theme="dark"] .panel,:root[data-theme="dark"] .manual-form,:root[data-theme="dark"] .appointment,:root[data-theme="dark"] .stat,:root[data-theme="dark"] .record-card,:root[data-theme="dark"] .section-panel,:root[data-theme="dark"] .nova-card,:root[data-theme="dark"] .patient-row,:root[data-theme="dark"] .visit-card,:root[data-theme="dark"] .empty{background:#1d302c!important;color:#e4eeeb!important;border-color:#30433f!important}
-    :root[data-theme="dark"] .nova-sidebar{background:linear-gradient(165deg,#102d2b,#102421)}
-    :root[data-theme="dark"] .nova-toolbar h1,:root[data-theme="dark"] .nova-card h2,:root[data-theme="dark"] .nova-info-row strong,:root[data-theme="dark"] .stat strong{color:#e4eeeb!important}
-    :root[data-theme="dark"] input,:root[data-theme="dark"] select,:root[data-theme="dark"] textarea{background:#142522!important;color:#e4eeeb!important;border-color:#3a514b!important}
-    :root[data-theme="dark"] .views,:root[data-theme="dark"] .patient-detail,:root[data-theme="dark"] .schedule-box,:root[data-theme="dark"] .notes,:root[data-theme="dark"] .report-stat{background:#263b36!important;color:#e4eeeb!important;border-color:#3a514b!important}
-    :root[data-theme="dark"] .view-btn{color:#c3d2cd}:root[data-theme="dark"] .view-btn.active{background:#397e78;color:#fff}
-    :root[data-theme="dark"] .btn-light{background:#304640;color:#e4eeeb}
+
+  window.NOVAAdminPreferences = {
+    apply,
+    translate: value => translateValue(value, language()),
+    currentLanguage: language,
+    currentTheme: theme
+  };
+
+  const styles = document.createElement('style');
+  styles.id = 'nova-global-preferences-theme';
+  styles.textContent = `
+    :root[data-theme="light"]{color-scheme:light;--nova-ink:#203a35;--nova-muted:#71847d;--nova-line:#dfe9e4;--nova-bg:#f3f7f4;--nova-card:#ffffff;--nova-card-soft:#f7faf8;--nova-panel:#ffffff;--nova-input:#ffffff;--nova-teal:#226c61;--nova-teal-dark:#18564e;--nova-mint:#e7f2ed;--nova-text:#203a35}
+    :root[data-theme="dark"]{color-scheme:dark;--nova-ink:#e6efeb;--nova-muted:#a0b4ac;--nova-line:#344b43;--nova-bg:#101a17;--nova-card:#1b2b25;--nova-card-soft:#22372f;--nova-panel:#1b2b25;--nova-input:#14231e;--nova-teal:#68b4a4;--nova-teal-dark:#4b9e8e;--nova-mint:#29463c;--nova-text:#e6efeb}
+    :root[data-theme="light"] body{background:var(--nova-bg)!important;color:var(--nova-ink)!important}
+    :root[data-theme="light"] .topbar{background:rgba(250,252,250,.96)!important;color:var(--nova-ink)!important;border-color:var(--nova-line)!important}
+    :root[data-theme="light"] .nova-sidebar{background:linear-gradient(160deg,#e5f0ea,#dcebe3)!important;color:#24483d!important;box-shadow:0 16px 38px rgba(33,74,59,.08)}
+    :root[data-theme="light"] .nova-side-brand strong,:root[data-theme="light"] .nova-nav button{color:#24483d!important}
+    :root[data-theme="light"] .nova-side-brand small,:root[data-theme="light"] .nova-nav-label,:root[data-theme="light"] .nova-sidebar-foot{color:#668579!important}
+    :root[data-theme="light"] .nova-nav button:hover{background:rgba(39,100,79,.08)!important}
+    :root[data-theme="light"] .nova-nav button.active{background:#ffffff!important;color:#1d695b!important}
+    :root[data-theme="light"] .nova-welcome{background:linear-gradient(112deg,#e4f0e9,#d3e8df)!important;color:#21463b!important;box-shadow:0 14px 30px rgba(42,93,71,.08)}
+    :root[data-theme="light"] .nova-welcome h2,:root[data-theme="light"] .nova-welcome p,:root[data-theme="light"] .nova-welcome small,:root[data-theme="light"] .nova-welcome-date{color:#21463b!important}
+    :root[data-theme="light"] .nova-welcome-date{border-color:rgba(33,70,59,.18)!important}
+    :root[data-theme="light"] .nova-card,:root[data-theme="light"] .stat,:root[data-theme="light"] .section-panel,:root[data-theme="light"] .manual-form,:root[data-theme="light"] .appointment,:root[data-theme="light"] .panel,:root[data-theme="light"] .record-card,:root[data-theme="light"] .nova-shortcut,:root[data-theme="light"] .empty{background:var(--nova-card)!important;color:var(--nova-ink)!important;border-color:var(--nova-line)!important}
+    :root[data-theme="light"] .nova-shortcut{background:var(--nova-card-soft)!important}
+    :root[data-theme="light"] .nova-shortcut:hover{background:#edf6f1!important}
+    :root[data-theme="light"] .nova-card h2,:root[data-theme="light"] .nova-toolbar h1,:root[data-theme="light"] .nova-info-row strong,:root[data-theme="light"] .stat strong{color:var(--nova-ink)!important}
+    :root[data-theme="light"] .nova-info-row{border-color:var(--nova-line)!important}
+    :root[data-theme="light"] input,:root[data-theme="light"] select,:root[data-theme="light"] textarea{background:var(--nova-input)!important;color:var(--nova-ink)!important;border-color:var(--nova-line)!important}
+    :root[data-theme="light"] .views,:root[data-theme="light"] .patient-detail,:root[data-theme="light"] .schedule-box,:root[data-theme="light"] .notes,:root[data-theme="light"] .report-stat{background:var(--nova-card-soft)!important;color:var(--nova-ink)!important;border-color:var(--nova-line)!important}
+    :root[data-theme="light"] .view-btn{color:var(--nova-muted)!important}:root[data-theme="light"] .view-btn.active{background:var(--nova-teal)!important;color:#fff!important}
+    :root[data-theme="light"] .btn-light{background:#eaf2ed!important;color:#28584b!important}
+    :root[data-theme="light"] option{background:#fff!important;color:var(--nova-ink)!important}
+    :root[data-theme="light"] .status{background:#f7efdf!important;color:#86632c!important}
+    :root[data-theme="light"] .status.confirmed{background:#e5f2e9!important;color:#267052!important}
+    :root[data-theme="light"] .status.rejected,:root[data-theme="light"] .status.cancelled{background:#f8e9e7!important;color:#a34d45!important}
+    :root[data-theme="dark"] body{background:radial-gradient(circle at 88% 0%,#1b332a 0,transparent 28%),var(--nova-bg)!important;color:var(--nova-ink)!important}
+    :root[data-theme="dark"] .topbar{background:rgba(20,34,29,.97)!important;color:var(--nova-ink)!important;border-color:var(--nova-line)!important}
+    :root[data-theme="dark"] .nova-sidebar{background:linear-gradient(165deg,#182f27,#13251f)!important;color:var(--nova-ink)!important;border:1px solid var(--nova-line)}
+    :root[data-theme="dark"] .nova-side-brand strong,:root[data-theme="dark"] .nova-nav button{color:#dceae4!important}
+    :root[data-theme="dark"] .nova-side-brand small,:root[data-theme="dark"] .nova-nav-label,:root[data-theme="dark"] .nova-sidebar-foot{color:#8da99b!important}
+    :root[data-theme="dark"] .nova-nav button:hover{background:#294239!important;color:#fff!important}
+    :root[data-theme="dark"] .nova-nav button.active{background:#2b493e!important;color:#b9e4d2!important;box-shadow:none}
+    :root[data-theme="dark"] .nova-welcome{background:linear-gradient(112deg,#1c3930,#23483b)!important;color:#e6efeb!important;box-shadow:0 14px 32px rgba(0,0,0,.18)}
+    :root[data-theme="dark"] .nova-welcome h2,:root[data-theme="dark"] .nova-welcome p,:root[data-theme="dark"] .nova-welcome small,:root[data-theme="dark"] .nova-welcome-date{color:#e6efeb!important}
+    :root[data-theme="dark"] .nova-welcome p{color:#bfd0c7!important}
+    :root[data-theme="dark"] .nova-welcome-date{border-color:#506b5e!important}
+    :root[data-theme="dark"] .nova-card,:root[data-theme="dark"] .stat,:root[data-theme="dark"] .section-panel,:root[data-theme="dark"] .manual-form,:root[data-theme="dark"] .appointment,:root[data-theme="dark"] .panel,:root[data-theme="dark"] .record-card,:root[data-theme="dark"] .nova-shortcut,:root[data-theme="dark"] .empty{background:var(--nova-card)!important;color:var(--nova-ink)!important;border-color:var(--nova-line)!important;box-shadow:0 10px 28px rgba(0,0,0,.13)}
+    :root[data-theme="dark"] .nova-shortcut{background:var(--nova-card-soft)!important;color:var(--nova-ink)!important}
+    :root[data-theme="dark"] .nova-shortcut:hover{background:#2a4439!important;border-color:#547465!important}
+    :root[data-theme="dark"] .nova-shortcut i{background:#29483d!important;color:#9bd0ba!important}
+    :root[data-theme="dark"] .nova-card h2,:root[data-theme="dark"] .nova-toolbar h1,:root[data-theme="dark"] .nova-info-row strong,:root[data-theme="dark"] .stat strong,:root[data-theme="dark"] h1,:root[data-theme="dark"] h2{color:var(--nova-ink)!important}
+    :root[data-theme="dark"] .nova-info-row{border-color:var(--nova-line)!important}
+    :root[data-theme="dark"] .nova-info-row span,:root[data-theme="dark"] .nova-card-head small,:root[data-theme="dark"] .muted,:root[data-theme="dark"] .subtitle{color:var(--nova-muted)!important}
+    :root[data-theme="dark"] input,:root[data-theme="dark"] select,:root[data-theme="dark"] textarea{background:var(--nova-input)!important;color:var(--nova-ink)!important;border-color:#3b5449!important;color-scheme:dark}
+    :root[data-theme="dark"] input::placeholder,:root[data-theme="dark"] textarea::placeholder{color:#81978c!important}
+    :root[data-theme="dark"] .views,:root[data-theme="dark"] .patient-detail,:root[data-theme="dark"] .schedule-box,:root[data-theme="dark"] .notes,:root[data-theme="dark"] .report-stat{background:var(--nova-card-soft)!important;color:var(--nova-ink)!important;border-color:var(--nova-line)!important}
+    :root[data-theme="dark"] .view-btn{color:#bacbc2!important}:root[data-theme="dark"] .view-btn.active{background:#377a68!important;color:#fff!important}
+    :root[data-theme="dark"] .btn-light{background:#2a4137!important;color:#d9e9e1!important;border:1px solid #40594d!important}
+    :root[data-theme="dark"] .btn-light:hover{background:#365347!important}
+    :root[data-theme="dark"] .status{background:#493c28!important;color:#e6c990!important}
+    :root[data-theme="dark"] .status.confirmed{background:#244838!important;color:#9ad5b4!important}
+    :root[data-theme="dark"] .status.rejected,:root[data-theme="dark"] .status.cancelled{background:#4b302e!important;color:#efaaa1!important}
+    :root[data-theme="dark"] .stat::after{border-color:rgba(168,197,182,.09)!important}
+    :root[data-theme="dark"] option{background:#14231e!important;color:#e6efeb!important}
+    :root[data-theme="dark"] .actions{border-color:var(--nova-line)!important}
+    :root[data-theme="dark"] .appointment-head{border-color:var(--nova-line)!important}
+    :root[data-theme="dark"] .footer-note{color:#81978c!important}
+    :root[data-theme="dark"] .refresh-action{background:#2a4137!important;color:#d9e9e1!important}
+    :root[data-theme="dark"] .nova-setting-card{background:var(--nova-card-soft)!important;border-color:var(--nova-line)!important;color:var(--nova-ink)!important}
+    :root[data-theme="light"] .nova-setting-card{background:var(--nova-card-soft)!important;border-color:var(--nova-line)!important;color:var(--nova-ink)!important}
+    .nova-settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}
+    .nova-setting-card{display:grid;grid-template-columns:42px minmax(0,1fr);gap:12px;align-items:center;padding:17px;border:1px solid var(--nova-line);border-radius:15px;background:var(--nova-card-soft);color:var(--nova-ink);cursor:pointer}
+    .nova-setting-icon{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:var(--nova-mint);color:var(--nova-teal);font-size:18px;font-weight:800}
+    .nova-setting-copy{display:grid;gap:4px}.nova-setting-copy strong{font-size:13px}.nova-setting-copy small{color:var(--nova-muted);font-size:11px;line-height:1.6}
+    .nova-setting-card select{grid-column:1/-1;margin-top:4px}
+    .nova-settings-hint{margin:16px 0 0;color:var(--nova-muted);font-size:11px}
+    .refresh-action{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-width:142px}
+    .refresh-icon{display:inline-block;font-size:18px;line-height:1;transition:transform .35s ease}
+    .refresh-action:hover .refresh-icon{transform:rotate(90deg)}
+    .refresh-action.is-refreshing .refresh-icon{animation:nova-refresh-spin .8s linear infinite}
+    .refresh-action.is-refreshing{opacity:.9;cursor:progress}
+    @keyframes nova-refresh-spin{to{transform:rotate(360deg)}}
     :root[dir="ltr"] body{font-family:Inter,"Segoe UI",system-ui,sans-serif}
     :root[dir="ltr"] .nova-shell{direction:ltr}
-    :root[dir="ltr"] .nova-nav button{text-align:left}
-    :root[dir="ltr"] .nova-welcome small,:root[dir="ltr"] .nova-admin-toolbar .admin-eyebrow{text-align:left}
-    :root[dir="ltr"] .nova-side-brand small{text-align:left}
+    :root[dir="ltr"] .nova-nav button,:root[dir="ltr"] .nova-shortcut{text-align:left}
+    :root[dir="ltr"] .nova-welcome small,:root[dir="ltr"] .nova-admin-toolbar .admin-eyebrow,:root[dir="ltr"] .nova-side-brand small{text-align:left}
     :root[dir="ltr"] .nova-info-row{flex-direction:row}
+    :root[dir="ltr"] .patient-phone,:root[dir="ltr"] .reference{direction:ltr;text-align:left}
+    @media(max-width:650px){.nova-settings-grid{grid-template-columns:1fr}}
   `;
-  document.head.append(css);
+  document.head.append(styles);
   apply();
-  const observer = new MutationObserver(records => { const lang = language(); for (const r of records) for (const n of r.addedNodes) if (n.nodeType === 1 || n.nodeType === 3) translateTree(n, lang); });
-  observer.observe(document.body, { childList:true, subtree:true });
-  matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { if ((localStorage.getItem("nova-admin-theme") || "system") === "system") apply(); });
+
+  const observer = new MutationObserver(records => {
+    const lang = language();
+    for (const record of records) {
+      for (const added of record.addedNodes) {
+        if (added.nodeType === 1 || added.nodeType === 3) translateTree(added, lang);
+      }
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => {
+    if (selectedTheme() === 'system') apply();
+  });
 })();

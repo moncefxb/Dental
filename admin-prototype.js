@@ -25,14 +25,14 @@
     .nova-nav button.active{background:#f4f8f5;color:#174f53;box-shadow:0 7px 18px rgba(0,0,0,.09)}
     .nova-nav-icon{width:27px;height:27px;display:grid;place-items:center;border-radius:9px;background:rgba(255,255,255,.1);font-size:14px;flex:0 0 27px}
     .nova-nav button.active .nova-nav-icon{background:var(--nova-mint);color:var(--nova-teal)}
-    .nova-sidebar-foot{position:absolute;inset:auto 22px 20px;color:#a8c6c3;font-size:10px;line-height:1.8}
+    .nova-sidebar-foot{position:static;margin:24px 8px 0;color:#a8c6c3;font-size:10px;line-height:1.8}
     .nova-workspace{min-width:0}
     .nova-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 22px;padding:4px 2px 20px;border-bottom:1px solid var(--nova-line)}
     .nova-toolbar h1{margin:0;color:var(--nova-ink);font-size:clamp(23px,2.5vw,31px);font-weight:800;letter-spacing:-.04em}
     .nova-toolbar p{margin:6px 0 0;color:var(--nova-muted);font-size:12px}
     .nova-toolbar .admin-eyebrow{display:block;color:#9b8253;font-size:9px;font-weight:800;letter-spacing:.16em;margin-bottom:7px;direction:ltr;text-align:right}
     .nova-toolbar-actions{display:flex;gap:8px;align-items:center}
-    .nova-toolbar-actions .btn{min-height:41px;border-radius:11px;padding-inline:15px}
+    .nova-toolbar-actions .btn{min-height:41px;border-radius:11px;padding-inline:15px;white-space:nowrap}
     .btn{background:var(--nova-teal);border-radius:11px;box-shadow:none;transition:background .18s,transform .18s,box-shadow .18s}
     .btn:hover{background:var(--nova-teal-dark);transform:translateY(-1px);box-shadow:0 7px 16px rgba(23,109,112,.14)}
     .btn-light{background:#edf4f2;color:#28565a}.btn-light:hover{background:#e1eeeb;color:#174f53}
@@ -97,13 +97,12 @@
   const workspace = document.createElement('div'); workspace.className = 'nova-workspace';
   const overview = document.createElement('section'); overview.className = 'nova-overview'; overview.id = 'nova-overview';
   overview.innerHTML = `
-    <div class="nova-welcome"><div><small>NOVA DENTAL STUDIO / OVERVIEW</small><h2>مرحباً بك في لوحة العيادة</h2><p>نظرة سريعة على سير العمل اليومي وإدارة المرضى والمواعيد.</p></div><div class="nova-welcome-date" id="nova-today-date"></div></div>
+    <div class="nova-welcome"><div><small>NOVA DENTAL STUDIO / OVERVIEW</small><h2>مرحباً بك في لوحة العيادة</h2><p>نظرة سريعة على سير العمل اليومي والحجوزات.</p></div><div class="nova-welcome-date" id="nova-today-date"></div></div>
     <div class="nova-overview-grid">
       <div class="nova-card"><div class="nova-card-head"><h2>الوصول السريع</h2><small>المهام الأساسية</small></div><div class="nova-shortcuts">
         <button class="nova-shortcut" data-nova-go="appointmentsSection"><i>▦</i><span>إدارة المواعيد</span></button>
-        <button class="nova-shortcut" data-nova-go="patientsSection"><i>♙</i><span>ملفات المرضى</span></button>
         <button class="nova-shortcut" data-nova-go="reportsSection"><i>▤</i><span>عرض التقارير</span></button>
-        <button class="nova-shortcut" data-nova-go="setupSection"><i>⚙</i><span>إعداد العيادة</span></button>
+        <button class="nova-shortcut" data-nova-go="setupSection"><i>⚙</i><span>الإعدادات</span></button>
       </div></div>
       <div class="nova-card"><div class="nova-card-head"><h2>ملخص العمل</h2><small>من بيانات النظام</small></div><div class="nova-info-list">
         <div class="nova-info-row"><span>حالات بانتظار التأكيد</span><strong id="nova-pending-summary">—</strong></div>
@@ -116,7 +115,7 @@
   const heading = document.createElement('div'); heading.innerHTML = `<span class="admin-eyebrow">NOVA DENTAL STUDIO / WORKSPACE</span><h1 id="nova-page-title">نظرة عامة</h1><p id="nova-page-description">ملخص العيادة والمهام اليومية.</p>`;
   const actions = document.createElement('div'); actions.className = 'nova-toolbar-actions';
   const refresh = $('refreshBtn');
-  if (refresh) { refresh.textContent = 'تحديث البيانات'; refresh.classList.add('btn-light'); actions.append(refresh); }
+  if (refresh) { refresh.classList.add('btn-light'); actions.append(refresh); }
   const exportCsv = document.createElement('button'); exportCsv.type = 'button'; exportCsv.className = 'btn btn-light'; exportCsv.textContent = 'تصدير المواعيد CSV';
   exportCsv.addEventListener('click', () => window.novaExportAppointmentsCsv?.()); actions.append(exportCsv);
   header.append(heading, actions);
@@ -124,9 +123,8 @@
   const navItems = [
     ['overview','⌂','نظرة عامة','ملخص العيادة والمهام اليومية.'],
     ['appointmentsSection','▦','المواعيد','تنظيم الحجوزات ومتابعة حالاتها.'],
-    ['patientsSection','♙','المرضى','إدارة ملفات المرضى وسجل الزيارات.'],
     ['reportsSection','▤','التقارير','ملخص النشاط خلال فترة محددة.'],
-    ['setupSection','⚙','الإعدادات','بيانات العيادة والأطباء وساعات العمل.']
+    ['setupSection','⚙','الإعدادات','تغيير لغة النظام ومظهره.']
   ];
   const buttons = new Map();
   navItems.forEach(([id,icon,label]) => {
@@ -140,9 +138,7 @@
   if (stats) overview.insertBefore(stats, overview.querySelector('.nova-overview-grid'));
   if (appointmentSection) appointmentSection.insertBefore(overview, appointmentSection.firstChild);
   if (oldToolbar) oldToolbar.remove();
-  const sections = ['appointmentsSection','patientsSection','reportsSection','setupSection'].map($).filter(Boolean);
-  const patientHeading = $('patientsSection')?.querySelector('.section-title');
-  if (patientHeading) { const patientCsv = document.createElement('button'); patientCsv.type='button'; patientCsv.className='btn btn-light'; patientCsv.textContent='تصدير المرضى CSV'; patientCsv.addEventListener('click',()=>window.novaExportPatientsCsv?.()); patientHeading.append(patientCsv); }
+  const sections = ['appointmentsSection','reportsSection','setupSection'].map($).filter(Boolean);
   sections.forEach(section => { content.append(section); });
   // Overview is the landing page; the appointment section remains the source of the original KPI elements.
   content.prepend(overview);
@@ -157,8 +153,9 @@
     sections.forEach(section => { section.hidden = section.id !== id; });
     buttons.forEach((button,key) => button.classList.toggle('active', key === id));
     const meta = titles[id] || titles.overview;
-    $('nova-page-title').textContent = window.NOVAAdminPreferences?.translate(meta.label) || meta.label;
-    $('nova-page-description').textContent = window.NOVAAdminPreferences?.translate(meta.description) || meta.description;
+    $('nova-page-title').textContent = meta.label;
+    $('nova-page-description').textContent = meta.description;
+    window.NOVAAdminPreferences?.apply();
     if (id !== 'overview' && typeof originalShowSection === 'function') originalShowSection(id);
     if (id === 'overview') syncSummary();
     if (id === 'appointmentsSection') $('selectedDate')?.dispatchEvent(new Event('change'));

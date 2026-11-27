@@ -188,15 +188,14 @@ input:focus,select:focus,textarea:focus{border-color:#557b68;box-shadow:0 0 0 3p
 
 <section id="dashboardSection" hidden>
  <div class="toolbar nova-admin-toolbar">
-  <div><span class="admin-eyebrow">NOVA DENTAL STUDIO / CONTROL CENTER</span><h1>لوحة إدارة NOVA</h1><div class="muted">الحجوزات والمرضى والزيارات والتقارير</div></div>
+  <div><span class="admin-eyebrow">NOVA DENTAL STUDIO / CONTROL CENTER</span><h1>لوحة إدارة NOVA</h1><div class="muted">الحجوزات والتقارير وإدارة العيادة</div></div>
   <div class="toolbar-actions">
-   <button id="refreshBtn" class="btn btn-light">تحديث الحجوزات</button>
+   <button id="refreshBtn" class="btn btn-light refresh-action" type="button"><span class="refresh-icon" aria-hidden="true">↻</span><span id="refreshLabel">تحديث البيانات</span></button>
   </div>
  </div>
 
  <div class="views" role="tablist">
   <button class="view-btn active" data-section="appointmentsSection">الحجوزات</button>
-  <button class="view-btn" data-section="patientsSection">المرضى</button>
   <button class="view-btn" data-section="reportsSection">التقارير</button>
  </div>
 
@@ -258,57 +257,6 @@ input:focus,select:focus,textarea:focus{border-color:#557b68;box-shadow:0 0 0 3p
   <div id="appointmentList" class="appointment-list"></div>
  </section>
 
- <section id="patientsSection" hidden>
-  <div class="section-panel">
-   <div class="section-title"><div><h2>إدارة المرضى</h2><div class="muted">إضافة المرضى والبحث في السجل الطبي.</div></div></div>
-   <form id="patientForm">
-    <div class="form-grid">
-     <div><label for="patientName">اسم المريض</label><input id="patientName" maxlength="100" required></div>
-     <div><label for="patientPhone">رقم الهاتف</label><input id="patientPhone" type="tel" maxlength="25" required></div>
-    </div>
-    <label for="patientNotes">ملاحظات أولية</label><textarea id="patientNotes" maxlength="5000"></textarea>
-    <button id="patientSubmitBtn" class="btn">إضافة المريض</button>
-    <div id="patientMessage" class="message" role="status"></div>
-   </form>
-  </div>
-
-  <div class="section-panel">
-   <h2>قائمة المرضى</h2>
-   <label for="patientSearch">البحث بالاسم أو الهاتف</label>
-   <input id="patientSearch" type="search" placeholder="اكتب اسم المريض أو رقم هاتفه">
-   <div id="patientsMessage" class="message"></div>
-   <div id="patientsList" class="record-list"></div>
-  </div>
-
-  <div id="patientDetailSection" class="section-panel" hidden>
-   <div class="section-title"><h2>ملف المريض</h2><button id="closePatientBtn" class="btn btn-light">إغلاق</button></div>
-   <div id="patientDetail"></div>
-   <div class="section-panel">
-    <h2>تسجيل زيارة جديدة</h2>
-    <form id="visitForm">
-     <input id="visitPatientId" type="hidden">
-     <div class="form-grid">
-      <div><label for="visitDate">تاريخ الزيارة</label><input id="visitDate" type="date" required></div>
-      <div><label for="visitService">الخدمة</label>
-       <select id="visitService">
-        <option value="general">علاج عام</option><option value="cosmetic">تجميل الأسنان</option>
-        <option value="orthodontics">تقويم الأسنان</option><option value="restorative">ترميم الأسنان</option>
-        <option value="implants">زراعة الأسنان</option><option value="pediatric">طب أسنان الأطفال</option><option value="other">خدمة أخرى</option>
-       </select>
-      </div>
-     </div>
-     <label for="visitDiagnosis">التشخيص</label><textarea id="visitDiagnosis" maxlength="5000"></textarea>
-     <label for="visitTreatment">العلاج المقدم</label><textarea id="visitTreatment" maxlength="5000"></textarea>
-     <label for="visitNotes">ملاحظات</label><textarea id="visitNotes" maxlength="5000"></textarea>
-     <button id="visitSubmitBtn" class="btn">حفظ الزيارة</button>
-     <div id="visitMessage" class="message" role="status"></div>
-    </form>
-   </div>
-   <div class="section-panel"><h2>سجل الزيارات</h2><div id="visitHistory" class="record-list"></div></div>
-   <div class="section-panel"><h2>حجوزات المريض</h2><div id="patientAppointments" class="record-list"></div></div>
-  </div>
- </section>
-
  <section id="reportsSection" hidden>
   <div class="section-panel">
    <h2>التقارير والإحصائيات</h2>
@@ -328,10 +276,7 @@ input:focus,select:focus,textarea:focus{border-color:#557b68;box-shadow:0 0 0 3p
 <script>
 const $ = id => document.getElementById(id);
 let appointments = [];
-let patients = [];
 let currentView = "day";
-let selectedPatientId = null;
-let patientSearchTimer = null;
 
 const statusLabels = {pending:"بانتظار التأكيد",confirmed:"مؤكد",rejected:"مرفوض",cancelled:"ملغي"};
 const serviceLabels = {general:"علاج عام",cosmetic:"تجميل الأسنان",orthodontics:"تقويم الأسنان",restorative:"ترميم الأسنان",implants:"زراعة الأسنان",pediatric:"طب أسنان الأطفال",other:"خدمة أخرى"};
@@ -403,7 +348,7 @@ function renderInsights(){
  for(let offset=6;offset>=0;offset--){
   const d=new Date(today);d.setDate(d.getDate()-offset);
   const key=[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
-  days.push({key,label:new Intl.DateTimeFormat("ar-DZ",{weekday:"short"}).format(d),count:0});
+  days.push({key,label:new Intl.DateTimeFormat((document.documentElement.lang||"ar")+"-DZ",{weekday:"short"}).format(d),count:0});
  }
  appointments.forEach(a=>{
   const key=String(a.created_at||"").slice(0,10);
@@ -439,7 +384,7 @@ function renderInsights(){
  const sourceNames={website:"الموقع الإلكتروني",phone:"الهاتف",whatsapp:"واتساب",walk_in:"حضور مباشر"};
  const sourceCounts=Object.entries(sourceNames).map(([key,label])=>({label,count:appointments.filter(a=>a.source===key).length})).filter(x=>x.count).sort((a,b)=>b.count-a.count);
  addMetrics(sourceRoot,sourceCounts);
- $("insightsUpdated").textContent="آخر تحديث: "+new Intl.DateTimeFormat("ar-DZ",{hour:"2-digit",minute:"2-digit"}).format(new Date());
+ $("insightsUpdated").textContent="آخر تحديث: "+new Intl.DateTimeFormat((document.documentElement.lang||"ar")+"-DZ",{hour:"2-digit",minute:"2-digit"}).format(new Date());
 }
 function selectView(view){
  currentView=view;
@@ -500,16 +445,36 @@ function renderAppointments(){
   root.append(card);
  });
 }
+let refreshFeedbackTimer = null;
+function setRefreshLabel(value){
+ const label=$("refreshLabel");
+ if(!label)return;
+ label.replaceChildren(document.createTextNode(value));
+ window.NOVAAdminPreferences?.apply();
+}
 async function loadAppointments(){
+ const refreshButton=$("refreshBtn");
  setMessage($("dashboardMessage"),"جارٍ تحميل الحجوزات...");
- $("refreshBtn").disabled=true;
+ refreshButton.disabled=true;
+ refreshButton.classList.add("is-refreshing");
+ refreshButton.setAttribute("aria-busy","true");
+ setRefreshLabel("جارٍ تحديث البيانات");
+ clearTimeout(refreshFeedbackTimer);
+ let refreshed=false;
  try{
   const {response,data}=await api("/api/admin/appointments");
-  if(!response.ok||data.ok!==true){if(response.status!==401)setMessage($("dashboardMessage"),"تعذر تحميل الحجوزات.");return}
+  if(!response.ok||data.ok!==true){if(response.status!==401)setMessage($("dashboardMessage"),"تعذر تحميل الحجوزات.");setRefreshLabel("تعذّر التحديث");return}
   appointments=Array.isArray(data.appointments)?data.appointments:[];
   updateStats();setMessage($("dashboardMessage"),"");renderAppointments();
- }catch{setMessage($("dashboardMessage"),"تعذر الاتصال بالخادم.")}
- finally{$("refreshBtn").disabled=false}
+  setRefreshLabel("تم التحديث");
+  refreshed=true;
+ }catch{setMessage($("dashboardMessage"),"تعذر الاتصال بالخادم.");setRefreshLabel("تعذّر التحديث")}
+ finally{
+  refreshButton.disabled=false;
+  refreshButton.classList.remove("is-refreshing");
+  refreshButton.removeAttribute("aria-busy");
+  refreshFeedbackTimer=setTimeout(()=>setRefreshLabel("تحديث البيانات"),refreshed?1700:2300);
+ }
 }
 async function saveScheduledAt(id,value,button){
  button.disabled=true;
@@ -543,107 +508,10 @@ async function createManualAppointment(event){
 
 /* التنقل بين أقسام اللوحة */
 function showSection(id){
- ["appointmentsSection","patientsSection","reportsSection","setupSection"].forEach(s=>$(s).hidden=s!==id);
+ ["appointmentsSection","reportsSection","setupSection"].forEach(s=>{const section=$(s);if(section)section.hidden=s!==id;});
  document.querySelectorAll("[data-section]").forEach(b=>b.classList.toggle("active",b.dataset.section===id));
- if(id==="patientsSection")loadPatients();
  if(id==="reportsSection")loadReports();
  if(id==="setupSection"&&window.loadSetup)window.loadSetup();
-}
-
-/* المرضى */
-async function loadPatients(){
- setMessage($("patientsMessage"),"جارٍ تحميل المرضى...");
- const q=$("patientSearch").value.trim();
- try{
-  const {response,data}=await api("/api/admin/patients?q="+encodeURIComponent(q));
-  if(!response.ok||!data.ok){setMessage($("patientsMessage"),"تعذر تحميل قائمة المرضى.");return}
-  patients=Array.isArray(data.patients)?data.patients:[];
-  renderPatients();
-  setMessage($("patientsMessage"),patients.length+" مريض");
- }catch{setMessage($("patientsMessage"),"تعذر الاتصال بالخادم.")}
-}
-function renderPatients(){
- const root=$("patientsList");root.replaceChildren();
- if(!patients.length){const e=document.createElement("div");e.className="empty";e.textContent="لا يوجد مرضى مطابقون للبحث.";root.append(e);return}
- patients.forEach(p=>{
-  const row=document.createElement("div");row.className="patient-row";
-  const info=document.createElement("div"),name=document.createElement("strong"),phone=document.createElement("small");
-  name.textContent=p.patient_name;phone.textContent=p.phone+" · "+(p.visits_count||0)+" زيارة";
-  info.append(name,phone);
-  row.append(info,createButton("فتح الملف","btn-light",()=>loadPatientDetails(p.id)));
-  root.append(row);
- });
-}
-async function createPatient(event){
- event.preventDefault();const button=$("patientSubmitBtn");button.disabled=true;
- const payload={patient_name:$("patientName").value.trim(),phone:$("patientPhone").value.trim(),notes:$("patientNotes").value.trim()};
- try{
-  const {response,data}=await api("/api/admin/patients/create",{method:"POST",body:JSON.stringify(payload)});
-  if(!response.ok||!data.ok){setMessage($("patientMessage"),data.error==="invalid_input"?"تحقق من الاسم ورقم الهاتف.":"تعذرت إضافة المريض.");return}
-  $("patientForm").reset();setMessage($("patientMessage"),"تمت إضافة المريض بنجاح.",true);
-  await loadPatients();
-  if(data.patient?.id)await loadPatientDetails(data.patient.id);
- }catch{setMessage($("patientMessage"),"تعذر الاتصال بالخادم.")}
- finally{button.disabled=false}
-}
-async function loadPatientDetails(id){
- selectedPatientId=id;
- setMessage($("patientsMessage"),"جارٍ تحميل ملف المريض...");
- try{
-  const {response,data}=await api("/api/admin/patients/detail?id="+encodeURIComponent(id));
-  if(!response.ok||!data.ok){setMessage($("patientsMessage"),"تعذر تحميل ملف المريض.");return}
-  const p=data.patient;$("patientDetailSection").hidden=false;$("visitPatientId").value=p.id;
-  const detail=$("patientDetail");detail.replaceChildren();
-  const card=document.createElement("div");card.className="patient-detail";
-  const title=document.createElement("strong");title.textContent=p.patient_name;
-  const phone=document.createElement("div");phone.textContent="الهاتف: "+p.phone;
-  const notes=document.createElement("div");notes.textContent="ملاحظات: "+(p.notes||"لا توجد");
-  card.append(title,phone,notes);detail.append(card);
-  renderVisits(data.visits||[]);renderPatientAppointments(data.appointments||[]);
-  $("visitDate").value=localDateString();setMessage($("visitMessage"),"");
-  $("patientDetailSection").scrollIntoView({behavior:"smooth",block:"start"});
- }catch{setMessage($("patientsMessage"),"تعذر الاتصال بالخادم.")}
-}
-function renderVisits(visits){
- const root=$("visitHistory");root.replaceChildren();
- if(!visits.length){const e=document.createElement("div");e.className="empty";e.textContent="لا توجد زيارات مسجلة.";root.append(e);return}
- visits.forEach(v=>{
-  const card=document.createElement("div");card.className="visit-card";
-  const title=document.createElement("strong");title.textContent=formatDate(v.visit_date)+" · "+(serviceLabels[v.service_type]||v.service_type);
-  card.append(title);
-  [["التشخيص",v.diagnosis],["العلاج",v.treatment],["ملاحظات",v.notes]].forEach(([label,value])=>{
-   if(value){const p=document.createElement("div");p.textContent=label+": "+value;card.append(p)}
-  });
-  root.append(card);
- });
-}
-function renderPatientAppointments(items){
- const root=$("patientAppointments");root.replaceChildren();
- if(!items.length){const e=document.createElement("div");e.className="empty";e.textContent="لا توجد حجوزات مرتبطة بهذا الملف.";root.append(e);return}
- items.forEach(a=>{
-  const card=document.createElement("div");card.className="visit-card";
-  card.textContent=(serviceLabels[a.service_type]||a.service_type)+" · "+formatScheduledAt(a.scheduled_at)+" · "+(statusLabels[a.status]||a.status)+" · "+(a.reference||"");
-  root.append(card);
- });
-}
-async function createVisit(event){
- event.preventDefault();const button=$("visitSubmitBtn");button.disabled=true;
- const payload={
-  patient_id:Number($("visitPatientId").value),
-  visit_date:$("visitDate").value,
-  service_type:$("visitService").value,
-  diagnosis:$("visitDiagnosis").value.trim(),
-  treatment:$("visitTreatment").value.trim(),
-  notes:$("visitNotes").value.trim()
- };
- try{
-  const {response,data}=await api("/api/admin/visits",{method:"POST",body:JSON.stringify(payload)});
-  if(!response.ok||!data.ok){setMessage($("visitMessage"),"تعذر حفظ الزيارة. تحقق من البيانات.");return}
-  $("visitForm").reset();$("visitPatientId").value=selectedPatientId;$("visitDate").value=localDateString();
-  setMessage($("visitMessage"),"تم تسجيل الزيارة بنجاح.",true);
-  await loadPatientDetails(selectedPatientId);await loadPatients();
- }catch{setMessage($("visitMessage"),"تعذر الاتصال بالخادم.")}
- finally{button.disabled=false}
 }
 
 /* التقارير */
@@ -687,10 +555,7 @@ window.novaExportAppointmentsCsv = () => {
  const rows=[["الاسم","الهاتف","الخدمة","المصدر","الحالة","تاريخ الطلب","الموعد","الطبيب","المرجع"], ...appointments.map(a=>[a.patient_name,a.phone,serviceLabels[a.service_type]||a.service_type,sourceLabels[a.source]||a.source,statusLabels[a.status]||a.status,a.created_at,a.scheduled_at,a.dentist_name,a.reference])];
  downloadCsv(rows,"nova-appointments.csv");
 };
-window.novaExportPatientsCsv = () => {
- const rows=[["اسم المريض","الهاتف","عدد الزيارات"], ...patients.map(p=>[p.patient_name,p.phone,p.visits_count||0])];
- downloadCsv(rows,"nova-patients.csv");
-};
+
 function downloadCsv(rows,filename){
  const csv="\uFEFF"+rows.map(row=>row.map(csvCell).join(",")).join("\r\n");
  const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});const url=URL.createObjectURL(blob);const a=document.createElement("a");
@@ -740,27 +605,26 @@ $("logoutBtn").addEventListener("click",async()=>{
  try{await api("/api/admin/logout",{method:"POST"})}finally{showLogin("تم تسجيل الخروج.")}
 });
 $("manualBookingForm").addEventListener("submit",createManualAppointment);
-$("refreshBtn").addEventListener("click",loadAppointments);
+async function refreshCurrentView(){
+ const reportsVisible=!$("reportsSection").hidden;
+ const settingsVisible=!$("setupSection")?.hidden;
+ await loadAppointments();
+ if(reportsVisible)await loadReports();
+ if(settingsVisible)window.NOVAAdminPreferences?.apply();
+}
+$("refreshBtn").addEventListener("click",refreshCurrentView);
 $("searchInput").addEventListener("input",renderAppointments);
 $("statusFilter").addEventListener("change",renderAppointments);
 $("sourceFilter").addEventListener("change",renderAppointments);
 $("selectedDate").addEventListener("change",renderAppointments);
 document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>selectView(b.dataset.view)));
 document.querySelectorAll("[data-section]").forEach(b=>b.addEventListener("click",()=>showSection(b.dataset.section)));
-$("patientForm").addEventListener("submit",createPatient);
-$("visitForm").addEventListener("submit",createVisit);
 $("loadReportsBtn").addEventListener("click",loadReports);
-$("closePatientBtn").addEventListener("click",()=>{$("patientDetailSection").hidden=true;selectedPatientId=null});
-$("patientSearch").addEventListener("input",()=>{
- clearTimeout(patientSearchTimer);
- patientSearchTimer=setTimeout(loadPatients,300);
-});
 
 window.showSection=showSection;
 async function restoreSession(){
  $("selectedDate").value=localDateString();
- $("visitDate").value=localDateString();
- $("reportFrom").value=localDateString();
+  $("reportFrom").value=localDateString();
  $("reportTo").value=localDateString();
  try{
   const {response,data}=await api("/api/admin/session");
