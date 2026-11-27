@@ -1,0 +1,36 @@
+/* Treatment cards: independent hover movement (separate from the scroll-reveal transform). */
+@media (hover: hover) and (pointer: fine) {
+  .service-detail-list .service-detail-card {
+    translate: 0 0;
+    border-radius: 14px;
+    transition:
+      opacity 750ms var(--ease),
+      transform 750ms var(--ease),
+      translate 260ms cubic-bezier(.2, .75, .25, 1),
+      background-color 260ms ease,
+      box-shadow 260ms ease,
+      border-color 260ms ease;
+  }
+
+  .service-detail-list .service-detail-card:hover {
+    translate: 0 -4px;
+    background-color: rgba(255, 255, 255, 0.72);
+    border-color: rgba(21, 92, 96, 0.2);
+    box-shadow: 0 13px 30px rgba(23, 45, 53, 0.11);
+  }
+
+  .service-detail-list .service-detail-card:hover .service-detail-icon {
+    color: var(--rust);
+    transform: translateY(-2px) rotate(5deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .service-detail-list .service-detail-card:hover {
+    translate: none !important;
+  }
+
+  .service-detail-list .service-detail-card:hover .service-detail-icon {
+    transform: none !important;
+  }
+}
