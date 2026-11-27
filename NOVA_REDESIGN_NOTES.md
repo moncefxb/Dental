@@ -21,7 +21,8 @@
 - Kept the chart scope explicit: the current appointments API returns at most 200 recent records.
 - Replaced the admin layout with a focused RTL workspace: overview, appointments, patients, reports, and clinic setup.
 - Removed demo-only finance, inventory, and odontogram screens from the basic admin interface.
-- Removed backup and CSV export controls from the admin UI as requested.
+- Removed backup controls; CSV export is available for appointments, patients, and reports.
+- Added persistent light/dark/system appearance and Arabic/French/English language preferences; system language is the default.
 - Corrected Cloudflare Worker asset routing so `/admin` and `/api/health` reach the Worker instead of falling through to static assets.
 - Added the health-check route to the Worker and excluded its source module from public static assets.
 - Hardened visit creation so an appointment cannot be attached to a different patient; an unlinked appointment is associated atomically when a visit is created.

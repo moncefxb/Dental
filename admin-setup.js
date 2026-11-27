@@ -56,6 +56,25 @@
       box.append(table(["الجهة", "من", "إلى", "السبب", ""], (t.j.timeoff || []).map(x => [x.dentist_id ? dentists.find(v => v.id === x.dentist_id)?.name || x.dentist_id : "العيادة كلها", x.starts_at.replace("T", " "), x.ends_at.replace("T", " "), x.reason, isAdmin() ? btn("حذف", async () => { if (!confirm("حذف هذه الفترة؟")) return; say(await call("/api/admin/timeoff", { action: "delete", id: x.id }), "تم الحذف."); render(); }) : ""])));
       if (isAdmin()) box.append(el("h3", {}, "إضافة إغلاق / إجازة"), form, el("div", { style: "height:12px" }), btn("إضافة", async () => { const r = await call("/api/admin/timeoff", { dentist_id: sel.value === "" ? null : Number(sel.value), starts_at: a.value, ends_at: b.value, reason: why.value }); say(r, "تمت الإضافة."); if (r.ok) render(); }, "")); else box.append(ro());
     },
+    async appearance(box) {
+      const storedTheme = localStorage.getItem("nova-admin-theme") || "system";
+      const storedLanguage = localStorage.getItem("nova-admin-language") || "system";
+      const theme = el("select");
+      [["system","حسب إعداد الجهاز"],["light","فاتح"],["dark","داكن"]].forEach(([v,t]) => theme.append(el("option", { value:v }, t)));
+      theme.value = storedTheme; theme.dataset.novaTheme = "";
+      const language = el("select");
+      [["system","لغة النظام (افتراضي)"],["ar","العربية"],["fr","Français"],["en","English"]].forEach(([v,t]) => language.append(el("option", { value:v }, t)));
+      language.value = storedLanguage; language.dataset.novaLanguage = "";
+      const form = grid();
+      form.append(lab("مظهر لوحة الإدارة", theme), lab("لغة الواجهة", language));
+      const apply = () => {
+        localStorage.setItem("nova-admin-theme", theme.value);
+        localStorage.setItem("nova-admin-language", language.value);
+        window.NOVAAdminPreferences?.apply();
+      };
+      theme.addEventListener("change", apply); language.addEventListener("change", apply);
+      box.append(el("h3", {}, "المظهر واللغة"), el("p", { style:"font-size:12px;color:#6b756f" }, "يتم حفظ هذه الاختيارات على هذا الجهاز. عند اختيار لغة النظام، تُستخدم لغة المتصفح إذا كانت العربية أو الفرنسية أو الإنجليزية، وإلا فالعربية."), form);
+    },
     async settings(box) {
       const { j } = await call("/api/admin/settings"), s = j.settings || {};
       const f = { timezone: inp("text", s.timezone), slot_step_minutes: el("select"), min_notice_minutes: inp("number", s.min_notice_minutes, { min: 0 }), max_days_ahead: inp("number", s.max_days_ahead, { min: 1, max: 365 }), online_booking_enabled: inp("checkbox") };
@@ -80,7 +99,7 @@
       box.append(form, el("div", { style: "height:12px" }), btn("تغيير كلمة المرور", async () => { const r = await call("/api/admin/password", { current: c.value, next: n.value }); say(r.status === 400 ? { ok: false, j: { error: "x" } } : r, "تم التغيير. سُجّل خروجك من الأجهزة الأخرى."); if (r.status === 400) msg.textContent = "كلمة المرور الجديدة ضعيفة (12 حرفاً على الأقل، حروف ورموز/أرقام)."; if (r.ok) { c.value = n.value = ""; } }, ""));
     }
   };
-  const TABS = [["services", "الخدمات"], ["dentists", "الأطباء"], ["hours", "ساعات العمل"], ["timeoff", "الإجازات والإغلاق"], ["settings", "الإعدادات"], ["users", "المستخدمون"], ["audit", "سجل التدقيق"], ["password", "كلمة المرور"]];
+  const TABS = [["services", "الخدمات"], ["dentists", "الأطباء"], ["hours", "ساعات العمل"], ["timeoff", "الإجازات والإغلاق"], ["appearance", "المظهر واللغة"], ["settings", "إعدادات الحجز"], ["users", "المستخدمون"], ["audit", "سجل التدقيق"], ["password", "كلمة المرور"]];
   async function render() {
     const sec = $("setupSection"); sec.replaceChildren(); const nav = el("div", { role: "tablist", style: "display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px" });
     for (const [k, v] of TABS) { const b = el("button", { type: "button", role: "tab", class: "btn " + (k === tab ? "" : "btn-light"), "aria-selected": String(k === tab) }, v); b.onclick = () => { tab = k; msg.textContent = ""; render(); }; nav.append(b); }

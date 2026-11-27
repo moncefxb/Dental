@@ -7,6 +7,7 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="same-origin">
 <title>NOVA | لوحة الإدارة</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>
 :root{color-scheme:light;--ink:#183044;--muted:#718096;--line:#e6edf2;--page:#f4f7fa;--blue:#176b87;--green:#16845b;--red:#bd4545;--orange:#a36a18}
 *{box-sizing:border-box}
@@ -315,7 +316,7 @@ input:focus,select:focus,textarea:focus{border-color:#557b68;box-shadow:0 0 0 3p
     <div><label for="reportFrom">من تاريخ</label><input id="reportFrom" type="date"></div>
     <div><label for="reportTo">إلى تاريخ</label><input id="reportTo" type="date"></div>
    </div>
-   <button id="loadReportsBtn" class="btn">عرض التقرير</button>
+   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button id="loadReportsBtn" class="btn">عرض التقرير</button><button id="exportReportsCsvBtn" class="btn btn-light" type="button" disabled>تصدير CSV</button></div>
    <div id="reportsMessage" class="message" role="status"></div>
    <div id="reportResults"></div>
   </div>
@@ -646,6 +647,7 @@ async function createVisit(event){
 }
 
 /* التقارير */
+let currentReportData = null;
 async function loadReports(){
  if(!$("reportFrom").value)$("reportFrom").value=localDateString();
  if(!$("reportTo").value)$("reportTo").value=localDateString();
@@ -655,9 +657,46 @@ async function loadReports(){
  try{
   const {response,data}=await api("/api/admin/reports?from="+encodeURIComponent(from)+"&to="+encodeURIComponent(to));
   if(!response.ok||!data.ok){setMessage($("reportsMessage"),"تعذر تحميل التقرير.");return}
+  currentReportData = data; $("exportReportsCsvBtn").disabled = false;
   renderReports(data);setMessage($("reportsMessage"),"تم تحديث التقرير.",true);
  }catch{setMessage($("reportsMessage"),"تعذر الاتصال بالخادم.")}
 }
+function csvCell(value){
+ let text=String(value??"");
+ if(/^[=+\-@\t\r]/.test(text)) text="'"+text;
+ return '"'+text.replace(/"/g,'""')+'"';
+}
+function exportReportsCsv(){
+ if(!currentReportData)return;
+ const d=currentReportData;
+ const rows=[["القسم","البند","القيمة"],
+  ["ملخص","من تاريخ",$("reportFrom").value],["ملخص","إلى تاريخ",$("reportTo").value],
+  ["ملخص","المرضى الجدد",d.new_patients??0],["ملخص","إجمالي الزيارات",d.visits_total??0],
+  ["ملخص","إجمالي الحجوزات",(d.appointments_by_status||[]).reduce((n,x)=>n+Number(x.total||0),0)],
+  ...(d.appointments_by_status||[]).map(x=>["الحجوزات حسب الحالة",statusLabels[x.status]||x.status,x.total]),
+  ...(d.visits_by_service||[]).map(x=>["الزيارات حسب الخدمة",serviceLabels[x.service_type]||x.service_type,x.total]),
+  ...(d.visits_by_day||[]).map(x=>["الزيارات حسب اليوم",x.visit_date,x.total])];
+ const csv="\uFEFF"+rows.map(row=>row.map(csvCell).join(",")).join("\r\n");
+ const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+ const url=URL.createObjectURL(blob);const a=document.createElement("a");
+ a.href=url;a.download=`nova-report-${$("reportFrom").value}-${$("reportTo").value}.csv`;
+ document.body.append(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+$("exportReportsCsvBtn").addEventListener("click",exportReportsCsv);
+window.novaExportAppointmentsCsv = () => {
+ const rows=[["الاسم","الهاتف","الخدمة","المصدر","الحالة","تاريخ الطلب","الموعد","الطبيب","المرجع"], ...appointments.map(a=>[a.patient_name,a.phone,serviceLabels[a.service_type]||a.service_type,sourceLabels[a.source]||a.source,statusLabels[a.status]||a.status,a.created_at,a.scheduled_at,a.dentist_name,a.reference])];
+ downloadCsv(rows,"nova-appointments.csv");
+};
+window.novaExportPatientsCsv = () => {
+ const rows=[["اسم المريض","الهاتف","عدد الزيارات"], ...patients.map(p=>[p.patient_name,p.phone,p.visits_count||0])];
+ downloadCsv(rows,"nova-patients.csv");
+};
+function downloadCsv(rows,filename){
+ const csv="\uFEFF"+rows.map(row=>row.map(csvCell).join(",")).join("\r\n");
+ const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});const url=URL.createObjectURL(blob);const a=document.createElement("a");
+ a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+
 function renderReports(data){
  const root=$("reportResults");root.replaceChildren();
  const stats=document.createElement("div");stats.className="report-grid";
@@ -732,6 +771,7 @@ async function restoreSession(){
 restoreSession();
 </script>
 <script src="admin-setup.js"></script>
+<script src="admin-preferences.js"></script>
 <script src="admin-prototype.js"></script>
 </body>
 </html>

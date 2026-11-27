@@ -117,6 +117,8 @@
   const actions = document.createElement('div'); actions.className = 'nova-toolbar-actions';
   const refresh = $('refreshBtn');
   if (refresh) { refresh.textContent = 'تحديث البيانات'; refresh.classList.add('btn-light'); actions.append(refresh); }
+  const exportCsv = document.createElement('button'); exportCsv.type = 'button'; exportCsv.className = 'btn btn-light'; exportCsv.textContent = 'تصدير المواعيد CSV';
+  exportCsv.addEventListener('click', () => window.novaExportAppointmentsCsv?.()); actions.append(exportCsv);
   header.append(heading, actions);
 
   const navItems = [
@@ -139,6 +141,8 @@
   if (appointmentSection) appointmentSection.insertBefore(overview, appointmentSection.firstChild);
   if (oldToolbar) oldToolbar.remove();
   const sections = ['appointmentsSection','patientsSection','reportsSection','setupSection'].map($).filter(Boolean);
+  const patientHeading = $('patientsSection')?.querySelector('.section-title');
+  if (patientHeading) { const patientCsv = document.createElement('button'); patientCsv.type='button'; patientCsv.className='btn btn-light'; patientCsv.textContent='تصدير المرضى CSV'; patientCsv.addEventListener('click',()=>window.novaExportPatientsCsv?.()); patientHeading.append(patientCsv); }
   sections.forEach(section => { content.append(section); });
   // Overview is the landing page; the appointment section remains the source of the original KPI elements.
   content.prepend(overview);
@@ -153,8 +157,8 @@
     sections.forEach(section => { section.hidden = section.id !== id; });
     buttons.forEach((button,key) => button.classList.toggle('active', key === id));
     const meta = titles[id] || titles.overview;
-    $('nova-page-title').textContent = meta.label;
-    $('nova-page-description').textContent = meta.description;
+    $('nova-page-title').textContent = window.NOVAAdminPreferences?.translate(meta.label) || meta.label;
+    $('nova-page-description').textContent = window.NOVAAdminPreferences?.translate(meta.description) || meta.description;
     if (id !== 'overview' && typeof originalShowSection === 'function') originalShowSection(id);
     if (id === 'overview') syncSummary();
     if (id === 'appointmentsSection') $('selectedDate')?.dispatchEvent(new Event('change'));
@@ -168,8 +172,9 @@
     $('nova-confirmed-summary').textContent = $('confirmedCount')?.textContent || '0';
     $('nova-unscheduled-summary').textContent = $('unscheduledCount')?.textContent || '0';
   }
-  const date = new Intl.DateTimeFormat('ar-DZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date());
-  $('nova-today-date').textContent = date;
+  const updateDate = () => { const lang = document.documentElement.lang || 'ar'; $('nova-today-date').textContent = new Intl.DateTimeFormat(lang + '-DZ',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date()); };
+  updateDate();
+  window.addEventListener('nova:preferences-changed', updateDate);
   const observer = new MutationObserver(syncSummary);
   ['pendingCount','confirmedCount','unscheduledCount'].forEach(id => { const el = $(id); if (el) observer.observe(el,{childList:true,characterData:true,subtree:true}); });
   showPage('overview');
