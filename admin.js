@@ -317,7 +317,6 @@ export async function adminListAppointments({ request, env }) {
         scheduled_at,
         notes,
         status,
-        reference,
         source,
         created_at
       FROM appointments
@@ -486,10 +485,7 @@ export async function adminCreateAppointment({ request, env }) {
     const bytes = new Uint8Array(16);
     crypto.getRandomValues(bytes);
 
-    const reference = "NOVA-" + Array.from(
-      bytes,
-      byte => byte.toString(16).padStart(2, "0")
-    ).join("").slice(0, 16).toUpperCase();
+    const legacyUniqueValue = Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).join("");
 
     const result = await env.DB.prepare(`
       INSERT INTO appointments (
@@ -504,12 +500,12 @@ export async function adminCreateAppointment({ request, env }) {
       VALUES (?, ?, ?, '', 'pending', ?, ?)
       RETURNING id, patient_name, phone, service_type,
                 preferred_date, scheduled_at, status,
-                reference, source, created_at
+                source, created_at
     `).bind(
       name,
       phone,
       body.service_type,
-      reference,
+      legacyUniqueValue,
       body.source
     ).first();
 

@@ -141,7 +141,7 @@ export async function adminGetPatient({ request, env }) {
     `).bind(id).all();
 
     const appointments = await env.DB.prepare(`
-      SELECT id, service_type, scheduled_at, status, reference, source, created_at
+      SELECT id, service_type, scheduled_at, status, source, created_at
       FROM appointments
       WHERE patient_id = ?
       ORDER BY datetime(created_at) DESC
@@ -308,7 +308,7 @@ export async function adminExport({ request, env }) {
   try {
     const [patients, appointments, visits] = await Promise.all([
       env.DB.prepare("SELECT * FROM patients ORDER BY id").all(),
-      env.DB.prepare("SELECT * FROM appointments ORDER BY id").all(),
+      env.DB.prepare("SELECT id, patient_name, phone, email, service_type, preferred_date, scheduled_at, duration_minutes, notes, status, source, created_at, patient_id, dentist_id, service_id, language FROM appointments ORDER BY id").all(),
       env.DB.prepare("SELECT * FROM visits ORDER BY id").all()
     ]);
 

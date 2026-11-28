@@ -7,17 +7,17 @@
 <h2 style="font-size:18px;margin-top:26px">Reschedule</h2><label class="form-field"><span>New date</span><input type="date" id="rdate"></label><div id="rslots" class="lb-slot-grid"></div><div class="row"><button class="button button-dark" id="resBtn" type="button" disabled>Confirm new time</button></div>
 </div><p id="msg" role="status" aria-live="polite" style="color:var(--rust)"></p><p><a href="index.html">← NOVA Dental Studio</a></p></div></main>
 <script>
-(()=>{const q=new URLSearchParams(location.search),ref=q.get("ref")||"",token=q.get("token")||"",$=id=>document.getElementById(id);let appt,pick="";
+(()=>{const q=new URLSearchParams(location.search),token=q.get("token")||"",$=id=>document.getElementById(id);let appt,pick="";
 const post=(p,b)=>fetch(p,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).then(async r=>({ok:r.ok,j:await r.json().catch(()=>({}))}));
 const say=m=>{$("msg").textContent=m};
-async function load(){const r=await fetch(`/api/booking/manage?ref=${encodeURIComponent(ref)}&token=${encodeURIComponent(token)}`);const j=await r.json().catch(()=>({}));
- if(!r.ok||!j.ok){$("info").textContent="This link is not valid.";return}appt=j.appointment;$("info").textContent=`${appt.reference} — ${appt.scheduled_at.replace("T"," ")} — ${appt.status}`;$("actions").hidden=!["pending","confirmed"].includes(appt.status);
+async function load(){const r=await fetch(`/api/booking/manage?token=${encodeURIComponent(token)}`);const j=await r.json().catch(()=>({}));
+ if(!r.ok||!j.ok){$("info").textContent="This link is not valid.";return}appt=j.appointment;$("info").textContent=`${appt.scheduled_at.replace("T"," ")} — ${appt.status}`;$("actions").hidden=!["pending","confirmed"].includes(appt.status);
  const d=new Date();$("rdate").min=d.toISOString().slice(0,10)}
-$("cancelBtn").onclick=async()=>{if(!confirm("Cancel this appointment?"))return;const r=await post("/api/booking/cancel",{reference:ref,token});say(r.ok?"Appointment cancelled.":(r.j.error==="not_changeable"?"It is too late to cancel online. Please call the clinic.":"Could not cancel."));if(r.ok)load()};
+$("cancelBtn").onclick=async()=>{if(!confirm("Cancel this appointment?"))return;const r=await post("/api/booking/cancel",{token});say(r.ok?"Appointment cancelled.":(r.j.error==="not_changeable"?"It is too late to cancel online. Please call the clinic.":"Could not cancel."));if(r.ok)load()};
 $("rdate").onchange=async()=>{pick="";$("resBtn").disabled=true;const box=$("rslots");box.replaceChildren();
  const r=await fetch(`/api/availability?service=${encodeURIComponent(appt.service)}&date=${$("rdate").value}&dentist=any`);const j=await r.json().catch(()=>({}));
  if(!j.ok||!j.slots.length){box.textContent="No times available that day.";return}
  for(const s of j.slots){const b=document.createElement("button");b.type="button";b.className="button button-outline lb-slot";b.textContent=s.time;b.setAttribute("aria-pressed","false");b.onclick=()=>{pick=s.time;box.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));$("resBtn").disabled=false};box.append(b)}};
-$("resBtn").onclick=async()=>{const r=await post("/api/booking/reschedule",{reference:ref,token,date:$("rdate").value,time:pick});say(r.ok?"Rescheduled. The clinic will confirm the new time.":(r.j.error==="slot_unavailable"?"That time is no longer free (or your dentist is not available then).":"Could not reschedule."));if(r.ok)load()};
+$("resBtn").onclick=async()=>{const r=await post("/api/booking/reschedule",{token,date:$("rdate").value,time:pick});say(r.ok?"Rescheduled. The clinic will confirm the new time.":(r.j.error==="slot_unavailable"?"That time is no longer free (or your dentist is not available then).":"Could not reschedule."));if(r.ok)load()};
 load()})();
 </script></body></html>

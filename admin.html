@@ -57,7 +57,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 
 .status.rejected,.status.cancelled{background:#fce9e9;color:var(--red)}
 .details{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .detail{font-size:13px;overflow-wrap:anywhere}.detail small{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
-.reference{direction:ltr;text-align:right;font-family:monospace}
 .notes{margin-top:12px;padding:10px;background:#f5f8fa;border-radius:10px;white-space:pre-wrap;font-size:13px}
 .schedule-box{margin-top:13px;padding:13px;background:#f5f8fa;border-radius:11px}
 .schedule-row{display:grid;grid-template-columns:1fr 160px;gap:9px;align-items:end}
@@ -248,7 +247,7 @@ input:focus,select:focus,textarea:focus{border-color:#557b68;box-shadow:0 0 0 3p
   </div>
   <div id="dateTools" class="date-tools"><label for="selectedDate">عرض مواعيد تاريخ</label><input id="selectedDate" type="date"></div>
   <div class="filters">
-   <input id="searchInput" type="search" placeholder="ابحث بالاسم أو الهاتف أو المرجع">
+   <input id="searchInput" type="search" placeholder="ابحث بالاسم أو الهاتف">
    <select id="statusFilter"><option value="all">كل الحالات</option><option value="pending">بانتظار التأكيد</option><option value="confirmed">مؤكد</option><option value="rejected">مرفوض</option><option value="cancelled">ملغي</option></select>
    <select id="sourceFilter"><option value="all">كل المصادر</option><option value="website">الموقع الإلكتروني</option><option value="phone">الهاتف</option><option value="whatsapp">واتساب</option><option value="walk_in">حضور مباشر</option></select>
   </div>
@@ -396,7 +395,7 @@ function selectView(view){
 function renderAppointments(){
  const query=$("searchInput").value.trim().toLowerCase(),status=$("statusFilter").value,source=$("sourceFilter").value,date=$("selectedDate").value;
  let list=appointments.filter(a=>{
-  const text=[a.patient_name,a.phone,a.reference].join(" ").toLowerCase();
+  const text=[a.patient_name,a.phone].join(" ").toLowerCase();
   if(!text.includes(query)||(status!=="all"&&a.status!==status)||(source!=="all"&&a.source!==source))return false;
   if(currentView==="day"&&(!a.scheduled_at||getScheduledDate(a)!==date))return false;
   if(currentView==="unscheduled"&&(a.scheduled_at||!["pending","confirmed"].includes(a.status)))return false;
@@ -424,7 +423,6 @@ function renderAppointments(){
   addDetail(details,"الموعد",formatScheduledAt(item.scheduled_at));
   if(item.dentist_name)addDetail(details,"الطبيب",item.dentist_name);
   if(item.email)addDetail(details,"البريد الإلكتروني",item.email);
-  addDetail(details,"رقم المرجع",item.reference,"reference");
   card.append(details);
   if(item.notes){const n=document.createElement("div");n.className="notes";n.textContent="ملاحظات: "+item.notes;card.append(n)}
   const schedule=document.createElement("div");schedule.className="schedule-box";
@@ -552,7 +550,7 @@ function exportReportsCsv(){
 }
 $("exportReportsCsvBtn").addEventListener("click",exportReportsCsv);
 window.novaExportAppointmentsCsv = () => {
- const rows=[["الاسم","الهاتف","الخدمة","المصدر","الحالة","تاريخ الطلب","الموعد","الطبيب","المرجع"], ...appointments.map(a=>[a.patient_name,a.phone,serviceLabels[a.service_type]||a.service_type,sourceLabels[a.source]||a.source,statusLabels[a.status]||a.status,a.created_at,a.scheduled_at,a.dentist_name,a.reference])];
+ const rows=[["الاسم","الهاتف","الخدمة","المصدر","الحالة","تاريخ الطلب","الموعد","الطبيب"], ...appointments.map(a=>[a.patient_name,a.phone,serviceLabels[a.service_type]||a.service_type,sourceLabels[a.source]||a.source,statusLabels[a.status]||a.status,a.created_at,a.scheduled_at,a.dentist_name])];
  downloadCsv(rows,"nova-appointments.csv");
 };
 

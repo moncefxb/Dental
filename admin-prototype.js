@@ -144,6 +144,34 @@
     :root[dir="ltr"] .nova-info-row{gap:10px;flex-wrap:wrap}
     :root[dir="ltr"] .nova-info-row>*{min-width:0;overflow-wrap:anywhere}
     :root[dir="ltr"] .nova-setting-card{min-width:0}
+    /* On narrow screens the toolbar becomes a compact stack. Reset desktop flex bases
+       so the heading/actions cannot reserve unused vertical space. */
+    @media(max-width:760px){
+      .nova-toolbar{
+        display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;
+        align-items:stretch!important;justify-content:flex-start!important;gap:12px!important;
+        width:100%;height:auto!important;min-height:0!important;
+        margin:0 0 15px!important;padding:4px 0 15px!important;
+      }
+      .nova-toolbar>div:first-child{
+        flex:0 1 auto!important;width:100%!important;min-width:0!important;
+        min-height:0!important;height:auto!important;margin:0!important;
+      }
+      .nova-toolbar-actions{
+        display:flex!important;flex:0 0 auto!important;align-self:stretch!important;
+        width:100%!important;height:auto!important;min-height:0!important;
+        margin:0!important;align-items:stretch!important;justify-content:stretch!important;
+      }
+      .nova-toolbar-actions .btn{flex:1 1 140px!important;min-height:44px!important}
+    }
+    @media(max-width:520px){
+      .nova-toolbar{gap:10px!important;padding-bottom:13px!important}
+      .nova-toolbar-actions{
+        display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+        flex:0 0 auto!important;gap:7px!important;
+      }
+      .nova-toolbar-actions .btn{width:100%!important;min-width:0!important;min-height:44px!important;flex:none!important}
+    }
   `;
   const style = document.createElement('style');
   style.id = 'nova-admin-design-system';

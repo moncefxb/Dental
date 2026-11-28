@@ -526,16 +526,43 @@ a,button{-webkit-tap-highlight-color:transparent}
   .service-detail-list .service-detail-copy li { font-size: 10px; line-height: 1.8; }
   .service-detail-list .service-detail-aside { font-size: 9px; }
 }
-/* Touch devices still get scroll-reveal motion and a brief press response. */
+/* Touch interaction: no sticky simulated hover; lift only while the finger is down. */
 @media (hover: none), (pointer: coarse) {
-  .service-detail-list .service-detail-card:active {
-    translate: 0 -2px;
-    background-color: rgba(255, 255, 255, .82);
-    box-shadow: 0 9px 24px rgba(23, 45, 53, .09);
+  .service-detail-list .service-detail-card:hover {
+    translate: 0 0;
+    background-color: rgba(255, 255, 255, .56);
+    border-color: rgba(23, 45, 53, .14);
+    box-shadow: 0 7px 22px rgba(23, 45, 53, .045);
   }
-  .service-detail-list .service-detail-card:active .service-detail-icon {
+  .service-detail-list .service-detail-card:hover .service-detail-icon {
+    color: inherit;
+    transform: none;
+  }
+  .service-detail-list .service-detail-card:active,
+  .service-detail-list .service-detail-card.is-touch-pressed {
+    translate: 0 -4px;
+    background-color: rgba(255, 255, 255, .86);
+    border-color: rgba(21, 92, 96, .24);
+    box-shadow: 0 14px 32px rgba(23, 45, 53, .11);
+    transition-duration: 120ms;
+  }
+  .service-detail-list .service-detail-card:active .service-detail-icon,
+  .service-detail-list .service-detail-card.is-touch-pressed .service-detail-icon {
     color: var(--rust);
     transform: translateY(-2px) scale(1.04);
+  }
+
+  /* Informational cards are not selectable controls on touch browsers. */
+  .service-detail-list,
+  .service-detail-list .service-detail-card,
+  .service-detail-list .service-detail-card * {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+  }
+  .service-detail-list .service-detail-card {
+    touch-action: pan-y pinch-zoom;
   }
 }
 @media (prefers-reduced-motion: reduce) {
