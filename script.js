@@ -1,48 +1,56 @@
 /* NOVA Dental Studio — multilingual UI and D1-backed appointment requests. */
 
-// Treatment cards are informational. On touch devices, suppress long-press
-// selection/callouts and keep the lift effect only for the duration of a press.
+/* Treatment cards: keep the touch lift while the finger remains down, including
+   when the browser takes over a vertical scroll and emits pointercancel. */
 const treatmentCards = document.querySelector('.service-detail-list');
 const touchTreatmentMode = window.matchMedia('(any-pointer: coarse)').matches || navigator.maxTouchPoints > 0;
 if (treatmentCards && touchTreatmentMode) {
   let pressedTreatmentCard = null;
+  const cardFromTarget = target => target instanceof Element
+    ? target.closest('.service-detail-card')
+    : null;
   const clearPressedTreatmentCard = () => {
     pressedTreatmentCard?.classList.remove('is-touch-pressed');
     pressedTreatmentCard = null;
   };
-  const cardFromTarget = target => target instanceof Element
-    ? target.closest('.service-detail-card')
-    : null;
 
-  if ('PointerEvent' in window) {
-    treatmentCards.addEventListener('pointerdown', event => {
-      if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
-      const card = cardFromTarget(event.target);
-      if (!card) return;
-      clearPressedTreatmentCard();
-      pressedTreatmentCard = card;
-      card.classList.add('is-touch-pressed');
-    }, { passive: true });
+  // Touch Events continue to represent the physical contact while native page
+  // scrolling is in progress. Pointer Events alone do not: browsers send
+  // pointercancel as soon as they take over panning, even though the finger is
+  // still on the screen. Therefore touch cards are released on touchend only.
+  treatmentCards.addEventListener('touchstart', event => {
+    const card = cardFromTarget(event.target);
+    if (!card) return;
+    clearPressedTreatmentCard();
+    pressedTreatmentCard = card;
+    card.classList.add('is-touch-pressed');
+  }, { passive: true });
 
-    // Listen at document level so the effect clears even when the finger is
-    // lifted just outside the card or the browser cancels a scroll gesture.
-    document.addEventListener('pointerup', clearPressedTreatmentCard, true);
-    document.addEventListener('pointercancel', clearPressedTreatmentCard, true);
-    document.addEventListener('lostpointercapture', clearPressedTreatmentCard, true);
-  } else {
-    treatmentCards.addEventListener('touchstart', event => {
-      const card = cardFromTarget(event.target);
-      if (!card) return;
-      clearPressedTreatmentCard();
-      pressedTreatmentCard = card;
-      card.classList.add('is-touch-pressed');
-    }, { passive: true });
-    ['touchend', 'touchcancel'].forEach(type => {
-      document.addEventListener(type, clearPressedTreatmentCard, true);
-    });
-  }
+  document.addEventListener('touchend', event => {
+    if (!event.touches || event.touches.length === 0) clearPressedTreatmentCard();
+  }, { capture: true, passive: true });
+
+  // Do not drop the visual state on touchcancel/pointercancel: the browser may
+  // emit those while it takes over native scrolling. Clear on physical release.
+  treatmentCards.addEventListener('pointerdown', event => {
+    if (event.pointerType !== 'pen') return;
+    const card = cardFromTarget(event.target);
+    if (!card) return;
+    clearPressedTreatmentCard();
+    pressedTreatmentCard = card;
+    card.classList.add('is-touch-pressed');
+  }, { passive: true });
+  const clearPenPress = event => {
+    if (event.pointerType === 'pen') clearPressedTreatmentCard();
+  };
+  document.addEventListener('pointerup', clearPenPress, true);
+  document.addEventListener('pointercancel', clearPenPress, true);
 
   window.addEventListener('blur', clearPressedTreatmentCard);
+  window.addEventListener('pagehide', clearPressedTreatmentCard);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) clearPressedTreatmentCard();
+  });
   ['contextmenu', 'selectstart', 'dragstart'].forEach(type => {
     treatmentCards.addEventListener(type, event => {
       if (cardFromTarget(event.target)) event.preventDefault();

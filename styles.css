@@ -510,8 +510,18 @@ a,button{-webkit-tap-highlight-color:transparent}
   .service-detail-list .service-detail-copy li { font-size: 10px; line-height: 1.8; }
   .service-detail-list .service-detail-aside { font-size: 9px; }
 }
-/* Touch input has no persistent hover state. Only the pointer lifecycle can lift a card. */
+/* Touch input has no persistent hover state. The explicit pressed class controls the lift. */
 @media (hover: none), (pointer: coarse), (any-pointer: coarse) {
+  .service-detail-list .service-detail-card {
+    /* Keep scroll reveal opacity smooth, but make the press/release response quick. */
+    transition:
+      opacity 750ms var(--ease),
+      transform 150ms ease,
+      translate 150ms ease,
+      background-color 150ms ease,
+      box-shadow 150ms ease,
+      border-color 150ms ease;
+  }
   .service-detail-list .service-detail-card:hover {
     translate: 0 0 !important;
     transform: none !important;
