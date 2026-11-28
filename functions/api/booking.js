@@ -98,14 +98,14 @@ export async function availability({ request, env }) {
   return J({ ok: true, date, slots: Object.keys(map).sort().map(t => ({ time: t, dentists: map[t] })) });
 }
 
-async function insertBooking(env, { ipHash, name, phone, email, svc, dentistId, startsAt, lang, tokenHash, reference, source = "website" }) {
-  const now = Math.floor(Date.now() / 1000), rlToken = rand(16);
+async function insertBooking(env, { ipHash, name, phone, email, svc, dentistId, startsAt, lang, tokenHash, source = "website" }) {
+  const now = Math.floor(Date.now() / 1000), rlToken = rand(16), legacyUniqueValue = rand(16);
   const rl = env.DB.prepare(`INSERT INTO appointment_rate_limits (ip_hash,last_request_at,token) VALUES (?,?,?)
     ON CONFLICT(ip_hash) DO UPDATE SET last_request_at=excluded.last_request_at, token=excluded.token
     WHERE appointment_rate_limits.last_request_at <= excluded.last_request_at - 60 RETURNING token`).bind(ipHash, now, rlToken);
   const ins = env.DB.prepare(`INSERT INTO appointments (patient_name,phone,email,service_type,service_id,dentist_id,preferred_date,scheduled_at,duration_minutes,status,reference,source,language,manage_token_hash)
-    SELECT ?,?,?,?,?,?,'',?,?,'pending',?,?,?,? WHERE EXISTS (SELECT 1 FROM appointment_rate_limits WHERE ip_hash=? AND token=?) RETURNING id,reference`)
-    .bind(name, phone, email, svc.slug, svc.id, dentistId, startsAt, svc.duration_minutes, reference, source, lang, tokenHash, ipHash, rlToken);
+    SELECT ?,?,?,?,?,?,'',?,?,'pending',?,?,?,? WHERE EXISTS (SELECT 1 FROM appointment_rate_limits WHERE ip_hash=? AND token=?) RETURNING id`)
+    .bind(name, phone, email, svc.slug, svc.id, dentistId, startsAt, svc.duration_minutes, legacyUniqueValue, source, lang, tokenHash, ipHash, rlToken);
   const res = await env.DB.batch([rl, ins]);
   if (!res[0]?.results?.length) return { error: "rate_limited" };
   return { row: res[1]?.results?.[0] };
@@ -114,7 +114,7 @@ async function insertBooking(env, { ipHash, name, phone, email, svc, dentistId, 
 export async function book({ request, env, ctx }) {
   if (!sameOrigin(request)) return J({ ok: false, error: "forbidden" }, 403);
   const b = await body(request); if (!b) return J({ ok: false, error: "invalid_input" }, 400);
-  if (typeof b.website === "string" && b.website.trim()) return J({ ok: true, reference: "" }, 202); // honeypot
+  if (typeof b.website === "string" && b.website.trim()) return J({ ok: true }, 202); // honeypot
   if (!env.DB || !env.RATE_LIMIT_SECRET) return J({ ok: false, error: "server_configuration_error" }, 503);
   const name = String(b.name ?? "").trim().replace(/\s+/g, " "), phone = String(b.phone ?? "").trim().replace(/\s+/g, " "), email = String(b.email ?? "").trim().toLowerCase();
   const digits = phone.replace(/\D/g, ""), lang = ["ar", "fr", "en"].includes(b.language) ? b.language : "";
@@ -135,28 +135,31 @@ export async function book({ request, env, ctx }) {
   const ipHash = await hmac(`book:${ip}`, env.RATE_LIMIT_SECRET), startsAt = `${b.date}T${b.time}`, manageToken = rand(24), tokenHash = await sha256(manageToken);
   for (const d of free) {                       // "any dentist": fall through if a concurrent booking took the first choice
     try {
-      const r = await insertBooking(env, { ipHash, name, phone, email, svc, dentistId: d.id, startsAt, lang, tokenHash, reference: `NOVA-${rand(8).toUpperCase()}` });
+      const r = await insertBooking(env, { ipHash, name, phone, email, svc, dentistId: d.id, startsAt, lang, tokenHash });
       if (r.error) return J({ ok: false, error: r.error }, 429);
       if (r.row) {
-        ctx?.waitUntil?.(notifyAppointment(env, "created", { reference: r.row.reference, name, email, phone, service: svc.slug, startsAt, lang, manageToken, origin: new URL(request.url).origin }));
-        return J({ ok: true, reference: r.row.reference, manageToken, scheduled_at: startsAt, status: "pending" }, 201);
+        ctx?.waitUntil?.(notifyAppointment(env, "created", { name, email, phone, service: svc.slug, startsAt, lang, manageToken, origin: new URL(request.url).origin }));
+        return J({ ok: true, manageToken, scheduled_at: startsAt, status: "pending" }, 201);
       }
     } catch (e) { if (String(e?.message || "").includes("appointment_conflict")) continue; console.error("book error", e); return J({ ok: false, error: "database_write_failed" }, 503); }
   }
   return J({ ok: false, error: "slot_unavailable" }, 409);
 }
 
-async function loadManaged(env, ref, token) {
-  if (typeof ref !== "string" || typeof token !== "string" || !/^NOVA-[A-Z0-9]{16}$/.test(ref) || !/^[a-f0-9]{48}$/.test(token)) return null;
-  const a = await env.DB.prepare("SELECT id,patient_name,email,phone,service_id,service_type,dentist_id,scheduled_at,duration_minutes,status,language,manage_token_hash FROM appointments WHERE reference=?").bind(ref).first();
+async function loadManaged(env, token) {
+  if (typeof token !== "string" || !/^[a-f0-9]{48}$/.test(token)) return null;
+  const given = await sha256(token);
+  // A high-entropy management token is the only customer-facing appointment key.
+  // The legacy unique database column is not used by customer or admin features.
+  const a = await env.DB.prepare("SELECT id,patient_name,email,phone,service_id,service_type,dentist_id,scheduled_at,duration_minutes,status,language,manage_token_hash FROM appointments WHERE manage_token_hash=?").bind(given).first();
   if (!a || !a.manage_token_hash) return null;
-  const given = await sha256(token); let diff = 0; for (let i = 0; i < 64; i++) diff |= given.charCodeAt(i) ^ a.manage_token_hash.charCodeAt(i);
+  let diff = 0; for (let i = 0; i < 64; i++) diff |= given.charCodeAt(i) ^ a.manage_token_hash.charCodeAt(i);
   return diff === 0 ? a : null;
 }
 export async function manageLookup({ request, env }) {
-  const u = new URL(request.url), a = await loadManaged(env, u.searchParams.get("ref"), u.searchParams.get("token"));
+  const u = new URL(request.url), a = await loadManaged(env, u.searchParams.get("token"));
   if (!a) return J({ ok: false, error: "not_found" }, 404);
-  return J({ ok: true, appointment: { reference: u.searchParams.get("ref"), service: a.service_type, scheduled_at: a.scheduled_at, status: a.status } });
+  return J({ ok: true, appointment: { service: a.service_type, scheduled_at: a.scheduled_at, status: a.status } });
 }
 function canChange(a, st, now) {
   if (!["pending", "confirmed"].includes(a.status) || !a.scheduled_at) return false;
@@ -165,17 +168,17 @@ function canChange(a, st, now) {
 }
 export async function manageCancel({ request, env, ctx }) {
   if (!sameOrigin(request)) return J({ ok: false, error: "forbidden" }, 403);
-  const b = await body(request); const a = b && await loadManaged(env, b.reference, b.token);
+  const b = await body(request); const a = b && await loadManaged(env, b.token);
   if (!a) return J({ ok: false, error: "not_found" }, 404);
   const st = await settings(env);
   if (!canChange(a, st, localNow(st.tz))) return J({ ok: false, error: "not_changeable" }, 409);
   await env.DB.prepare("UPDATE appointments SET status='cancelled' WHERE id=?").bind(a.id).run();
-  ctx?.waitUntil?.(notifyAppointment(env, "cancelled", { reference: b.reference, name: a.patient_name, email: a.email, startsAt: a.scheduled_at, lang: a.language, origin: new URL(request.url).origin }));
+  ctx?.waitUntil?.(notifyAppointment(env, "cancelled", { name: a.patient_name, email: a.email, startsAt: a.scheduled_at, lang: a.language, origin: new URL(request.url).origin }));
   return J({ ok: true, status: "cancelled" });
 }
 export async function manageReschedule({ request, env, ctx }) {
   if (!sameOrigin(request)) return J({ ok: false, error: "forbidden" }, 403);
-  const b = await body(request); const a = b && await loadManaged(env, b.reference, b.token);
+  const b = await body(request); const a = b && await loadManaged(env, b.token);
   if (!a) return J({ ok: false, error: "not_found" }, 404);
   if (typeof b.date !== "string" || typeof b.time !== "string" || !TIME_RE.test(b.time)) return J({ ok: false, error: "invalid_input" }, 400);
   const st = await settings(env), now = localNow(st.tz);
@@ -189,6 +192,6 @@ export async function manageReschedule({ request, env, ctx }) {
     // Rescheduling returns the appointment to 'pending' so staff re-confirm the new time.
     await env.DB.prepare("UPDATE appointments SET scheduled_at=?, status='pending' WHERE id=?").bind(`${b.date}T${b.time}`, a.id).run();
   } catch (e) { if (String(e?.message || "").includes("appointment_conflict")) return J({ ok: false, error: "slot_unavailable" }, 409); throw e; }
-  ctx?.waitUntil?.(notifyAppointment(env, "rescheduled", { reference: b.reference, name: a.patient_name, email: a.email, startsAt: `${b.date}T${b.time}`, lang: a.language, origin: new URL(request.url).origin }));
+  ctx?.waitUntil?.(notifyAppointment(env, "rescheduled", { name: a.patient_name, email: a.email, startsAt: `${b.date}T${b.time}`, lang: a.language, origin: new URL(request.url).origin }));
   return J({ ok: true, scheduled_at: `${b.date}T${b.time}`, status: "pending" });
 }

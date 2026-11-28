@@ -30,10 +30,6 @@ function randomToken() {
   ).join("");
 }
 
-function generateReference() {
-  return `NOVA-${randomToken().slice(0, 16).toUpperCase()}`;
-}
-
 async function hashIP(ip, secret) {
   const encoder = new TextEncoder();
 
@@ -103,7 +99,7 @@ export async function onRequestPost({ request, env }) {
   }
 
   if (typeof body.website === "string" && body.website.trim() !== "") {
-    return json({ ok: true, reference: "" }, 202);
+    return json({ ok: true }, 202);
   }
 
   const name = typeof body.name === "string"
@@ -167,7 +163,7 @@ export async function onRequestPost({ request, env }) {
 
     for (let attempt = 0; attempt < 3; attempt++) {
       const token = randomToken();
-      const reference = generateReference();
+      const legacyUniqueValue = randomToken();
 
       const rateLimitStatement = env.DB.prepare(`
         INSERT INTO appointment_rate_limits (
@@ -199,12 +195,12 @@ export async function onRequestPost({ request, env }) {
           FROM appointment_rate_limits
           WHERE ip_hash = ? AND token = ?
         )
-        RETURNING reference
+        RETURNING id
       `).bind(
         name,
         phone,
         service,
-        reference,
+        legacyUniqueValue,
         ipHash,
         token
       );
@@ -220,17 +216,14 @@ export async function onRequestPost({ request, env }) {
 
       const saved = results[1]?.results?.[0];
 
-      if (saved?.reference) {
-        return json({
-          ok: true,
-          reference: saved.reference
-        }, 201);
+      if (saved?.id) {
+        return json({ ok: true }, 201);
       }
 
       return json({ ok: false, error: "database_write_failed" }, 503);
     }
 
-    return json({ ok: false, error: "reference_generation_failed" }, 503);
+    return json({ ok: false, error: "database_write_failed" }, 503);
 
   } catch {
     return json({ ok: false, error: "database_write_failed" }, 503);

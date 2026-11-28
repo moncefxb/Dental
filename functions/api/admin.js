@@ -10,7 +10,7 @@ export async function adminListAppointments({ request, env }) {
     const result = await env.DB.prepare(`
       SELECT
         a.id, a.patient_name, a.phone, a.email, a.service_type, a.preferred_date,
-        a.scheduled_at, a.duration_minutes, a.notes, a.status, a.reference, a.source,
+        a.scheduled_at, a.duration_minutes, a.notes, a.status, a.source,
         a.created_at, a.dentist_id, d.name AS dentist_name
       FROM appointments a
       LEFT JOIN dentists d ON d.id = a.dentist_id
@@ -179,10 +179,7 @@ export async function adminCreateAppointment({ request, env }) {
     const bytes = new Uint8Array(16);
     crypto.getRandomValues(bytes);
 
-    const reference = "NOVA-" + Array.from(
-      bytes,
-      byte => byte.toString(16).padStart(2, "0")
-    ).join("").slice(0, 16).toUpperCase();
+    const legacyUniqueValue = Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).join("");
 
     const result = await env.DB.prepare(`
       INSERT INTO appointments (
@@ -197,12 +194,12 @@ export async function adminCreateAppointment({ request, env }) {
       VALUES (?, ?, ?, '', 'pending', ?, ?)
       RETURNING id, patient_name, phone, service_type,
                 preferred_date, scheduled_at, status,
-                reference, source, created_at
+                source, created_at
     `).bind(
       name,
       phone,
       body.service_type,
-      reference,
+      legacyUniqueValue,
       body.source
     ).first();
 

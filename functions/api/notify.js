@@ -11,9 +11,9 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<"
 export async function notifyAppointment(env, event, d) {
   if (!env.EMAIL_API_KEY || !env.EMAIL_FROM) return { skipped: "not_configured" };
   const lang = SUBJECT[event][d.lang] ? d.lang : "en", subject = SUBJECT[event][lang];
-  const link = d.manageToken ? `${d.origin}/manage.html?ref=${encodeURIComponent(d.reference)}&token=${d.manageToken}` : "";
+  const link = d.manageToken ? `${d.origin}/manage.html?token=${d.manageToken}` : "";
   const html = `<div dir="${lang === "ar" ? "rtl" : "ltr"}" style="font-family:sans-serif"><h2>${esc(subject)}</h2>
-    <p>${esc(d.name)} — <b>${esc(d.startsAt || "")}</b></p><p>Ref: ${esc(d.reference)}</p>${link ? `<p><a href="${esc(link)}">Manage / cancel</a></p>` : ""}</div>`;
+    <p>${esc(d.name)} — <b>${esc(d.startsAt || "")}</b></p>${link ? `<p><a href="${esc(link)}">Manage / cancel</a></p>` : ""}</div>`;
   const to = [d.email, event === "created" ? env.CLINIC_NOTIFY_EMAIL : ""].filter(Boolean);
   if (!to.length) return { skipped: "no_recipient" };
   try {

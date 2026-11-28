@@ -113,10 +113,10 @@ export async function adminSetStatus({ request, env, ctx }) {
   const a = await requireAdmin(request, env, { write: true }); if (a.response) return a.response;
   const b = await readJson(request); if (!b || !Number.isSafeInteger(b.id) || !["confirmed", "cancelled", "rejected"].includes(b.status)) return json({ ok: false, error: "invalid_input" }, 400);
   try {
-    const r = await env.DB.prepare("UPDATE appointments SET status=? WHERE id=? RETURNING id,status,patient_name,email,scheduled_at,reference,language").bind(b.status, b.id).first();
+    const r = await env.DB.prepare("UPDATE appointments SET status=? WHERE id=? RETURNING id,status,patient_name,email,scheduled_at,language").bind(b.status, b.id).first();
     if (!r) return json({ ok: false, error: "not_found" }, 404);
     await audit(env, request, a.user.username, `appointment.${b.status}`, "appointment", r.id);
-    if (r.status === "confirmed" || r.status === "cancelled") ctx?.waitUntil?.(notifyAppointment(env, r.status, { reference: r.reference, name: r.patient_name, email: r.email, startsAt: r.scheduled_at, lang: r.language, origin: new URL(request.url).origin }));
+    if (r.status === "confirmed" || r.status === "cancelled") ctx?.waitUntil?.(notifyAppointment(env, r.status, { name: r.patient_name, email: r.email, startsAt: r.scheduled_at, lang: r.language, origin: new URL(request.url).origin }));
     return json({ ok: true, appointment: { id: r.id, status: r.status } });
   } catch (e) { return String(e?.message).includes("appointment_conflict") ? json({ ok: false, error: "appointment_conflict" }, 409) : json({ ok: false, error: "database_error" }, 503); }
 }
